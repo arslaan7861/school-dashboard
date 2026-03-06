@@ -14,7 +14,7 @@ export type LoginData = {
     email: string;
     phone: string;
     role: string;
-    is_active: boolean;
+    isActive: boolean; // Changed
   };
   token: string;
 };

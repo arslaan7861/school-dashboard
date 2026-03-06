@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -13,15 +13,6 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Switch } from "@/components/ui/switch";
-
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from "@/components/ui/select";
 
 import {
   Form,
@@ -37,36 +28,33 @@ import {
   updateAdminSchema,
 } from "@/features/admin/validators.admin";
 
-import { Loader2 } from "lucide-react";
+import { Loader2, ImagePlus, X, Upload } from "lucide-react";
 import { toast } from "sonner";
-import { useAuthStore } from "@/store/authStore";
 import { UserRole } from "@/types/user";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
 
 type Props = {
   open: boolean;
   onOpenChange: (v: boolean) => void;
   initial?: any;
-  onCreate: (data: any, form: formType) => Promise<any> | void;
-  onUpdate: (id: string, data: any, form: formType) => Promise<any> | void;
+  onCreate: (data: any, form: FormType) => Promise<any> | void;
+  onUpdate: (id: string, data: any, form: FormType) => Promise<any> | void;
+  isCreatePending?: boolean;
+  isUpdatePending?: boolean;
 };
-type formType = UseFormReturn<
-  any,
-  unknown,
-  | {
-      name: string;
-      email: string;
-      phone: string;
-      password: string;
-      role: UserRole;
-    }
-  | {
-      name?: string | undefined;
-      email?: string | undefined;
-      phone?: string | undefined;
-      password?: string | undefined;
-      role?: UserRole | undefined;
-    }
->;
+
+type FormType = UseFormReturn<any>;
+
+// Define the shape of update defaults
+interface UpdateDefaults {
+  name: string;
+  email: string;
+  phone: string;
+  role: UserRole;
+  [key: string]: any;
+}
 
 export function AdminFormDialog({
   open,
@@ -74,18 +62,27 @@ export function AdminFormDialog({
   initial,
   onCreate,
   onUpdate,
+  isCreatePending = false,
+  isUpdatePending = false,
 }: Props) {
   const isEdit = !!initial;
+  const isPending = isEdit ? isUpdatePending : isCreatePending;
+
+  const [image, setImage] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [imageChanged, setImageChanged] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
   const createDefaults: any = {
     name: "",
     email: "",
     phone: "",
     password: "",
-    role: "admin",
-    is_active: true,
+    role: "admin" as UserRole,
   };
 
-  const updateDefaults: any = {
+  const updateDefaults: UpdateDefaults = {
     name: initial?.name ?? "",
     email: initial?.email ?? "",
     phone: initial?.phone ?? "",
@@ -103,49 +100,264 @@ export function AdminFormDialog({
   });
 
   const { reset, handleSubmit, control, formState } = form;
-  const { isSubmitting } = formState;
-  useEffect(() => {
-    console.log(formState.errors);
-  }, [formState.errors]);
+  const { isSubmitting, dirtyFields } = formState;
 
-  useEffect(() => {
-    if (isEdit) {
-      setTimeout(() => reset(updateDefaults), 100);
-    } else {
-      setTimeout(() => reset(createDefaults), 100);
+  /* ---------- IMAGE PREVIEW ---------- */
+  const handleImageChange = (file: File | null) => {
+    setImage(file);
+    setImageChanged(true);
+    setUploadProgress(0);
+
+    if (!file) {
+      setPreview(null);
+      return;
     }
-  }, [initial, isEdit, reset]);
 
+    // Simulate upload progress (optional)
+    const interval = setInterval(() => {
+      setUploadProgress((prev) => {
+        if (prev >= 90) {
+          clearInterval(interval);
+          return 90;
+        }
+        return prev + 10;
+      });
+    }, 100);
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      clearInterval(interval);
+      setUploadProgress(100);
+      setPreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleImageRemove = () => {
+    setImage(null);
+    setPreview(initial?.profilePic || null);
+    setImageChanged(false);
+    setUploadProgress(0);
+  };
+
+  /* ---------- RESET ON OPEN ---------- */
+  useEffect(() => {
+    if (!open) return;
+
+    if (isEdit) {
+      reset(updateDefaults);
+      setPreview(initial?.profilePic || null);
+    } else {
+      reset(createDefaults);
+      setPreview(null);
+    }
+
+    setImage(null);
+    setImageChanged(false);
+    setIsUploading(false);
+    setUploadProgress(0);
+  }, [open, initial, isEdit, reset]);
+
+  /* ---------- CHECK IF ANYTHING CHANGED ---------- */
+  const hasChanges = useMemo(() => {
+    if (!isEdit) return true; // Create mode always has changes
+
+    // Check if any form field is dirty (changed) OR image changed
+    const formChanged = Object.keys(dirtyFields).length > 0;
+
+    return formChanged || imageChanged;
+  }, [dirtyFields, imageChanged, isEdit]);
+
+  /* ---------- SUBMIT ---------- */
   const submit = async (data: any) => {
     try {
-      console.log("triggered");
+      setIsUploading(true);
 
       if (isEdit) {
-        await onUpdate(initial.id, data, form);
+        // For update, only send changed fields
+        const changedData: any = {};
+
+        // Add changed form fields (only the ones that are dirty)
+        (Object.keys(dirtyFields) as Array<keyof UpdateDefaults>).forEach(
+          (key) => {
+            changedData[key] = data[key];
+          },
+        );
+
+        // Add image if changed (even if no form fields changed)
+        if (imageChanged) {
+          changedData.image = image;
+        }
+
+        // Only proceed if there are changes
+        if (Object.keys(changedData).length === 0) {
+          toast.info("No changes to update");
+          onOpenChange(false);
+          return;
+        }
+
+        await onUpdate(initial.id, changedData, form);
       } else {
-        await onCreate(data, form);
+        // For create, send all data including image
+        await onCreate({ ...data, image }, form);
       }
     } catch (err: any) {
       toast.error(err?.message || "Something went wrong");
+    } finally {
+      setIsUploading(false);
+      setUploadProgress(0);
     }
   };
 
-  return (
-    <Dialog
-      open={open}
-      onOpenChange={(state) => {
-        onOpenChange(state);
+  const initials =
+    initial?.name
+      ?.split(" ")
+      ?.map((n: string) => n[0])
+      ?.join("")
+      ?.toUpperCase()
+      ?.slice(0, 2) || "AD";
 
-        // if (!state) setTimeout(() => reset(createDefaults), 100);
-      }}
-    >
+  // Determine button text and state
+  const getButtonContent = () => {
+    if (isPending) {
+      return (
+        <>
+          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+          {isEdit ? "Updating..." : "Creating..."}
+        </>
+      );
+    }
+
+    if (isUploading) {
+      return (
+        <>
+          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+          Uploading {uploadProgress > 0 && `${uploadProgress}%`}...
+        </>
+      );
+    }
+
+    if (isEdit && imageChanged && Object.keys(dirtyFields).length === 0) {
+      return (
+        <>
+          <Upload className="w-4 h-4 mr-2" />
+          Upload Image Only
+        </>
+      );
+    }
+
+    return isEdit ? "Update Admin" : "Create Admin";
+  };
+
+  // Determine if submit should be disabled
+  // FIXED: Button should be enabled if ANY field is dirty OR image changed
+  const isSubmitDisabled =
+    isPending ||
+    isUploading ||
+    (!isEdit && Object.keys(dirtyFields).length === 0 && !imageChanged) || // Create mode needs at least one field
+    (isEdit && Object.keys(dirtyFields).length === 0 && !imageChanged); // Edit mode needs at least one change
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
           <DialogTitle>{isEdit ? "Update Admin" : "Create Admin"}</DialogTitle>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={handleSubmit(submit)} className="space-y-4 mt-2">
+          <form onSubmit={handleSubmit(submit)} className="space-y-5 mt-2">
+            {/* IMAGE UPLOAD */}
+            <div className="flex flex-col items-center gap-3">
+              <div className="relative">
+                <Avatar className="h-24 w-24 border-2 border-muted">
+                  <AvatarImage src={preview || undefined} />
+                  <AvatarFallback className="text-lg bg-primary/10">
+                    {isUploading || isPending ? (
+                      <Loader2 className="w-6 h-6 animate-spin" />
+                    ) : (
+                      initials
+                    )}
+                  </AvatarFallback>
+                </Avatar>
+
+                {/* Upload Progress Ring */}
+                {uploadProgress > 0 && uploadProgress < 100 && (
+                  <svg className="absolute inset-0 w-full h-full -rotate-90">
+                    <circle
+                      className="text-muted-foreground/20"
+                      strokeWidth="3"
+                      stroke="currentColor"
+                      fill="transparent"
+                      r="38"
+                      cx="48"
+                      cy="48"
+                    />
+                    <circle
+                      className="text-primary"
+                      strokeWidth="3"
+                      strokeDasharray={239}
+                      strokeDashoffset={239 - (239 * uploadProgress) / 100}
+                      strokeLinecap="round"
+                      stroke="currentColor"
+                      fill="transparent"
+                      r="38"
+                      cx="48"
+                      cy="48"
+                    />
+                  </svg>
+                )}
+
+                {isUploading && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
+                    <Loader2 className="w-6 h-6 text-white animate-spin" />
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <label className="cursor-pointer">
+                  <div className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors">
+                    <ImagePlus className="w-4 h-4" />
+                    {preview ? "Change Image" : "Upload Image"}
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    disabled={isPending || isUploading}
+                    onChange={(e) =>
+                      handleImageChange(e.target.files?.[0] || null)
+                    }
+                  />
+                </label>
+
+                {imageChanged && (
+                  <>
+                    <span className="text-muted-foreground">•</span>
+                    <button
+                      type="button"
+                      onClick={handleImageRemove}
+                      className="flex items-center gap-1 text-sm text-destructive hover:text-destructive/80 transition-colors"
+                      disabled={isPending || isUploading}
+                    >
+                      <X className="w-3 h-3" />
+                      Cancel
+                    </button>
+                  </>
+                )}
+              </div>
+
+              {imageChanged && (
+                <Badge variant="outline" className="text-xs">
+                  {Object.keys(dirtyFields).length === 0
+                    ? "Only image will be updated"
+                    : "Image + details will be updated"}
+                </Badge>
+              )}
+            </div>
+
+            <Separator />
+
             {/* NAME */}
             <FormField
               control={control}
@@ -155,9 +367,9 @@ export function AdminFormDialog({
                   <FormLabel>Name</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter name"
                       {...field}
-                      disabled={isSubmitting}
+                      disabled={isPending || isUploading}
+                      placeholder="Enter full name"
                     />
                   </FormControl>
                   <FormMessage />
@@ -174,9 +386,10 @@ export function AdminFormDialog({
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter email"
                       {...field}
-                      disabled={isSubmitting}
+                      disabled={isPending || isUploading}
+                      placeholder="Enter email address"
+                      type="email"
                     />
                   </FormControl>
                   <FormMessage />
@@ -193,9 +406,9 @@ export function AdminFormDialog({
                   <FormLabel>Phone</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Enter phone number"
                       {...field}
-                      disabled={isSubmitting}
+                      disabled={isPending || isUploading}
+                      placeholder="Enter phone number"
                     />
                   </FormControl>
                   <FormMessage />
@@ -203,7 +416,7 @@ export function AdminFormDialog({
               )}
             />
 
-            {/* PASSWORD CREATE ONLY */}
+            {/* PASSWORD ONLY CREATE */}
             {!isEdit && (
               <FormField
                 control={control}
@@ -213,10 +426,10 @@ export function AdminFormDialog({
                     <FormLabel>Password</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="Enter password"
                         type="password"
                         {...field}
-                        disabled={isSubmitting}
+                        disabled={isPending || isUploading}
+                        placeholder="Enter password"
                       />
                     </FormControl>
                     <FormMessage />
@@ -230,20 +443,18 @@ export function AdminFormDialog({
               <Button
                 type="button"
                 variant="outline"
+                disabled={isPending || isUploading}
                 onClick={() => onOpenChange(false)}
-                disabled={isSubmitting}
               >
                 Cancel
               </Button>
 
               <Button
                 type="submit"
-                disabled={isSubmitting || !form.formState.isDirty}
+                disabled={isSubmitDisabled}
+                className="min-w-[140px]"
               >
-                {isSubmitting && (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                )}
-                {isEdit ? "Update" : "Create"}
+                {getButtonContent()}
               </Button>
             </div>
           </form>

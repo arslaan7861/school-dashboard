@@ -1,9 +1,9 @@
 export type Session = {
   id: number;
   name: string;
-  start_date: string; // ISO
-  end_date: string; // ISO
-  is_active: boolean;
+  startDate: string; // Changed from start_date
+  endDate: string; // Changed from end_date
+  isActive: boolean; // Changed from is_active
   createdAt?: string;
   updatedAt?: string;
 };

@@ -1,33 +1,47 @@
 export type Teacher = {
   id: number;
-  user_id: number;
-
-  employee_code: string;
-  joining_date: string;
+  userId: number;
+  employeeCode: string;
+  joiningDate: string;
   qualification: string;
-
   name: string;
   email: string;
   phone: string;
-
   role: "teacher";
-  is_active: boolean;
+  isActive: boolean;
+  profilePic?: string | null;
+  classCount?: number; // Number of classes they're class teacher of
+  classes?: Array<{ id: number }>; // Basic class info
 };
+
+export type TeacherDetail = Teacher & {
+  classTeacherOf: Array<{
+    id: number;
+    name: string;
+    section: string;
+    sessionId: number;
+    displayName: string;
+  }>;
+};
+
 export type CreateTeacherPayload = {
   name: string;
   email: string;
   phone: string;
   password: string;
-  employee_code: string;
-  joining_date: string;
+  employeeCode: string;
+  joiningDate: string;
   qualification: string;
+  image?: File | null;
 };
 
 export type UpdateTeacherPayload = Partial<
   Omit<CreateTeacherPayload, "password">
 > & {
-  is_active?: boolean;
+  isActive?: boolean;
+  image?: File | null;
 };
+
 export type Pagination = {
   page: number;
   limit: number;
@@ -35,3 +49,7 @@ export type Pagination = {
   totalPages: number;
 };
 
+export type TeachersResponse = {
+  teachers: Teacher[];
+  pagination: Pagination;
+};

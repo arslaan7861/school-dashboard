@@ -8,10 +8,14 @@ import {
   GraduationCap,
   Search,
   Filter,
-  ChevronRight,
-  BookOpen,
   Users,
   Award,
+  Pencil,
+  Trash2,
+  MoreVertical,
+  Eye,
+  Power,
+  ChevronRight,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -25,22 +29,46 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { TeacherFormDialog } from "@/components/modal/teacher.form";
-import { toast } from "sonner";
 import { Teacher } from "@/features/teachers/type.teacher";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function TeachersPage() {
   const router = useRouter();
-  const { data, isLoading } = useTeachers();
-  const { createTeacherMutation } = useTeacherCrud();
+  const { data, isLoading, refetch } = useTeachers();
+  const {
+    createTeacherMutation,
+    updateTeacherMutation,
+    deleteTeacherMutation,
+    toggleTeacherStatusMutation,
+  } = useTeacherCrud();
 
   const [open, setOpen] = useState(false);
+  const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null);
+  const [deletingTeacher, setDeletingTeacher] = useState<Teacher | null>(null);
   const [search, setSearch] = useState("");
 
-  const teachers: Teacher[] = data?.data?.teachers ?? [];
+  const teachers: Teacher[] = data?.data.teachers ?? [];
 
   // Parse education string into array
   const parseEducation = (education: string) => {
@@ -55,13 +83,29 @@ export default function TeachersPage() {
       teacher.name.toLowerCase().includes(search.toLowerCase()) ||
       teacher.email.toLowerCase().includes(search.toLowerCase()) ||
       teacher.phone?.toLowerCase().includes(search.toLowerCase()) ||
-      teacher.qualification?.toLowerCase().includes(search.toLowerCase()),
+      teacher.qualification?.toLowerCase().includes(search.toLowerCase()) ||
+      teacher.employeeCode?.toLowerCase().includes(search.toLowerCase()),
   );
 
   const totalTeachers = teachers.length;
-  const qualifiedTeachers = teachers.filter(
-    (t) => t.qualification && t.qualification.trim().length > 0,
-  ).length;
+  const activeTeachers = teachers.filter((t) => t.isActive).length;
+
+  const handleEdit = (teacher: Teacher) => {
+    setEditingTeacher(teacher);
+    setOpen(true);
+  };
+
+  const handleDelete = async (teacher: Teacher) => {
+    await deleteTeacherMutation.mutateAsync(teacher.id);
+    setDeletingTeacher(null);
+  };
+
+  const handleToggleStatus = async (teacher: Teacher) => {
+    await toggleTeacherStatusMutation.mutateAsync({
+      teacherId: teacher.id,
+      isActive: !teacher.isActive,
+    });
+  };
 
   if (isLoading) {
     return (
@@ -92,8 +136,8 @@ export default function TeachersPage() {
             <Skeleton className="h-10 w-32" />
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
               <Card key={i}>
                 <CardContent className="pt-6">
                   <div className="flex items-start justify-between mb-4">
@@ -159,9 +203,9 @@ export default function TeachersPage() {
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <p className="text-sm font-medium text-muted-foreground">
-                  Qualified Faculty
+                  Active Teachers
                 </p>
-                <p className="text-3xl font-bold">{qualifiedTeachers}</p>
+                <p className="text-3xl font-bold">{activeTeachers}</p>
               </div>
               <div className="p-2 bg-green-500/10 rounded-lg">
                 <Award className="w-6 h-6 text-green-500" />
@@ -175,9 +219,11 @@ export default function TeachersPage() {
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <p className="text-sm font-medium text-muted-foreground">
-                  Avg. Experience
+                  With Profile Images
                 </p>
-                <p className="text-3xl font-bold">-</p>
+                <p className="text-3xl font-bold">
+                  {teachers.filter((t) => t.profilePic).length}
+                </p>
               </div>
               <div className="p-2 bg-blue-500/10 rounded-lg">
                 <GraduationCap className="w-6 h-6 text-blue-500" />
@@ -188,7 +234,7 @@ export default function TeachersPage() {
       </div>
 
       {/* TEACHERS LIST SECTION */}
-      <Card className="min-h-[60vh]">
+      <Card className="min-h-[65vh]">
         <CardHeader>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div>
@@ -205,33 +251,65 @@ export default function TeachersPage() {
                   placeholder="Search teachers..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="pl-9 w-full sm:w-[250px]"
+                  className="pl-9 w-full sm:w-[350px]"
                 />
               </div>
-              <Button variant="outline" size="icon">
-                <Filter className="w-4 h-4" />
-              </Button>
             </div>
           </div>
         </CardHeader>
 
         <CardContent>
-          {/* CREATE DIALOG */}
+          {/* CREATE/EDIT DIALOG */}
           <TeacherFormDialog
             open={open}
-            onOpenChange={setOpen}
-            onCreate={(data) =>
-              createTeacherMutation.mutate(data, {
-                onSuccess: () => {
-                  toast.success("Teacher added successfully!");
-                  setOpen(false);
-                },
-              })
-            }
-            onUpdate={() => {}}
+            onOpenChange={(state) => {
+              setOpen(state);
+              if (!state) setEditingTeacher(null);
+            }}
+            initial={editingTeacher}
+            onCreate={async (data, form) => {
+              await createTeacherMutation.mutateAsync(data);
+              setOpen(false);
+            }}
+            onUpdate={async (id, data, form) => {
+              await updateTeacherMutation.mutateAsync({
+                teacherId: Number(id),
+                ...data,
+              });
+              setOpen(false);
+            }}
+            isCreatePending={createTeacherMutation.isPending}
+            isUpdatePending={updateTeacherMutation.isPending}
           />
 
-          {/* VIEW DETAILS DIALOG */}
+          {/* DELETE CONFIRMATION DIALOG */}
+          <AlertDialog
+            open={!!deletingTeacher}
+            onOpenChange={() => setDeletingTeacher(null)}
+          >
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete the
+                  teacher "{deletingTeacher?.name}" and remove all associated
+                  data.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction
+                  variant={"destructive"}
+                  onClick={() =>
+                    deletingTeacher && handleDelete(deletingTeacher)
+                  }
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  Delete
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
 
           {/* TEACHERS GRID */}
           {filteredTeachers.length === 0 ? (
@@ -267,108 +345,130 @@ export default function TeachersPage() {
                 return (
                   <Card
                     key={teacher.id}
-                    className="overflow-hidden hover:shadow-lg transition-all duration-200 cursor-pointer group border hover:border-primary/20"
+                    className="overflow-hidden hover:shadow-lg transition-all duration-200 group border hover:border-primary/20 relative cursor-pointer"
                     onClick={() => router.push(`/teachers/${teacher.id}`)}
                   >
-                    <CardContent className="p-6">
-                      {/* TEACHER HEADER WITH BETTER LAYOUT */}
+                    <CardContent className="">
+                      {/* TEACHER HEADER */}
                       <div className="flex items-start gap-4">
                         <Avatar className="h-16 w-16 border-2 border-primary/10 group-hover:border-primary/30 transition-colors">
-                          {/* <AvatarImage src={teacher.avatar} /> */}
+                          <AvatarImage src={teacher.profilePic || undefined} />
                           <AvatarFallback className="bg-primary/10 text-primary text-lg font-semibold">
                             {initials}
                           </AvatarFallback>
                         </Avatar>
 
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex-1 min-w-0">
-                              <h3 className="font-bold text-lg truncate group-hover:text-primary transition-colors">
-                                {teacher.name}
-                              </h3>
+                          <h3 className="font-bold text-lg truncate group-hover:text-primary transition-colors">
+                            {teacher.name}
+                          </h3>
 
-                              {/* QUALIFICATION BADGE BESIDE NAME */}
-                              {teacher.qualification && (
-                                <Badge
-                                  variant="outline"
-                                  className="mt-1 text-xs border-green-500/30 text-green-600 bg-green-50"
-                                >
-                                  <GraduationCap className="w-3 h-3 mr-1" />
-                                  Qualified
-                                </Badge>
-                              )}
-                            </div>
-
-                            {/* VIEW BUTTON - ONLY VISIBLE ON HOVER */}
-                            <Button
-                              size="sm"
-                              variant="ghost"
-                              className="opacity-0 group-hover:opacity-100 transition-all duration-200 -mt-1 -mr-2"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                router.push(`/teachers/${teacher.id}`);
-                              }}
+                          <p className="text-sm text-muted-foreground">
+                            {teacher.employeeCode}
+                          </p>
+                          {teacher.classCount! > 0 && (
+                            <Badge
+                              variant="outline"
+                              className="text-xs mt-1 bg-blue-50 text-blue-700 border-blue-200"
                             >
-                              <ChevronRight className="w-4 h-4" />
-                            </Button>
-                          </div>
+                              <Users className="w-3 h-3 mr-1" />
+                              Class Teacher of {teacher.classCount}{" "}
+                              {teacher.classCount === 1 ? "class" : "classes"}
+                            </Badge>
+                          )}
+                        </div>
 
-                          {/* CONTACT INFO WITH ICONS */}
-                          <div className="mt-3 space-y-2">
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <div className="flex items-center gap-2 min-w-0">
-                                <Mail className="w-4 h-4 flex-shrink-0" />
-                                <span className="truncate">
-                                  {teacher.email}
-                                </span>
-                              </div>
-                            </div>
-
-                            {teacher.phone && (
-                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                <Phone className="w-4 h-4 flex-shrink-0" />
-                                <span>{teacher.phone}</span>
-                              </div>
-                            )}
-                          </div>
+                        {/* Chevron that appears on hover */}
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                          <ChevronRight className="w-5 h-5 text-primary" />
                         </div>
                       </div>
 
-                      {/* QUALIFICATIONS SECTION - BETTER VISUAL HIERARCHY */}
+                      {/* CONTACT INFO */}
+                      <div className="mt-4 space-y-2 relative">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Mail className="w-4 h-4 flex-shrink-0" />
+                          <span className="truncate">{teacher.email}</span>
+                        </div>
+
+                        {teacher.phone && (
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <Phone className="w-4 h-4 flex-shrink-0" />
+                            <span>{teacher.phone}</span>
+                          </div>
+                        )}
+
+                        <div className="absolute bottom-0 gap-1 right-0 flex items-center">
+                          <Badge
+                            variant={teacher.isActive ? "default" : "secondary"}
+                            className={teacher.isActive ? "bg-green-500" : ""}
+                          >
+                            {teacher.isActive ? "Active" : "Inactive"}
+                          </Badge>
+
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={(e) => e.stopPropagation()} // Prevent card click
+                              >
+                                <MoreVertical className="w-4 h-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+
+                              <DropdownMenuItem
+                                onClick={(e) => {
+                                  e.stopPropagation(); // Prevent card click
+                                  handleEdit(teacher);
+                                }}
+                              >
+                                <Pencil className="w-4 h-4 mr-2" />
+                                Edit
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={(e) => {
+                                  e.stopPropagation(); // Prevent card click
+                                  handleToggleStatus(teacher);
+                                }}
+                              >
+                                <Power className="w-4 h-4 mr-2" />
+                                {teacher.isActive ? "Deactivate" : "Activate"}
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                onClick={(e) => {
+                                  e.stopPropagation(); // Prevent card click
+                                  setDeletingTeacher(teacher);
+                                }}
+                                className="text-destructive focus:text-destructive"
+                              >
+                                <Trash2 className="w-4 h-4 mr-2 text-destructive" />
+                                Delete
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </div>
+
+                      {/* QUALIFICATIONS */}
                       {educationList.length > 0 && (
                         <div className="mt-4 pt-4 border-t">
-                          <div className="flex items-center gap-2 mb-3">
-                            <BookOpen className="w-4 h-4 text-blue-500" />
-                            <span className="text-sm font-medium text-gray-700">
-                              Education
-                            </span>
-                            <Badge
-                              variant="outline"
-                              className="ml-auto text-xs"
-                            >
-                              {educationList.length}{" "}
-                              {educationList.length === 1
-                                ? "degree"
-                                : "degrees"}
-                            </Badge>
-                          </div>
-
                           <div className="flex flex-wrap gap-2">
-                            {educationList.slice(0, 3).map((edu, index) => (
+                            {educationList.slice(0, 2).map((edu, index) => (
                               <Badge
                                 key={index}
                                 variant="secondary"
-                                className="px-3 py-1 text-xs font-medium bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border-blue-100"
+                                className="px-2 py-0.5 text-xs bg-blue-50 text-blue-700 border-blue-100"
                               >
                                 {edu}
                               </Badge>
                             ))}
-                            {educationList.length > 3 && (
-                              <Badge
-                                variant="outline"
-                                className="px-3 py-1 text-xs border-dashed"
-                              >
-                                +{educationList.length - 3} more
+                            {educationList.length > 2 && (
+                              <Badge variant="outline" className="text-xs">
+                                +{educationList.length - 2}
                               </Badge>
                             )}
                           </div>

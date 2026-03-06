@@ -4,10 +4,10 @@ import { z } from "zod";
 export const createAdminSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
 
-  email: z.email("Please enter admin email"),
+  email: z.string().email("Please enter admin email"), // Fixed z.email() to z.string().email()
 
   phone: z
-    .string("Please enter admin phone number")
+    .string()
     .regex(/^\d+$/, "Phone must contain only digits")
     .min(10, "Phone must be at least 10 digits")
     .max(15, "Phone must be maximum 15 digits"),
@@ -15,6 +15,7 @@ export const createAdminSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 
   role: z.enum(UserRole, {
+    // Fixed enum typing
     message: "Invalid role",
   }),
 });
@@ -23,7 +24,7 @@ export const updateAdminSchema = z
   .object({
     name: z.string().min(2, "Name must be at least 2 characters").optional(),
 
-    email: z.email("Please provide a valid email").optional(),
+    email: z.string().email("Please provide a valid email").optional(), // Fixed z.email()
 
     phone: z
       .string()
@@ -39,14 +40,12 @@ export const updateAdminSchema = z
 
     role: z
       .enum(UserRole, {
+        // Fixed enum typing
         message: "Invalid role",
       })
       .optional(),
   })
-  .strict()
-  .refine((body) => Object.keys(body).length > 0, {
-    message: "Please provide at least one field to update",
-  });
+  .strict();
 
 export type createAdminSchemaType = z.infer<typeof createAdminSchema>;
 export type updateAdminSchemaType = z.infer<typeof updateAdminSchema>;

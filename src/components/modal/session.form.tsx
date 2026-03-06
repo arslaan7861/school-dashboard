@@ -59,15 +59,15 @@ export function SessionFormDialog({
 
   const createDefaults = {
     name: "",
-    start_date: "",
-    end_date: "",
-    is_active: false,
+    startDate: "", // Changed
+    endDate: "", // Changed
+    isActive: false, // Changed
   };
 
   const updateDefaults: any = {
     name: initial?.name ?? "",
-    start_date: initial?.start_date ? initial.start_date.slice(0, 10) : "",
-    end_date: initial?.end_date ? initial.end_date.slice(0, 10) : "",
+    startDate: initial?.startDate ? initial.startDate.slice(0, 10) : "", // Changed
+    endDate: initial?.endDate ? initial.endDate.slice(0, 10) : "", // Changed
   };
 
   const form = useForm({
@@ -81,7 +81,7 @@ export function SessionFormDialog({
   useEffect(() => {
     if (isEdit) reset(updateDefaults);
     else reset(createDefaults);
-  }, [initial]);
+  }, [initial, isEdit, reset]); // Added dependencies
 
   const submit = async (data: any) => {
     if (isEdit) {
@@ -110,55 +110,65 @@ export function SessionFormDialog({
                 <FormItem>
                   <FormLabel>Session Name</FormLabel>
                   <FormControl>
-                    <Input {...field} disabled={isSubmitting} />
+                    <Input
+                      placeholder="e.g., 2024-2025"
+                      {...field}
+                      disabled={isSubmitting}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* START DATE */}
+            {/* START DATE - Changed field name */}
             <FormField
               control={control}
-              name="start_date"
+              name="startDate" // Changed
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Start Date</FormLabel>
                   <FormControl>
-                    <Input type="date" {...field} />
+                    <Input type="date" {...field} disabled={isSubmitting} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* END DATE */}
+            {/* END DATE - Changed field name */}
             <FormField
               control={control}
-              name="end_date"
+              name="endDate" // Changed
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>End Date</FormLabel>
                   <FormControl>
-                    <Input type="date" {...field} />
+                    <Input type="date" {...field} disabled={isSubmitting} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* ACTIVE */}
+            {/* ACTIVE - Changed field name */}
             {!isEdit && (
               <FormField
                 control={control}
-                name="is_active"
+                name="isActive" // Changed
                 render={({ field }) => (
-                  <FormItem className="flex items-center justify-between">
-                    <FormLabel>Active</FormLabel>
+                  <FormItem className="flex items-center justify-between rounded-lg border p-3">
+                    <div className="space-y-0.5">
+                      <FormLabel>Set as Active</FormLabel>
+                      <p className="text-sm text-muted-foreground">
+                        Make this the current active session
+                      </p>
+                    </div>
                     <FormControl>
                       <Switch
                         checked={field.value}
                         onCheckedChange={field.onChange}
+                        disabled={isSubmitting}
                       />
                     </FormControl>
                   </FormItem>

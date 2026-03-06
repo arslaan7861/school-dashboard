@@ -4,5 +4,6 @@ export type Admin = {
   email: string;
   phone: string;
   role: string;
-  is_active: boolean;
+  isActive: boolean; // Changed from is_active
+  profilePic?: string | null;
 };

@@ -4,28 +4,40 @@ import {
   updateClassSchemaType,
 } from "./validator.class";
 import { ApiSuccess } from "@/types/api";
-import { classType } from "./types.class";
+import { ClassType } from "./types.class";
 
 export async function createClassService(
   payload: createClassSchemaType,
-): Promise<ApiSuccess<classType>> {
+): Promise<ApiSuccess<ClassType>> {
   return api.post("/classes", payload);
 }
+
 export async function getAllClasses(
   sessionId: string,
-): Promise<ApiSuccess<classType[]>> {
-  return api.post(`/classes/${sessionId}`);
+  search?: string,
+): Promise<ApiSuccess<ClassType[]>> {
+  return api.get(`/classes/${sessionId}`, {
+    params: { search },
+  });
 }
+
+export async function getClassById(
+  classId: string,
+): Promise<ApiSuccess<ClassType>> {
+  return api.get(`/classes/get/${classId}`);
+}
+
 export async function updateClassService({
   classId,
   ...payload
 }: updateClassSchemaType & { classId: string }): Promise<
-  ApiSuccess<classType>
+  ApiSuccess<ClassType>
 > {
   return api.put(`/classes/${classId}`, payload);
 }
+
 export async function deleteClassService(
-  payload: updateClassSchemaType,
+  classId: string,
 ): Promise<ApiSuccess<never>> {
-  return api.put("/classes", payload);
+  return api.delete(`/classes/${classId}`);
 }

@@ -1,12 +1,12 @@
 import { api } from "@/lib/axios";
 import { ApiSuccess } from "@/types/api";
-import { Teacher, TeachersData } from "./type.teacher";
+import { Teacher, TeachersResponse } from "./type.teacher";
 import {
   createTeacherSchemaType,
   updateTeacherSchemaType,
 } from "./validator.teacher";
 
-export async function getAllTeachers(): Promise<ApiSuccess<Teacher[]>> {
+export async function getAllTeachers(): Promise<ApiSuccess<TeachersResponse>> {
   return api.get("/teacher");
 }
 
@@ -17,18 +17,52 @@ export async function getTeacherById(
 }
 
 export async function createTeacher(
-  payload: createTeacherSchemaType,
+  payload: createTeacherSchemaType & { image?: File | null },
 ): Promise<ApiSuccess<Teacher>> {
-  return api.post("/teacher", payload);
+  const formData = new FormData();
+
+  Object.entries(payload).forEach(([key, value]) => {
+    if (key === "image" && value instanceof File) {
+      formData.append("image", value);
+    } else if (value !== undefined && value !== null) {
+      formData.append(key, String(value));
+    }
+  });
+
+  return api.post("/teacher", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
 }
 
-export async function updateTeacher({
-  teacherId,
-  ...payload
-}: updateTeacherSchemaType & { teacherId: number }): Promise<
-  ApiSuccess<Teacher>
-> {
-  return api.put(`/teacher/${teacherId}`, payload);
+export async function updateTeacher(
+  payload: updateTeacherSchemaType & {
+    teacherId: number;
+    image?: File | null;
+  },
+): Promise<ApiSuccess<Teacher>> {
+  const { teacherId, ...data } = payload;
+
+  const formData = new FormData();
+
+  Object.entries(data).forEach(([key, value]) => {
+    if (key === "image" && value instanceof File) {
+      formData.append("image", value);
+    } else if (value !== undefined && value !== null) {
+      formData.append(key, String(value));
+    }
+  });
+
+  return api.put(`/teacher/${teacherId}`, formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+}
+
+// New toggle status endpoint
+export async function toggleTeacherStatus(
+  teacherId: number,
+  isActive: boolean,
+): Promise<ApiSuccess<Teacher>> {
+  return api.patch(`/teacher/${teacherId}/toggle-status`, { isActive });
 }
 
 export async function deleteTeacher(

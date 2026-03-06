@@ -3,15 +3,16 @@ import { z } from "zod";
 export const createTeacherSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
 
-  email: z.email("Please enter teacher email"),
+  email: z.string().email("Please enter teacher email"),
   phone: z
-    .string("Please enter teacher phone number")
+    .string()
     .regex(/^\d+$/, "Phone must contain only digits")
     .min(10, "Phone must be at least 10 digits")
     .max(15, "Phone must be maximum 15 digits"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  employee_code: z.string().min(2, "Please provide employee code"),
-  joining_date: z
+
+  employeeCode: z.string().min(2, "Please provide employee code"), // Changed
+  joiningDate: z // Changed
     .string()
     .min(1, "Please provide joining date")
     .refine((val) => !isNaN(Date.parse(val)), {
@@ -20,6 +21,7 @@ export const createTeacherSchema = z.object({
 
   qualification: z.string().min(2, "Please provide qualification"),
 });
+
 export const updateTeacherSchema = z
   .object({
     // ✅ User fields (optional update)
@@ -43,12 +45,12 @@ export const updateTeacherSchema = z
       .min(6, "Password must be at least 6 characters")
       .optional(),
 
-    is_active: z.boolean().optional(),
+    isActive: z.boolean().optional(), // Changed
 
     // ✅ Teacher fields (optional update)
-    employee_code: z.string().min(2, "Please provide employee code").optional(),
+    employeeCode: z.string().min(2, "Please provide employee code").optional(), // Changed
 
-    joining_date: z
+    joiningDate: z // Changed
       .string()
       .refine((val) => !isNaN(Date.parse(val)), {
         message: "Please provide a valid joining date",

@@ -37,7 +37,7 @@ export function SessionSwitcher() {
   // decide active session
   const activeSession =
     sessions.find((s) => String(s.id) === activeSessionId) ||
-    sessions.find((s) => s.is_active) ||
+    sessions.find((s) => s.isActive) ||
     sessions[0] ||
     null;
 
@@ -51,8 +51,8 @@ export function SessionSwitcher() {
   if (isLoading || !activeSession) return null;
 
   const formatRange = (s: Session) => {
-    const start = new Date(s.start_date).getFullYear();
-    const end = new Date(s.end_date).getFullYear();
+    const start = new Date(s.startDate).getFullYear();
+    const end = new Date(s.endDate).getFullYear();
     return `${start} - ${end}`;
   };
 
@@ -96,7 +96,7 @@ export function SessionSwitcher() {
             </DropdownMenuLabel>
 
             {sessions.map((session) => {
-              const isActive = session.is_active;
+              const isActive = session.isActive;
 
               return (
                 <DropdownMenuItem

@@ -41,14 +41,14 @@ export default function TeacherDetailPage() {
           <b>Phone:</b> {teacher.phone}
         </p>
         <p>
-          <b>Employee Code:</b> {teacher.employee_code}
+          <b>Employee Code:</b> {teacher.employeeCode}
         </p>
         <p>
           <b>Qualification:</b> {teacher.qualification}
         </p>
         <p>
           <b>Joining Date:</b>{" "}
-          {new Date(teacher.joining_date).toLocaleDateString()}
+          {new Date(teacher.joiningDate).toLocaleDateString()}
         </p>
       </div>
 

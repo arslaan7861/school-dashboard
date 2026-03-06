@@ -1,44 +1,54 @@
 "use client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 import {
   createClassService,
   deleteClassService,
   getAllClasses,
+  getClassById,
   updateClassService,
 } from "./api.class";
+
 /* ------------------ QUERIES ------------------ */
 
-export const useClasses = (sessionId?: string) => {
+export const useClasses = (sessionId?: string, search?: string) => {
   return useQuery({
-    queryKey: ["classes", sessionId],
-    queryFn: () => getAllClasses(sessionId as string),
-    enabled: !!sessionId, // prevents run if null
+    queryKey: ["classes", sessionId, search],
+    queryFn: () => getAllClasses(sessionId as string, search),
+    enabled: !!sessionId,
     staleTime: 1000 * 60 * 5,
   });
 };
 
-// export const useTeacher = (teacherId?: number) => {
-//   return useQuery({
-//     queryKey: ["teacher", teacherId],
-//     queryFn: () => getTeacherById(Number(teacherId)),
-//     enabled: !!teacherId,
-//   });
-// };
+export const useClass = (classId?: string) => {
+  return useQuery({
+    queryKey: ["class", classId],
+    queryFn: () => getClassById(classId as string),
+    enabled: !!classId,
+  });
+};
 
 /* ------------------ CRUD MUTATIONS ------------------ */
 
-export const useClassCrud = () => {
+export const useClassCrud = (sessionId?: string) => {
   const qc = useQueryClient();
 
-  const invalidateTeachers = (sessionId: string) =>
-    qc.invalidateQueries({ queryKey: ["classes", sessionId] });
+  const invalidateClasses = () => {
+    if (sessionId) {
+      qc.invalidateQueries({ queryKey: ["classes", sessionId] });
+    }
+    qc.invalidateQueries({ queryKey: ["classes"] });
+  };
 
   /* CREATE */
   const createClassMutation = useMutation({
     mutationFn: createClassService,
     onSuccess: (res) => {
-      console.log(res);
-      invalidateTeachers(res.data.session_id);
+      toast.success(res.message || "Class created successfully");
+      invalidateClasses();
+    },
+    onError: (error: any) => {
+      toast.error(error?.message || "Failed to create class");
     },
   });
 
@@ -46,17 +56,23 @@ export const useClassCrud = () => {
   const updateClassMutation = useMutation({
     mutationFn: updateClassService,
     onSuccess: (res) => {
-      console.log(res);
-      invalidateTeachers(res.data.session_id);
+      toast.success(res.message || "Class updated successfully");
+      invalidateClasses();
+    },
+    onError: (error: any) => {
+      toast.error(error?.message || "Failed to update class");
     },
   });
 
   /* DELETE */
   const deleteClassMutation = useMutation({
     mutationFn: deleteClassService,
-    onSuccess: (res, d) => {
-      console.log(res);
-      invalidateTeachers(String(d.session_id));
+    onSuccess: (res) => {
+      toast.success(res.message || "Class deleted successfully");
+      invalidateClasses();
+    },
+    onError: (error: any) => {
+      toast.error(error?.message || "Failed to delete class");
     },
   });
 

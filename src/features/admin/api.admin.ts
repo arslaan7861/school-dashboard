@@ -12,26 +12,56 @@ export const fetchAdmins = async (): Promise<ApiSuccess<Admin[]>> => {
   return api.get("/auth/admins");
 };
 export async function createAdmin(
-  payload: createAdminSchemaType,
+  payload: createAdminSchemaType & { image?: File | null },
 ): Promise<ApiSuccess<Admin>> {
-  return api.post("/auth/create", payload);
+  const fd = new FormData();
+
+  Object.entries(payload).forEach(([key, value]) => {
+    if (key === "image" && value instanceof File) {
+      fd.append("image", value);
+    } else if (value !== undefined && value !== null) {
+      fd.append(key, String(value));
+    }
+  });
+
+  return api.post("/auth/create", fd, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
 }
 
 export async function updateAdmin({
   userId,
+  image,
   ...payload
-}: updateAdminSchemaType & { userId: number }): Promise<ApiSuccess<Admin>> {
-  return api.patch(`/auth/admin/${userId}`, payload);
+}: updateAdminSchemaType & {
+  userId: number;
+  image?: File | null;
+}): Promise<ApiSuccess<Admin>> {
+  const fd = new FormData();
+
+  Object.entries(payload).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      fd.append(key, String(value));
+    }
+  });
+
+  if (image instanceof File) {
+    fd.append("image", image);
+  }
+
+  return api.patch(`/auth/admin/${userId}`, fd, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
 }
 
 export async function toggleUserActiveStatus({
   userId,
-  active,
+  isActive,
 }: {
   userId: number;
-  active: boolean;
+  isActive: boolean;
 }): Promise<ApiSuccess<never>> {
-  return api.patch(`/auth/togglestatus/${userId}`, { active });
+  return api.patch(`/auth/togglestatus/${userId}`, { isActive });
 }
 
 export async function deleteAdmin(userId: number): Promise<ApiSuccess<never>> {

@@ -95,12 +95,12 @@ function Admins() {
       admin.email.toLowerCase().includes(search.toLowerCase()) ||
       admin.phone?.toLowerCase().includes(search.toLowerCase());
 
-    if (activeTab === "active") return matchesSearch && admin.is_active;
-    if (activeTab === "inactive") return matchesSearch && !admin.is_active;
+    if (activeTab === "active") return matchesSearch && admin.isActive; // Changed
+    if (activeTab === "inactive") return matchesSearch && !admin.isActive; // Changed
     return matchesSearch;
   });
 
-  const activeAdmins = admins.filter((a) => a.is_active).length;
+  const activeAdmins = admins.filter((a) => a.isActive).length; // Changed
   const totalAdmins = admins.length;
 
   /* ---------- ACTIONS ---------- */
@@ -121,7 +121,7 @@ function Admins() {
   const handleToggleStatus = (admin: Admin, checked: boolean) => {
     toggleAdminActiveStatusMutation.mutate({
       userId: Number(admin.id),
-      active: checked,
+      isActive: checked, // Changed from 'active' to 'isActive'
     });
   };
 
@@ -367,6 +367,8 @@ function Admins() {
                 },
               )
             }
+            isCreatePending={createAdminMutation.isPending}
+            isUpdatePending={updateAdminMutation.isPending}
           />
 
           {/* ADMIN CARDS GRID */}
@@ -412,7 +414,7 @@ function Admins() {
                       <div className="flex items-start justify-between mb-4">
                         <div className="flex items-center gap-3">
                           <Avatar className="h-12 w-12">
-                            {/* <AvatarImage src={admin.avatar} /> */}
+                            <AvatarImage src={admin.profilePic || undefined} />
                             <AvatarFallback className="bg-primary/10 text-primary">
                               {initials}
                             </AvatarFallback>
@@ -436,12 +438,13 @@ function Admins() {
                               variant="outline"
                               className={cn(
                                 "mt-1 text-xs",
-                                admin.is_active
+                                admin.isActive // Changed
                                   ? "border-green-500/30 text-green-600"
                                   : "border-gray-300 text-gray-500",
                               )}
                             >
-                              {admin.is_active ? "Active" : "Inactive"}
+                              {admin.isActive ? "Active" : "Inactive"}{" "}
+                              {/* Changed */}
                             </Badge>
                           </div>
                         </div>
@@ -460,8 +463,8 @@ function Admins() {
                               Edit Admin
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() =>
-                                handleToggleStatus(admin, !admin.is_active)
+                              onClick={
+                                () => handleToggleStatus(admin, !admin.isActive) // Changed
                               }
                               disabled={
                                 isCurrentUser ||
@@ -469,7 +472,8 @@ function Admins() {
                               }
                             >
                               <Power className="w-4 h-4 mr-2" />
-                              {admin.is_active ? "Deactivate" : "Activate"}
+                              {admin.isActive ? "Deactivate" : "Activate"}{" "}
+                              {/* Changed */}
                             </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
@@ -512,7 +516,7 @@ function Admins() {
                             <Power
                               className={cn(
                                 "w-4 h-4",
-                                admin.is_active
+                                admin.isActive // Changed
                                   ? "text-green-500"
                                   : "text-gray-400",
                               )}
@@ -522,7 +526,7 @@ function Admins() {
 
                           <div className="flex gap-2">
                             <Switch
-                              checked={admin.is_active}
+                              checked={admin.isActive} // Changed
                               onCheckedChange={(checked) =>
                                 handleToggleStatus(admin, checked)
                               }
@@ -531,7 +535,7 @@ function Admins() {
                                 toggleAdminActiveStatusMutation.isPending
                               }
                               className={cn(
-                                admin.is_active &&
+                                admin.isActive && // Changed
                                   "data-[state=checked]:bg-green-500",
                               )}
                             />

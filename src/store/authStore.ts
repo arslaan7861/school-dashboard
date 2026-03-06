@@ -11,7 +11,8 @@ type User = {
   email: string;
   phone: string;
   role: Role;
-  is_active: boolean;
+  isActive: boolean; // Changed
+  profilePic?: string | null;
 };
 
 type AuthResponseData = {

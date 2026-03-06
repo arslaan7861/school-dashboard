@@ -62,12 +62,12 @@ export default function SessionsPage() {
   const [activeTab, setActiveTab] = useState("all");
 
   const sessions: Session[] = data?.data ?? [];
-  const activeSession = sessions.find((s) => s.is_active);
+  const activeSession = sessions.find((s) => s.isActive); // Changed
 
   // Calculate progress for sessions
   const calculateProgress = (session: Session) => {
-    const start = new Date(session.start_date);
-    const end = new Date(session.end_date);
+    const start = new Date(session.startDate); // Changed
+    const end = new Date(session.endDate); // Changed
     const today = new Date();
     console.log({ end, start, today });
 
@@ -83,11 +83,11 @@ export default function SessionsPage() {
 
   // Filter sessions based on tab
   const filteredSessions = sessions.filter((session) => {
-    if (activeTab === "active") return session.is_active;
+    if (activeTab === "active") return session.isActive; // Changed
     if (activeTab === "upcoming")
-      return new Date(session.start_date) > new Date();
+      return new Date(session.startDate) > new Date(); // Changed
     if (activeTab === "completed")
-      return new Date(session.end_date) < new Date();
+      return new Date(session.endDate) < new Date(); // Changed
     return true;
   });
 
@@ -215,7 +215,7 @@ export default function SessionsPage() {
                 </p>
                 <p className="text-3xl font-bold">
                   {
-                    sessions.filter((s) => new Date(s.start_date) > new Date())
+                    sessions.filter((s) => new Date(s.startDate) > new Date()) // Changed
                       .length
                   }
                 </p>
@@ -236,7 +236,7 @@ export default function SessionsPage() {
                 </p>
                 <p className="text-3xl font-bold">
                   {
-                    sessions.filter((s) => new Date(s.end_date) < new Date())
+                    sessions.filter((s) => new Date(s.endDate) < new Date()) // Changed
                       .length
                   }
                 </p>
@@ -263,9 +263,11 @@ export default function SessionsPage() {
                   <Badge variant="outline" className="border-primary/30">
                     <Calendar className="w-3 h-3 mr-1" />
                     {format(
-                      new Date(activeSession.start_date),
+                      new Date(activeSession.startDate), // Changed
                       "MMM yyyy",
-                    )} - {format(new Date(activeSession.end_date), "MMM yyyy")}
+                    )}{" "}
+                    - {format(new Date(activeSession.endDate), "MMM yyyy")}{" "}
+                    {/* Changed */}
                   </Badge>
                 </div>
 
@@ -388,8 +390,8 @@ export default function SessionsPage() {
               {filteredSessions.map((session) => {
                 const progress = calculateProgress(session);
                 const isCurrent = isWithinInterval(new Date(), {
-                  start: new Date(session.start_date),
-                  end: new Date(session.end_date),
+                  start: new Date(session.startDate), // Changed
+                  end: new Date(session.endDate), // Changed
                 });
 
                 return (
@@ -402,7 +404,7 @@ export default function SessionsPage() {
                         <div>
                           <CardTitle className="text-lg flex items-center gap-2">
                             {session.name}
-                            {session.is_active && (
+                            {session.isActive && ( // Changed
                               <Badge className="bg-green-600 hover:bg-green-600">
                                 Active
                               </Badge>
@@ -410,29 +412,31 @@ export default function SessionsPage() {
                           </CardTitle>
                           <CardDescription className="mt-1">
                             {format(
-                              new Date(session.start_date),
+                              new Date(session.startDate), // Changed
                               "MMM dd, yyyy",
                             )}{" "}
                             -{" "}
-                            {format(new Date(session.end_date), "MMM dd, yyyy")}
+                            {format(new Date(session.endDate), "MMM dd, yyyy")}{" "}
+                            {/* Changed */}
                           </CardDescription>
                         </div>
 
-                        {!session.is_active && isCurrent && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() =>
-                              toggleSessionActiveMutation.mutate({
-                                sessionId: String(session.id),
-                                active: true,
-                              })
-                            }
-                            disabled={toggleSessionActiveMutation.isPending}
-                          >
-                            Set Active
-                          </Button>
-                        )}
+                        {!session.isActive &&
+                          isCurrent && ( // Changed
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() =>
+                                toggleSessionActiveMutation.mutate({
+                                  sessionId: String(session.id),
+                                  active: true, // Changed from 'active' to 'isActive'
+                                })
+                              }
+                              disabled={toggleSessionActiveMutation.isPending}
+                            >
+                              Set Active
+                            </Button>
+                          )}
                       </div>
                     </CardHeader>
 
@@ -465,25 +469,27 @@ export default function SessionsPage() {
                             Completed
                           </Badge>
                         )}
-                        {isCurrent && !session.is_active && (
-                          <Badge
-                            variant="outline"
-                            className="border-blue-500/30 text-blue-600"
-                          >
-                            <Clock className="w-3 h-3 mr-1" />
-                            In Progress
-                          </Badge>
-                        )}
-                        {isCurrent && session.is_active && (
-                          <Badge
-                            variant="outline"
-                            className="border-green-500/30 text-green-600"
-                          >
-                            <Clock className="w-3 h-3 mr-1" />
-                            Active
-                          </Badge>
-                        )}
-                        {new Date(session.start_date) > new Date() && (
+                        {isCurrent &&
+                          !session.isActive && ( // Changed
+                            <Badge
+                              variant="outline"
+                              className="border-blue-500/30 text-blue-600"
+                            >
+                              <Clock className="w-3 h-3 mr-1" />
+                              In Progress
+                            </Badge>
+                          )}
+                        {isCurrent &&
+                          session.isActive && ( // Changed
+                            <Badge
+                              variant="outline"
+                              className="border-green-500/30 text-green-600"
+                            >
+                              <Clock className="w-3 h-3 mr-1" />
+                              Active
+                            </Badge>
+                          )}
+                        {new Date(session.startDate) > new Date() && ( // Changed
                           <Badge
                             variant="outline"
                             className="border-amber-500/30 text-amber-600"
