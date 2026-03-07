@@ -13,7 +13,6 @@ import {
   Edit,
   Loader2,
   BookOpen,
-  GraduationCap,
   Clock,
   Award,
   FileText,
@@ -32,10 +31,10 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
-import { toast } from "sonner";
 
 import { useAuthStore } from "@/store/authStore";
 import { useStudent } from "@/features/students/hooks.student";
+import { StudentSubjectsTab } from "@/components/pages/student/StudentSubjectsTab";
 
 // Helper to get initials from name
 const getInitials = (name: string) => {
@@ -62,11 +61,12 @@ export default function StudentDetailsPage() {
   const params = useParams();
   const studentId = Number(params.studentId);
   const { user } = useAuthStore();
+  const sessionId = useAuthStore((s) => s.activeSessionId);
 
   const [activeTab, setActiveTab] = useState("overview");
 
   // Fetch student data
-  const { data: student, isLoading } = useStudent(studentId);
+  const { data: student, isLoading } = useStudent(studentId, Number(sessionId));
 
   const isAdmin = user?.role === "admin";
 
@@ -238,7 +238,7 @@ export default function StudentDetailsPage() {
           </TabsTrigger>
         </TabsList>
 
-        {/* Overview Tab - Basic Information */}
+        {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Personal Details */}
@@ -408,29 +408,13 @@ export default function StudentDetailsPage() {
           </div>
         </TabsContent>
 
-        {/* Subjects Tab - Empty for now */}
+        {/* Subjects Tab */}
         <TabsContent value="subjects">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <BookOpen className="h-4 w-4 text-muted-foreground" />
-                Enrolled Subjects
-              </CardTitle>
-              <CardDescription>
-                Subjects the student is currently enrolled in
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="min-h-[300px] flex flex-col items-center justify-center text-center">
-              <div className="w-16 h-16 rounded-full bg-muted/30 flex items-center justify-center mb-4">
-                <BookOpen className="h-8 w-8 text-muted-foreground/50" />
-              </div>
-              <h3 className="text-sm font-medium mb-1">No subjects yet</h3>
-              <p className="text-xs text-muted-foreground max-w-[300px]">
-                Subject management will be available soon. You'll be able to
-                assign subjects and manage batches here.
-              </p>
-            </CardContent>
-          </Card>
+          <StudentSubjectsTab
+            studentId={studentId}
+            classStudentId={student.classRelation?.id}
+            isAdmin={isAdmin}
+          />
         </TabsContent>
 
         {/* Attendance Tab - Empty for now */}
@@ -453,8 +437,7 @@ export default function StudentDetailsPage() {
                 No attendance records
               </h3>
               <p className="text-xs text-muted-foreground max-w-[300px]">
-                Attendance tracking will be available soon. You'll be able to
-                mark and view attendance here.
+                Attendance tracking will be available soon.
               </p>
             </CardContent>
           </Card>
@@ -478,8 +461,7 @@ export default function StudentDetailsPage() {
               </div>
               <h3 className="text-sm font-medium mb-1">No exam records</h3>
               <p className="text-xs text-muted-foreground max-w-[300px]">
-                Exam management will be available soon. You'll be able to record
-                and view exam results here.
+                Exam management will be available soon.
               </p>
             </CardContent>
           </Card>

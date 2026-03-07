@@ -17,7 +17,8 @@ export const studentKeys = {
   byClass: (params: StudentsByClassQueryParams) =>
     [...studentKeys.all, "byClass", params] as const,
   details: () => [...studentKeys.all, "detail"] as const,
-  detail: (id: number) => [...studentKeys.details(), id] as const,
+  detail: (id?: number, sessionId?: number) =>
+    [...studentKeys.details(), id, sessionId] as const,
 };
 
 // Get students listing with filters
@@ -74,16 +75,17 @@ export const useStudentsByClass = (params: StudentsByClassQueryParams) => {
   });
 };
 
-// Get student by ID
-export const useStudent = (studentId?: number) => {
+// Get student by ID with session
+export const useStudent = (studentId?: number, sessionId?: number) => {
   return useQuery({
-    queryKey: studentKeys.detail(studentId!),
+    queryKey: studentKeys.detail(studentId, sessionId),
     queryFn: async () => {
       if (!studentId) throw new Error("Student ID is required");
-      const response = await studentApi.getStudentById(studentId);
+      if (!sessionId) throw new Error("Session ID is required");
+      const response = await studentApi.getStudentById(studentId, sessionId);
       return response.data;
     },
-    enabled: !!studentId,
+    enabled: !!studentId && !!sessionId,
   });
 };
 

@@ -50,11 +50,13 @@ export const studentApi = {
     });
   },
 
-  // Get student by ID
-  getStudentById: async (studentId: number): Promise<StudentDetailResponse> => {
-    return api.get(`${BASE_URL}/${studentId}`);
+  // Get student by ID with session
+  getStudentById: async (
+    studentId: number,
+    sessionId: number,
+  ): Promise<StudentDetailResponse> => {
+    return api.get(`/students/${studentId}/session/${sessionId}`);
   },
-
   // Create student
   createStudent: async (
     data: CreateStudentFormValues,

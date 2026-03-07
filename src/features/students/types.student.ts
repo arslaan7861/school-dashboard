@@ -58,8 +58,18 @@ export interface StudentListItem {
   createdAt: string;
   updatedAt: string;
 }
+// Class relation with details
+export interface StudentClassRelationDetail {
+  id: number;
+  rollNumber: number;
+  classId: number;
+  className: string;
+  classSection: string;
+  sessionId: number;
+  sessionName: string;
+}
 
-// Student detail (without class info)
+// Updated StudentDetail with class relation
 export interface StudentDetail {
   id: number;
   admissionNo: string;
@@ -73,6 +83,7 @@ export interface StudentDetail {
   guardianName: string | null;
   guardianPhone: string | null;
   user: StudentUser;
+  classRelation: StudentClassRelationDetail | null;
   createdAt: string;
   updatedAt: string;
 }
