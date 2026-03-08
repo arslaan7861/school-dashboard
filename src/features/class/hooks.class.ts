@@ -58,6 +58,7 @@ export const useClassCrud = (sessionId?: string) => {
     onSuccess: (res) => {
       toast.success(res.message || "Class updated successfully");
       invalidateClasses();
+      qc.invalidateQueries({ queryKey: ["class"] });
     },
     onError: (error: any) => {
       toast.error(error?.message || "Failed to update class");

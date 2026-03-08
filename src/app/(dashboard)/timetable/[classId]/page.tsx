@@ -1053,7 +1053,7 @@ export default function TimetablePage() {
     });
 
     if (timetable) {
-      timetable.slots.forEach((slot: TimetableSlot) => {
+      timetable.slots?.forEach((slot: TimetableSlot) => {
         if (grid[slot.day]) {
           grid[slot.day][slot.lectureNo] = slot;
         }
@@ -1355,7 +1355,7 @@ export default function TimetablePage() {
             <Button
               variant="outline"
               size="icon"
-              onClick={() => router.push(`/classes/${classId}`)}
+              onClick={router.back}
               className="rounded-full hover:bg-primary/10 hover:text-primary"
             >
               <ArrowLeft className="w-4 h-4" />

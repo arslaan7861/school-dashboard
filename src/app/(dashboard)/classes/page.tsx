@@ -313,7 +313,7 @@ export default function ClassesPage() {
                   <Card
                     key={cls.id}
                     className="overflow-hidden hover:shadow-lg transition-all duration-200 group border hover:border-primary/50 hover:bg-primary/10 relative cursor-pointer"
-                    onClick={() => router.push(`/classes/${cls.id}/subjects`)}
+                    onClick={() => router.push(`/classes/${cls.id}`)}
                   >
                     <CardContent className="p-6">
                       {/* Header */}

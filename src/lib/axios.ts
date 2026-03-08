@@ -3,7 +3,7 @@ import { useAuthStore } from "@/store/authStore";
 import { ApiError } from "@/types/api";
 
 export const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api",
   withCredentials: true,
 });
 
