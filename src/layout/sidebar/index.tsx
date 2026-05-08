@@ -6,15 +6,21 @@ import {
   BookOpen,
   Bot,
   Calendar,
+  CalendarCheck,
+  CalendarClock,
   CalendarDays,
+  CalendarRange,
   Command,
   GalleryVerticalEnd,
   GraduationCap,
+  LayoutDashboard,
   PersonStanding,
   School,
   ShieldUser,
   SquareTerminal,
+  Truck,
   User,
+  Users,
 } from "lucide-react";
 
 import {
@@ -33,12 +39,12 @@ const data = {
     {
       title: "Dashboard",
       url: "/",
-      icon: SquareTerminal,
+      icon: LayoutDashboard,
     },
     {
       title: "Sessions",
       url: "/session",
-      icon: CalendarDays,
+      icon: CalendarRange,
     },
     {
       title: "Admins",
@@ -56,16 +62,24 @@ const data = {
       icon: GraduationCap,
     },
     {
-      title: "teachers",
+      title: "Teachers",
       url: "/teachers",
-      icon: User,
-      isActive: true,
+      icon: Users,
     },
     {
-      title: "Time table",
+      title: "Timetable",
       url: "/timetable",
-      icon: Calendar,
-      isActive: true,
+      icon: CalendarClock,
+    },
+    {
+      title: "Calendar",
+      url: "/calendar",
+      icon: CalendarCheck,
+    },
+    {
+      title: "Transport",
+      url: "/transport",
+      icon: Truck,
     },
   ],
 };

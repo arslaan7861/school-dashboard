@@ -124,7 +124,7 @@ export default function StudentsPage() {
   // Handle filter changes
   const handleFilterChange = (key: keyof StudentFilterForm, value: any) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
-    setPage(1); // Reset to first page on filter change
+    setPage(1);
   };
 
   const handleClearFilters = () => {

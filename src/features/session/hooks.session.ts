@@ -21,6 +21,17 @@ export const useSessions = () => {
   });
 };
 
+export const useSession = (sessionId?: string) => {
+  return useQuery({
+    queryKey: ["session", sessionId],
+    queryFn: () => getSessionById(Number(sessionId)),
+    enabled: !!sessionId,
+    staleTime: 1000 * 60 * 5,
+  });
+};
+
+/* ------------------ CRUD MUTATIONS ------------------ */
+
 export const useSessionCrud = () => {
   const qc = useQueryClient();
 

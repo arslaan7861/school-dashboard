@@ -1,46 +1,15 @@
-import { z } from "zod";
-
-// Zod Schema for Homework Creation
-export const createHomeworkSchema = z.object({
-  title: z.string().min(3, "Title must be at least 3 characters"),
-  description: z.string().min(10, "Description must be at least 10 characters"),
-  dueDate: z
-    .string()
-    .regex(/^\d{4}-\d{2}-\d{2}$/, "Due date must be in YYYY-MM-DD format"),
-  subjectId: z.number().int().positive("Please select a subject"),
-});
-
-// Zod Schema for Homework Update (all fields optional)
-export const updateHomeworkSchema = z
-  .object({
-    title: z.string().min(3, "Title must be at least 3 characters").optional(),
-    description: z
-      .string()
-      .min(10, "Description must be at least 10 characters")
-      .optional(),
-    dueDate: z
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/, "Due date must be in YYYY-MM-DD format")
-      .optional(),
-    subjectId: z.number().int().positive("Please select a subject").optional(),
-  })
-  .refine((data) => Object.keys(data).length > 0, {
-    message: "At least one field must be provided for update",
-  });
-
-export type CreateHomeworkType = z.infer<typeof createHomeworkSchema>;
-export type UpdateHomeworkType = z.infer<typeof updateHomeworkSchema>;
+// ==================== Homework Types ====================
 
 export interface HomeworkAttachment {
   id: number;
+  homeworkId: number;
   url: string;
-  fileName: string;
-  fileType: string;
-}
-
-export interface ClassTeacher {
-  id: number;
-  name: string;
+  key: string;
+  fileName: string | null;
+  fileType: string | null;
+  size: number | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface Homework {
@@ -48,38 +17,134 @@ export interface Homework {
   title: string;
   description: string;
   dueDate: string;
+  classId: number;
+  subjectId: number;
+  assignedBy: number;
+  sessionId: number;
   createdAt: string;
-  class: {
+  updatedAt: string;
+  subject?: {
+    id: number;
+    name: string;
+  };
+  assignedByUser?: {
+    id: number;
+    name: string;
+    email: string;
+  };
+  class?: {
     id: number;
     name: string;
     section: string;
-    classTeacher: ClassTeacher | null;
   };
-  subject: {
+  session?: {
     id: number;
     name: string;
-    teacher: {
-      id: number;
-      name: string;
-    };
   };
-  assignedBy: {
-    id: number;
-    name: string;
-    role: string;
-    profilePic?: string | null;
-  };
-  attachments: HomeworkAttachment[];
+  attachments?: HomeworkAttachment[];
 }
 
-export interface HomeworkListResponse {
-  success: boolean;
-  message: string;
-  data: Homework[];
+export interface CreateHomeworkRequest {
+  title: string;
+  description: string;
+  dueDate: string;
+  classId: number;
+  subjectId: number;
+  sessionId: number;
+  files?: File[];
 }
 
-export interface HomeworkResponse {
+export interface BulkHomeworkItem {
+  title: string;
+  description: string;
+  dueDate: string;
+  subjectId: number;
+}
+
+export interface BulkCreateHomeworkRequest {
+  assignments: BulkHomeworkItem[];
+  classId: number;
+  sessionId: number;
+  files?: File[][]; // Array of file arrays per assignment
+}
+
+export interface BulkCreateHomeworkResponse {
+  created: number;
+  failed: number;
+  errors: Array<{
+    index: number;
+    title: string;
+    error: string;
+  }>;
+  homeworks: Homework[];
+}
+
+export interface UpdateHomeworkRequest {
+  title?: string;
+  description?: string;
+  dueDate?: string;
+}
+
+// ==================== Filter Types ====================
+
+export interface HomeworkFilters {
+  sessionId?: number;
+  subjectId?: number;
+  fromDate?: string;
+  toDate?: string;
+}
+
+export interface StudentHomeworkFilters {
+  sessionId?: number;
+  fromDate?: string;
+  toDate?: string;
+}
+
+// ==================== API Response Types ====================
+
+export interface ApiResponse<T> {
   success: boolean;
   message: string;
-  data: Homework;
+  data: T;
+}
+
+export interface PaginatedResponse<T> {
+  success: boolean;
+  message: string;
+  data: T[];
+  pagination: {
+    total: number;
+    limit: number;
+    offset: number;
+  };
+}
+
+// ==================== Component Types ====================
+
+export interface HomeworkFormValues {
+  title: string;
+  description: string;
+  dueDate: string;
+  subjectId: number;
+  attachments: File[];
+}
+
+export interface BulkHomeworkFormValues {
+  assignments: BulkHomeworkItem[];
+  attachments: File[][];
+}
+
+export interface HomeworkCardProps {
+  homework: Homework;
+  onEdit?: (homework: Homework) => void;
+  onDelete?: (homeworkId: number) => void;
+  onDownload?: (attachment: HomeworkAttachment) => void;
+  isTeacher?: boolean;
+}
+
+export interface HomeworkStatus {
+  isOverdue: boolean;
+  daysRemaining: number;
+  statusLabel: string;
+  statusColor: string;
 }

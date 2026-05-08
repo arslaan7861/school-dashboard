@@ -1,124 +1,138 @@
 import { api } from "@/lib/axios";
-import { ApiSuccess } from "@/types/api";
 import {
-  CreateHomeworkType,
-  createHomeworkSchema,
-  UpdateHomeworkType,
-  updateHomeworkSchema,
+  ApiResponse,
   Homework,
-  HomeworkListResponse,
-  HomeworkResponse,
+  PaginatedResponse,
+  CreateHomeworkRequest,
+  BulkCreateHomeworkRequest,
+  BulkCreateHomeworkResponse,
+  UpdateHomeworkRequest,
+  HomeworkFilters,
+  StudentHomeworkFilters,
+  HomeworkAttachment,
 } from "./types.homework";
+import { toast } from "sonner";
 
-export async function getHomeworkByClass(
-  classId: number,
-  sessionId?: string,
-): Promise<HomeworkListResponse> {
-  return api.get(`/homework/class/${classId}`, {
-    params: sessionId ? { sessionId } : {},
-  });
-}
+const BASE_URL = "/homework";
 
-export async function getHomeworkById(
-  homeworkId: number,
-  sessionId?: string,
-): Promise<HomeworkResponse> {
-  return api.get(`/homework/${homeworkId}`, {
-    params: sessionId ? { sessionId } : {},
-  });
-}
-
-export async function createHomework(
-  classId: number,
-  payload: CreateHomeworkType,
-  attachments?: File[],
-  sessionId?: string,
-): Promise<HomeworkResponse> {
-  // Validate payload before sending
-  const validated = createHomeworkSchema.parse(payload);
-
-  // Create FormData for file upload
+// Helper to convert File to FormData
+const createFormData = (data: any, files?: File[] | File[][]): FormData => {
   const formData = new FormData();
 
-  // Append all fields
-  formData.append("title", validated.title);
-  formData.append("description", validated.description);
-  formData.append("dueDate", validated.dueDate);
-  formData.append("subjectId", validated.subjectId.toString());
-
-  // Append sessionId if provided
-  if (sessionId) {
-    formData.append("sessionId", sessionId);
+  // Append JSON data
+  for (const [key, value] of Object.entries(data)) {
+    if (value !== undefined && value !== null) {
+      formData.append(key, JSON.stringify(value));
+    }
   }
 
-  // Append attachments if any
-  if (attachments && attachments.length > 0) {
-    attachments.forEach((file) => {
-      formData.append("attachments", file);
+  // Append files
+  if (files) {
+    if (Array.isArray(files) && files[0] instanceof File) {
+      // Single array of files (for single homework)
+      (files as File[]).forEach((file) => {
+        formData.append("files", file);
+      });
+    } else if (Array.isArray(files) && Array.isArray(files[0])) {
+      // 2D array for bulk assignments - send with assignment index
+      (files as File[][]).forEach((fileArray, assignmentIndex) => {
+        fileArray.forEach((file) => {
+          // Append with index to identify which assignment the file belongs to
+          formData.append(`files_${assignmentIndex}`, file);
+        });
+      });
+    }
+  }
+
+  return formData;
+};
+
+export const homeworkApi = {
+  // Create homework with attachments
+  create: (data: CreateHomeworkRequest): Promise<ApiResponse<Homework>> => {
+    const formData = createFormData(
+      {
+        title: data.title,
+        description: data.description,
+        dueDate: data.dueDate,
+        classId: data.classId,
+        subjectId: data.subjectId,
+        sessionId: data.sessionId,
+      },
+      data.files,
+    );
+    return api.post(`${BASE_URL}/`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
     });
-  }
+  },
+  getAll: (filters?: {
+    subjectId?: number;
+    fromDate?: string;
+    toDate?: string;
+    search?: string;
+    classId?: number;
+    sessionId: number; // Required
+  }): Promise<ApiResponse<Homework[]>> =>
+    api.get(`${BASE_URL}/`, { params: filters }),
+  // Bulk create homework
+  bulkCreate: (
+    data: BulkCreateHomeworkRequest,
+  ): Promise<ApiResponse<BulkCreateHomeworkResponse>> => {
+    const formData = createFormData(
+      {
+        assignments: data.assignments,
+        classId: data.classId,
+        sessionId: data.sessionId,
+      },
+      data.files,
+    );
+    return api.post(`${BASE_URL}/bulk`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  },
 
-  return api.post(`/homework/class/${classId}`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
-}
+  // Get homework by class
+  getByClass: (
+    classId: number,
+    filters?: HomeworkFilters,
+  ): Promise<ApiResponse<Homework[]>> =>
+    api.get(`${BASE_URL}/class/${classId}`, { params: filters }),
 
-export async function updateHomework(
-  homeworkId: number,
-  payload: UpdateHomeworkType,
-  sessionId?: string,
-): Promise<HomeworkResponse> {
-  // Validate payload before sending
-  const validated = updateHomeworkSchema.parse(payload);
+  // Get homework by ID
+  getById: (homeworkId: number): Promise<ApiResponse<Homework>> =>
+    api.get(`${BASE_URL}/${homeworkId}`),
 
-  return api.patch(`/homework/${homeworkId}`, validated, {
-    params: sessionId ? { sessionId } : {},
-  });
-}
+  // Update homework
+  update: (
+    homeworkId: number,
+    data: UpdateHomeworkRequest,
+  ): Promise<ApiResponse<Homework>> =>
+    api.put(`${BASE_URL}/${homeworkId}`, data),
 
-export async function deleteHomework(
-  homeworkId: number,
-  sessionId?: string,
-): Promise<ApiSuccess<null>> {
-  return api.delete(`/homework/${homeworkId}`, {
-    params: sessionId ? { sessionId } : {},
-  });
-}
+  // Delete homework
+  delete: (homeworkId: number): Promise<ApiResponse<void>> =>
+    api.delete(`${BASE_URL}/${homeworkId}`),
 
-export async function deleteAttachment(
-  attachmentId: number,
-  sessionId?: string,
-): Promise<ApiSuccess<null>> {
-  return api.delete(`/homework/attachments/${attachmentId}`, {
-    params: sessionId ? { sessionId } : {},
-  });
-}
+  // Get homework for student
+  getForStudent: (
+    classStudentId: number,
+    filters?: StudentHomeworkFilters,
+  ): Promise<ApiResponse<Homework[]>> =>
+    api.get(`${BASE_URL}/student/${classStudentId}`, { params: filters }),
 
-export async function addAttachments(
-  homeworkId: number,
-  attachments: File[],
-  sessionId?: string,
-): Promise<ApiSuccess<HomeworkAttachment[]>> {
-  const formData = new FormData();
+  // Add attachment
+  addAttachment: (
+    homeworkId: number,
+    file: File,
+  ): Promise<ApiResponse<HomeworkAttachment>> => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return api.post(`${BASE_URL}/${homeworkId}/attachments`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  },
 
-  attachments.forEach((file) => {
-    formData.append("attachments", file);
-  });
-
-  return api.post(`/homework/${homeworkId}/attachments`, formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-    params: sessionId ? { sessionId } : {},
-  });
-}
-
-// Types for HomeworkAttachment
-export interface HomeworkAttachment {
-  id: number;
-  url: string;
-  fileName: string;
-  fileType: string;
-}
+  // Delete attachment
+  deleteAttachment: (attachmentId: number): Promise<ApiResponse<void>> =>
+    api.delete(`${BASE_URL}/attachments/${attachmentId}`),
+};

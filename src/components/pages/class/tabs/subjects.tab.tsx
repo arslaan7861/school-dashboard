@@ -53,6 +53,21 @@ function SubjectsTab({ classId }: { classId: string }) {
   if (!subjects.length) {
     return (
       <Card>
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <BookOpen className="h-4 w-4 text-muted-foreground" />
+            Subjects
+          </CardTitle>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => router.push(`/classes/${classId}/subjects`)}
+          >
+            Class Subjects Page
+            <ExternalLink className="h-3 w-3 ml-2" />
+          </Button>
+        </CardHeader>
         <CardContent className="flex flex-col items-center justify-center py-16">
           <BookOpen className="h-10 w-10 text-muted-foreground mb-4" />
           <p className="text-muted-foreground">No subjects found</p>

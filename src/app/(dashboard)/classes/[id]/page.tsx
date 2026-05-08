@@ -37,6 +37,7 @@ import SubjectsTab from "@/components/pages/class/tabs/subjects.tab";
 import StudentsTab from "@/components/pages/class/tabs/students.tab";
 import TimetableTab from "@/components/pages/class/tabs/timetable.tab";
 import { UpdateClassDialog } from "@/components/pages/class/dialog/updateClass.dialog";
+import HomeworkTab from "@/components/pages/class/tabs/homework.tab";
 
 const getInitials = (name: string) =>
   name
@@ -311,11 +312,12 @@ export default function ClassDetailsPage() {
 
       {/* Tabs - Synced with URL */}
       <Tabs value={activeTab} onValueChange={handleTabChange}>
-        <TabsList className="grid grid-cols-4 w-full md:w-[500px]">
+        <TabsList className=" w-full md:w-min">
           <TabsTrigger value="subjects">Subjects</TabsTrigger>
           <TabsTrigger value="students">Students</TabsTrigger>
           <TabsTrigger value="timetable">Timetable</TabsTrigger>
           <TabsTrigger value="exams">Exams</TabsTrigger>
+          <TabsTrigger value="homework">Homework</TabsTrigger>
         </TabsList>
 
         <TabsContent value="subjects">
@@ -332,6 +334,12 @@ export default function ClassDetailsPage() {
 
         <TabsContent value="exams">
           <PlaceholderCard icon={GraduationCap} title="Exams" />
+        </TabsContent>
+        <TabsContent value="homework">
+          <HomeworkTab
+            classId={classId}
+            sessionId={Number(classData.data.sessionId)}
+          />
         </TabsContent>
       </Tabs>
     </div>

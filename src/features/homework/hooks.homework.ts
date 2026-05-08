@@ -1,121 +1,194 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { toast } from "sonner";
+import { homeworkApi } from "./api.homework";
 import {
-  getHomeworkByClass,
-  getHomeworkById,
-  createHomework,
-  updateHomework,
-  deleteHomework,
-  deleteAttachment,
-  addAttachments,
-} from "./api.homework";
-import { CreateHomeworkType, UpdateHomeworkType } from "./types.homework";
+  CreateHomeworkRequest,
+  BulkCreateHomeworkRequest,
+  UpdateHomeworkRequest,
+  HomeworkFilters,
+  StudentHomeworkFilters,
+} from "./types.homework";
+import { useAuthStore } from "@/store/authStore";
 
-export const useHomeworkByClass = (classId: number, sessionId?: string) => {
+// ==================== Query Keys ====================
+
+export const homeworkKeys = {
+  all: ["homework"] as const,
+  lists: () => [...homeworkKeys.all, "list"] as const,
+  byClass: (classId: number, filters?: HomeworkFilters) =>
+    [...homeworkKeys.lists(), classId, filters] as const,
+  byStudent: (classStudentId: number, filters?: StudentHomeworkFilters) =>
+    [...homeworkKeys.lists(), "student", classStudentId, filters] as const,
+  details: () => [...homeworkKeys.all, "detail"] as const,
+  detail: (id: number) => [...homeworkKeys.details(), id] as const,
+};
+
+// ==================== Query Hooks ====================
+
+export const useHomeworkByClass = (
+  classId: number,
+  filters?: HomeworkFilters,
+) => {
   return useQuery({
-    queryKey: ["homework", "class", classId, sessionId],
-    queryFn: () => getHomeworkByClass(classId, sessionId),
+    queryKey: homeworkKeys.byClass(classId, filters),
+    queryFn: () =>
+      homeworkApi.getByClass(classId, filters).then((res) => res.data),
     enabled: !!classId,
-    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
 
-export const useHomeworkById = (homeworkId: number, sessionId?: string) => {
+export const useHomework = (homeworkId: number) => {
   return useQuery({
-    queryKey: ["homework", homeworkId, sessionId],
-    queryFn: () => getHomeworkById(homeworkId, sessionId),
+    queryKey: homeworkKeys.detail(homeworkId),
+    queryFn: () => homeworkApi.getById(homeworkId).then((res) => res.data),
     enabled: !!homeworkId,
   });
 };
 
-export const useHomeworkMutations = (classId: number, sessionId?: string) => {
+export const useHomeworkForStudent = (
+  classStudentId: number,
+  filters?: StudentHomeworkFilters,
+) => {
+  return useQuery({
+    queryKey: homeworkKeys.byStudent(classStudentId, filters),
+    queryFn: () =>
+      homeworkApi
+        .getForStudent(classStudentId, filters)
+        .then((res) => res.data),
+    enabled: !!classStudentId,
+  });
+};
+
+// ==================== Mutation Hooks ====================
+
+export const useCreateHomework = () => {
   const queryClient = useQueryClient();
 
-  const invalidateHomework = () => {
-    queryClient.invalidateQueries({
-      queryKey: ["homework", "class", classId, sessionId],
-    });
-  };
-
-  const createHomeworkMutation = useMutation({
-    mutationFn: ({
-      data,
-      attachments,
-    }: {
-      data: CreateHomeworkType;
-      attachments?: File[];
-    }) => createHomework(classId, data, attachments, sessionId),
-    onSuccess: (res) => {
-      toast.success(res.message || "Homework assigned successfully");
-      invalidateHomework();
-    },
-    onError: (error: any) => {
-      toast.error(error?.message || "Failed to assign homework");
+  return useMutation({
+    mutationFn: (data: CreateHomeworkRequest) => homeworkApi.create(data),
+    onSuccess: (_, data) => {
+      queryClient.invalidateQueries({
+        queryKey: homeworkKeys.byClass(data.classId),
+      });
     },
   });
+};
+// Update the useAllHomework hook to include sessionId
+export const useAllHomework = (
+  sessionId?: string,
+  filters?: {
+    subjectId?: number;
+    fromDate?: string;
+    toDate?: string;
+    search?: string;
+    classId?: number;
+  },
+) => {
+  return useQuery({
+    queryKey: [...homeworkKeys.all, "all", sessionId, filters],
+    queryFn: () =>
+      homeworkApi
+        .getAll({ ...filters, sessionId: Number(sessionId) })
+        .then((res) => res.data),
 
-  const updateHomeworkMutation = useMutation({
-    mutationFn: ({
-      homeworkId,
-      data,
-    }: {
-      homeworkId: number;
-      data: UpdateHomeworkType;
-    }) => updateHomework(homeworkId, data, sessionId),
-    onSuccess: (res) => {
-      toast.success(res.message || "Homework updated successfully");
-      invalidateHomework();
-    },
-    onError: (error: any) => {
-      toast.error(error?.message || "Failed to update homework");
+    enabled: !!sessionId,
+  });
+};
+export const useBulkCreateHomework = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: BulkCreateHomeworkRequest) =>
+      homeworkApi.bulkCreate(data),
+    onSuccess: (_, data) => {
+      queryClient.invalidateQueries({
+        queryKey: homeworkKeys.byClass(data.classId),
+      });
     },
   });
+};
 
-  const deleteHomeworkMutation = useMutation({
-    mutationFn: (homeworkId: number) => deleteHomework(homeworkId, sessionId),
-    onSuccess: (res) => {
-      toast.success(res.message || "Homework deleted successfully");
-      invalidateHomework();
-    },
-    onError: (error: any) => {
-      toast.error(error?.message || "Failed to delete homework");
+export const useUpdateHomework = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: UpdateHomeworkRequest }) =>
+      homeworkApi.update(id, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: homeworkKeys.detail(variables.id),
+      });
+      queryClient.invalidateQueries({ queryKey: homeworkKeys.lists() });
     },
   });
+};
 
-  const deleteAttachmentMutation = useMutation({
+export const useDeleteHomework = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => homeworkApi.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: homeworkKeys.lists() });
+    },
+  });
+};
+
+export const useAddAttachment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ homeworkId, file }: { homeworkId: number; file: File }) =>
+      homeworkApi.addAttachment(homeworkId, file),
+    onSuccess: (_, data) => {
+      queryClient.invalidateQueries({
+        queryKey: homeworkKeys.detail(data.homeworkId),
+      });
+    },
+  });
+};
+
+export const useDeleteAttachment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
     mutationFn: (attachmentId: number) =>
-      deleteAttachment(attachmentId, sessionId),
-    onSuccess: (res) => {
-      toast.success(res.message || "Attachment deleted successfully");
-      invalidateHomework();
-    },
-    onError: (error: any) => {
-      toast.error(error?.message || "Failed to delete attachment");
+      homeworkApi.deleteAttachment(attachmentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: homeworkKeys.details() });
     },
   });
+};
 
-  const addAttachmentsMutation = useMutation({
-    mutationFn: ({
-      homeworkId,
-      attachments,
-    }: {
-      homeworkId: number;
-      attachments: File[];
-    }) => addAttachments(homeworkId, attachments, sessionId),
-    onSuccess: (res) => {
-      toast.success(res.message || "Attachments added successfully");
-      invalidateHomework();
-    },
-    onError: (error: any) => {
-      toast.error(error?.message || "Failed to add attachments");
-    },
-  });
+// ==================== Helper Hook ====================
 
-  return {
-    createHomeworkMutation,
-    updateHomeworkMutation,
-    deleteHomeworkMutation,
-    deleteAttachmentMutation,
-    addAttachmentsMutation,
-  };
+export const useHomeworkStatus = (dueDate: string) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const due = new Date(dueDate);
+  due.setHours(0, 0, 0, 0);
+
+  const isOverdue = due < today;
+  const daysRemaining = Math.ceil(
+    (due.getTime() - today.getTime()) / (1000 * 60 * 60 * 24),
+  );
+
+  let statusLabel = "";
+  let statusColor = "";
+
+  if (isOverdue) {
+    statusLabel = "Overdue";
+    statusColor = "text-red-600 bg-red-50";
+  } else if (daysRemaining === 0) {
+    statusLabel = "Due Today";
+    statusColor = "text-orange-600 bg-orange-50";
+  } else if (daysRemaining <= 3) {
+    statusLabel = `Due in ${daysRemaining} days`;
+    statusColor = "text-yellow-600 bg-yellow-50";
+  } else {
+    statusLabel = `Due in ${daysRemaining} days`;
+    statusColor = "text-green-600 bg-green-50";
+  }
+
+  return { isOverdue, daysRemaining, statusLabel, statusColor };
 };

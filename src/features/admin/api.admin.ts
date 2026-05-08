@@ -15,6 +15,7 @@ export async function createAdmin(
   payload: createAdminSchemaType & { image?: File | null },
 ): Promise<ApiSuccess<Admin>> {
   const fd = new FormData();
+  console.log(payload);
 
   Object.entries(payload).forEach(([key, value]) => {
     if (key === "image" && value instanceof File) {
@@ -23,6 +24,7 @@ export async function createAdmin(
       fd.append(key, String(value));
     }
   });
+  console.log(fd);
 
   return api.post("/auth/create", fd, {
     headers: { "Content-Type": "multipart/form-data" },
