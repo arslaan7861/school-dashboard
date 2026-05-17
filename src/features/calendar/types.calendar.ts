@@ -61,24 +61,22 @@ export interface ClassOverrideInfo {
 
 // Day details response
 export interface DayDetailsResponse {
-  dayInfo: {
-    id: number;
-    date: string;
-    isHoliday: boolean;
-    holidayTitle: string | null;
-    holidayDescription: string | null;
-    event: string | null;
-    eventDescription: string | null;
-    isAttendanceLocked: boolean;
-  };
-  classes: ClassOverrideInfo[];
+  id: number;
+  date: string;
+  isHoliday: boolean;
+  holidayTitle: string | null;
+  holidayDescription: string | null;
+  event: string | null;
+  eventDescription: string | null;
+  isAttendanceLocked: boolean;
+  classOverrides: ClassOverrideInfo[];
 }
 
 // Query params for month dashboard
 export interface CalendarMonthQuery {
   year: string;
   month: string;
-  sessionId: number;
+  sessionId: number | null;
 }
 
 // Base update request with common fields

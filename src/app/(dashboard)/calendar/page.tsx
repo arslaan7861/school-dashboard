@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { CalendarHeader } from "@/components/calendar/CalendarHeader";
 import { CalendarLegend } from "@/components/calendar/CalendarLegend";
 import { CalendarGrid } from "@/components/calendar/CalendarGrid";
@@ -16,7 +16,7 @@ import { useSessions } from "@/features/session/hooks.session";
 import { Session } from "@/features/session/types.session";
 
 export default function CalendarPage() {
-  const { activeSessionId } = useAuthStore();
+  const activeSessionId = useAuthStore((s) => s.activeSessionId);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDay, setSelectedDay] = useState<CalendarDay | null>(null);
 
@@ -26,7 +26,6 @@ export default function CalendarPage() {
   const [isEventModalOpen, setIsEventModalOpen] = useState(false);
   const [isLockModalOpen, setIsLockModalOpen] = useState(false);
 
-  // For action-specific modals from hover card
   const [actionDay, setActionDay] = useState<CalendarDay | null>(null);
 
   const year = format(currentDate, "yyyy");
@@ -40,6 +39,7 @@ export default function CalendarPage() {
 
   // Handle day click (opens full details sheet)
   const handleDayClick = (day: CalendarDay) => {
+    console.log(day);
     setSelectedDay(day);
     setIsDaySheetOpen(true);
   };
@@ -65,20 +65,20 @@ export default function CalendarPage() {
     setIsDaySheetOpen(true);
   };
 
-  // Handle modal success
   const handleUpdateSuccess = () => {
-    // Refetch calendar data
-    // The mutation hooks will handle invalidation
     setActionDay(null);
   };
   const { data } = useSessions();
   const sessions: Session[] = data?.data ?? [];
 
-  const activeSession =
-    sessions.find((s) => String(s.id) === activeSessionId) ||
-    sessions.find((s) => s.isActive) ||
-    sessions[0] ||
-    null;
+  const activeSession = useMemo(
+    () =>
+      sessions.find((s) => String(s.id) === activeSessionId) ||
+      sessions.find((s) => s.isActive) ||
+      sessions[0] ||
+      null,
+    [activeSessionId],
+  );
 
   return (
     <div className="h-full w-full space-y-6 py-6">

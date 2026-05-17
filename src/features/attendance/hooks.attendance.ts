@@ -41,14 +41,18 @@ export const attendanceKeys = {
 
 // ==================== Query Hooks ====================
 
-export const useAttendanceByDay = (academicDayId: number, classId?: number) => {
+export const useAttendanceByDay = (
+  academicDayId?: number,
+  classId?: number,
+) => {
   return useQuery({
-    queryKey: attendanceKeys.byDay(academicDayId, classId),
+    queryKey: attendanceKeys.byDay(academicDayId!, classId),
     queryFn: () =>
       attendanceApi
-        .getAttendanceByDay(academicDayId, classId)
+        .getAttendanceByDay(academicDayId!, classId)
         .then((res) => res.data),
     enabled: !!academicDayId,
+    placeholderData: (previousData) => previousData,
   });
 };
 
@@ -126,14 +130,14 @@ export const useBulkMarkAttendance = () => {
       attendanceApi.bulkMarkAttendance(data),
     onSuccess: (_, data) => {
       queryClient.invalidateQueries({
-        queryKey: attendanceKeys.byDay(data.academicDayId),
+        queryKey: attendanceKeys.byDay(data.academicDayId, data.classId),
       });
-      queryClient.invalidateQueries({
-        queryKey: attendanceKeys.byClass(data.classId),
-      });
-      queryClient.invalidateQueries({
-        queryKey: attendanceKeys.summary(data.classId),
-      });
+      // queryClient.invalidateQueries({
+      //   queryKey: attendanceKeys.byClass(data.classId),
+      // });
+      // queryClient.invalidateQueries({
+      //   queryKey: attendanceKeys.summary(data.classId),
+      // });
     },
   });
 };

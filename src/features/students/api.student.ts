@@ -1,3 +1,5 @@
+// api.student.ts
+
 import { api } from "@/lib/axios";
 import {
   StudentsListResponse,
@@ -57,6 +59,7 @@ export const studentApi = {
   ): Promise<StudentDetailResponse> => {
     return api.get(`/students/${studentId}/session/${sessionId}`);
   },
+
   // Create student
   createStudent: async (
     data: CreateStudentFormValues,

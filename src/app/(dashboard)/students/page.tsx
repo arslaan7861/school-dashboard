@@ -477,6 +477,8 @@ export default function StudentsPage() {
                     </TableHead>
                   )}
                   <TableHead>Student</TableHead>
+
+                  <TableHead>Aadhaar No.</TableHead>
                   <TableHead>Admission No.</TableHead>
                   <TableHead>Class</TableHead>
                   <TableHead>Roll No.</TableHead>
@@ -584,6 +586,7 @@ export default function StudentsPage() {
                           </div>
                         </div>
                       </TableCell>
+                      <TableCell>{student.aadhaarNumber}</TableCell>
                       <TableCell>
                         <Badge variant="outline" className="font-mono">
                           {student.admissionNo}

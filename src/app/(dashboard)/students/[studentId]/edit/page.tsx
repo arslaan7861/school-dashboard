@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -59,16 +60,18 @@ export default function EditStudentPage() {
   const router = useRouter();
   const params = useParams();
   const studentId = Number(params.studentId);
-  const { user } = useAuthStore();
+  const sessionId = useAuthStore((s) => s.activeSessionId);
 
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
 
   // Fetch student data
-  const { data: student, isLoading: isLoadingStudent } = useStudent(studentId);
+  const { data: student, isLoading: isLoadingStudent } = useStudent(
+    studentId,
+    Number(sessionId) || undefined,
+  );
   const { updateStudentAsync, isUpdating } = useStudentMutations();
-
   const form = useForm<UpdateStudentFormValues>({
     resolver: zodResolver(updateStudentFormSchema),
     defaultValues: {
@@ -108,6 +111,7 @@ export default function EditStudentPage() {
         email: student.user?.email || "",
         phone: student.user?.phone || "",
         password: undefined,
+        address: student.address,
       });
 
       if (student.user?.profilePic) {
@@ -319,21 +323,33 @@ export default function EditStudentPage() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-sm">Gender</FormLabel>
+
                         <Select
-                          onValueChange={field.onChange}
-                          value={field.value || undefined}
+                          value={field.value ?? "male"}
+                          onValueChange={(value) => {
+                            console.log("value updated ", value);
+                            field.onChange(value ?? undefined);
+                          }}
                         >
                           <FormControl>
                             <SelectTrigger>
-                              <SelectValue placeholder="Select" />
+                              <SelectValue placeholder="Select Gender" />
                             </SelectTrigger>
                           </FormControl>
+
                           <SelectContent>
+                            <SelectItem value="unselected">
+                              Select Gender
+                            </SelectItem>
+
                             <SelectItem value="male">Male</SelectItem>
+
                             <SelectItem value="female">Female</SelectItem>
+
                             <SelectItem value="other">Other</SelectItem>
                           </SelectContent>
                         </Select>
+
                         <FormMessage />
                       </FormItem>
                     )}
@@ -348,6 +364,27 @@ export default function EditStudentPage() {
                         <FormControl>
                           <Input type="date" {...field} />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="address"
+                    render={({ field }) => (
+                      <FormItem className="col-span-1 md:col-span-2 lg:col-span-4">
+                        <FormLabel>Address</FormLabel>
+                        <FormControl>
+                          <textarea
+                            className="w-full min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            placeholder="House No., Street, City, State - Pincode"
+                            {...field}
+                            value={field.value || ""}
+                          />
+                        </FormControl>
+                        <FormDescription className="text-xs">
+                          Complete residential address
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}

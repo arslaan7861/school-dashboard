@@ -93,6 +93,7 @@ function StudentsTab({ classId }: { classId: string }) {
             <TableRow>
               <TableHead>Student</TableHead>
               <TableHead>Roll No</TableHead>
+              <TableHead>Aadhaar No</TableHead>
               <TableHead>Admission No</TableHead>
               <TableHead>Father</TableHead>
               <TableHead>Phone</TableHead>
@@ -132,6 +133,7 @@ function StudentsTab({ classId }: { classId: string }) {
                   {/* Roll */}
 
                   <TableCell>{rollNo}</TableCell>
+                  <TableCell>{student.aadhaarNumber}</TableCell>
 
                   {/* Admission */}
 

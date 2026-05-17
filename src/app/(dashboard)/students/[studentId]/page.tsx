@@ -258,6 +258,14 @@ export default function StudentDetailsPage() {
                     <p className="text-sm font-medium">{student.admissionNo}</p>
                   </div>
                   <div>
+                    <p className="text-xs text-muted-foreground">
+                      Aadhaar Number
+                    </p>
+                    <p className="text-sm font-medium">
+                      {student.aadhaarNumber}
+                    </p>
+                  </div>
+                  <div>
                     <p className="text-xs text-muted-foreground">Gender</p>
                     <p className="text-sm font-medium capitalize">
                       {student.gender || "—"}
@@ -278,6 +286,12 @@ export default function StudentDetailsPage() {
                         ? new Date().getFullYear() -
                           new Date(student.dob).getFullYear()
                         : "—"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Address</p>
+                    <p className="text-sm font-medium">
+                      {student.address || "Not provided"}
                     </p>
                   </div>
                 </div>

@@ -9,17 +9,13 @@ import {
   Loader2,
   User,
   Mail,
-  Phone,
-  Lock,
-  Calendar,
   Users,
-  BookOpen,
   AlertCircle,
-  Upload,
   X,
   Eye,
   EyeOff,
   Camera,
+  IdCard,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -47,7 +43,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
@@ -69,7 +64,6 @@ export default function CreateStudentPage() {
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
-  const [activeTab, setActiveTab] = useState("basic");
 
   // Fetch classes for the active session
   const { data: classesData, isLoading: isLoadingClasses } = useClasses(
@@ -87,6 +81,7 @@ export default function CreateStudentPage() {
     defaultValues: {
       admissionNo: "",
       name: "",
+      aadhaarNumber: "",
       gender: undefined,
       dob: "",
       sessionId: activeSessionId ? Number(activeSessionId) : undefined,
@@ -106,6 +101,7 @@ export default function CreateStudentPage() {
 
   // Watch form values for conditional rendering
   const watchClassId = form.watch("classId");
+  const watchName = form.watch("name");
 
   // Handle image selection
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -194,525 +190,507 @@ export default function CreateStudentPage() {
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* Compact Profile Image */}
-          {/* Profile Image - Centered with Click to Upload */}
-          <Card className="overflow-hidden border-0 shadow-none">
-            <CardContent className="p-6">
-              <div className="flex flex-col items-center justify-center gap-4">
-                <div className="relative group">
-                  <Avatar className="h-32 w-32 border-4 border-primary/20 cursor-pointer transition-all group-hover:border-primary/40">
-                    <AvatarImage src={imagePreview || undefined} />
-                    <AvatarFallback className="bg-primary/5 text-primary text-4xl">
-                      {form.watch("name")
-                        ? form.watch("name")[0].toUpperCase()
-                        : "?"}
-                    </AvatarFallback>
-                  </Avatar>
+          <div className="flex gap-6 flex-col md:flex-row">
+            {/* Profile Image Section */}
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex flex-col items-center justify-center gap-4">
+                  <div className="relative group">
+                    <Avatar className="h-32 w-32 border-4 border-primary/20 cursor-pointer transition-all group-hover:border-primary/40">
+                      <AvatarImage src={imagePreview || undefined} />
+                      <AvatarFallback className="bg-primary/5 text-primary text-4xl">
+                        {watchName ? watchName[0].toUpperCase() : "?"}
+                      </AvatarFallback>
+                    </Avatar>
 
-                  {/* Hidden file input */}
-                  <Input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="hidden"
-                    id="profile-image"
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="hidden"
+                      id="profile-image"
+                    />
+
+                    <div
+                      className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                      onClick={() =>
+                        document.getElementById("profile-image")?.click()
+                      }
+                    >
+                      <Camera className="h-8 w-8 text-white" />
+                    </div>
+
+                    {imagePreview && (
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="absolute -top-2 -right-2 h-8 w-8 rounded-full shadow-lg"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleRemoveImage();
+                        }}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm font-medium">Profile Picture</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Click on the image to upload • JPG, PNG, GIF • Max 5MB
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Section 1: Basic Information */}
+            <Card className="grow">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <User className="w-5 h-5" />
+                  Basic Information
+                </CardTitle>
+                <CardDescription>
+                  Student's personal and academic details
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="admissionNo"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Admission Number *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="STU2024001" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="name"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Full Name *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="John Doe" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="aadhaarNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-1">
+                          <IdCard className="w-3 h-3" />
+                          Aadhaar Number *
+                        </FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="123456789012"
+                            maxLength={12}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="gender"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Gender</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select gender" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="male">Male</SelectItem>
+                            <SelectItem value="female">Female</SelectItem>
+                            <SelectItem value="other">Other</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="dob"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Date of Birth</FormLabel>
+                        <FormControl>
+                          <Input type="date" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="sessionId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Academic Session</FormLabel>
+                        <FormControl>
+                          <Input
+                            value={
+                              currentSession?.name ||
+                              `Session ${activeSessionId}`
+                            }
+                            disabled
+                            className="bg-muted"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="classId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Class *</FormLabel>
+                        <Select
+                          onValueChange={(value) =>
+                            field.onChange(Number(value))
+                          }
+                          value={field.value?.toString()}
+                          disabled={isLoadingClasses}
+                        >
+                          <FormControl>
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select class" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {classes.map((cls) => (
+                              <SelectItem
+                                key={cls.id}
+                                value={cls.id.toString()}
+                              >
+                                {cls.name} - {cls.section}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="rollNumber"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Roll Number *</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            placeholder="15"
+                            {...field}
+                            onChange={(e) =>
+                              field.onChange(Number(e.target.value))
+                            }
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="address"
+                    render={({ field }) => (
+                      <FormItem className="col-span-1 md:col-span-2 lg:col-span-4">
+                        <FormLabel>Address</FormLabel>
+                        <FormControl>
+                          <textarea
+                            className="w-full min-h-[80px] rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                            placeholder="House No., Street, City, State - Pincode"
+                            {...field}
+                            value={field.value || ""}
+                          />
+                        </FormControl>
+                        <FormDescription className="text-xs">
+                          Complete residential address
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+
+                {!watchClassId && (
+                  <p className="text-xs text-amber-600 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    Select a class to assign roll number
+                  </p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+          <div className="flex gap-6 flex-col md:flex-row">
+            {/* Section 2: Guardian Information */}
+            <Card className="flex-2">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="w-5 h-5" />
+                  Guardian Information
+                </CardTitle>
+                <CardDescription>
+                  Parent or guardian contact details
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* Father's Details */}
+                <div className="space-y-4">
+                  <h3 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
+                    <Badge variant="secondary" className="text-xs">
+                      Optional
+                    </Badge>
+                    Father's Details
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="fatherName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Father's Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Robert Doe" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="fatherPhone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Father's Phone</FormLabel>
+                          <FormControl>
+                            <Input placeholder="9876543210" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Mother's Details */}
+                <div className="space-y-4">
+                  <h3 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
+                    <Badge variant="secondary" className="text-xs">
+                      Optional
+                    </Badge>
+                    Mother's Details
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="motherName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Mother's Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Jane Doe" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="motherPhone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Mother's Phone</FormLabel>
+                          <FormControl>
+                            <Input placeholder="9876543211" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Guardian's Details */}
+                <div className="space-y-4">
+                  <h3 className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
+                    <Badge variant="secondary" className="text-xs">
+                      Optional
+                    </Badge>
+                    Guardian's Details (if different)
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="guardianName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Guardian's Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Richard Roe" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="guardianPhone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Guardian's Phone</FormLabel>
+                          <FormControl>
+                            <Input placeholder="9876543212" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Section 3: Account Information */}
+            <Card className="flex-1">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Mail className="w-5 h-5" />
+                  Account Information
+                </CardTitle>
+                <CardDescription>
+                  Login credentials and contact details
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1  gap-4">
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email *</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            placeholder="john@example.com"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
 
-                  {/* Overlay on hover */}
-                  <div
-                    className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                    onClick={() =>
-                      document.getElementById("profile-image")?.click()
-                    }
-                  >
-                    <Camera className="h-8 w-8 text-white" />
-                  </div>
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Phone *</FormLabel>
+                        <FormControl>
+                          <Input placeholder="9876543213" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-                  {/* Remove button */}
-                  {imagePreview && (
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="icon"
-                      className="absolute -top-2 -right-2 h-8 w-8 rounded-full shadow-lg"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoveImage();
-                      }}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-
-                <div className="text-center">
-                  <p className="text-sm font-medium">Profile Picture</p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Click on the image to upload • JPG, PNG, GIF • Max 5MB
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Form Tabs */}
-          <Tabs
-            value={activeTab}
-            onValueChange={setActiveTab}
-            className="space-y-4"
-          >
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="basic">Basic Info</TabsTrigger>
-              <TabsTrigger value="guardian">Guardian Info</TabsTrigger>
-              <TabsTrigger value="account">Account Info</TabsTrigger>
-            </TabsList>
-
-            {/* Basic Info Tab */}
-            <TabsContent value="basic" className="space-y-4">
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <User className="w-4 h-4" />
-                    Basic Information
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="admissionNo"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm">
-                            Admission Number *
-                          </FormLabel>
-                          <FormControl>
-                            <Input placeholder="STU2024001" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm">Full Name *</FormLabel>
-                          <FormControl>
-                            <Input placeholder="John Doe" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="gender"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm">Gender</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            value={field.value}
-                          >
-                            <FormControl>
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="male">Male</SelectItem>
-                              <SelectItem value="female">Female</SelectItem>
-                              <SelectItem value="other">Other</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="dob"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm">
-                            Date of Birth
-                          </FormLabel>
-                          <FormControl>
-                            <Input type="date" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  <Separator />
-
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <FormField
-                      control={form.control}
-                      name="sessionId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm">Session</FormLabel>
-                          <FormControl>
+                  <FormField
+                    control={form.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password *</FormLabel>
+                        <FormControl>
+                          <div className="relative">
                             <Input
-                              value={
-                                currentSession?.name ||
-                                `Session ${activeSessionId}`
-                              }
-                              disabled
-                              className="bg-muted text-sm"
+                              type={showPassword ? "text" : "password"}
+                              placeholder="Enter password"
+                              {...field}
                             />
-                          </FormControl>
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="classId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm">Class *</FormLabel>
-                          <Select
-                            onValueChange={(value) =>
-                              field.onChange(Number(value))
-                            }
-                            value={field.value?.toString()}
-                            disabled={isLoadingClasses}
-                          >
-                            <FormControl>
-                              <SelectTrigger className="w-full">
-                                <SelectValue placeholder="Select class" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {isLoadingClasses ? (
-                                <div className="p-2 text-center">
-                                  <Loader2 className="w-4 h-4 animate-spin mx-auto" />
-                                </div>
-                              ) : classes.length === 0 ? (
-                                <div className="p-2 text-center text-sm text-muted-foreground">
-                                  No classes available
-                                </div>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                              onClick={() => setShowPassword(!showPassword)}
+                            >
+                              {showPassword ? (
+                                <EyeOff className="h-4 w-4" />
                               ) : (
-                                classes.map((cls) => (
-                                  <SelectItem
-                                    key={cls.id}
-                                    value={cls.id.toString()}
-                                  >
-                                    {cls.name} - {cls.section}
-                                  </SelectItem>
-                                ))
+                                <Eye className="h-4 w-4" />
                               )}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                            </Button>
+                          </div>
+                        </FormControl>
+                        <FormDescription className="text-xs">
+                          Minimum 6 characters
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
-                    <FormField
-                      control={form.control}
-                      name="rollNumber"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm">
-                            Roll Number *
-                          </FormLabel>
-                          <FormControl>
-                            <Input
-                              type="number"
-                              placeholder="15"
-                              {...field}
-                              onChange={(e) =>
-                                field.onChange(Number(e.target.value))
-                              }
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  {!watchClassId && (
-                    <p className="text-xs text-amber-600 flex items-center gap-1">
-                      <AlertCircle className="w-3 h-3" />
-                      Select a class to assign roll number
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Guardian Info Tab */}
-            <TabsContent value="guardian" className="space-y-4">
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Users className="w-4 h-4" />
-                    Guardian Information
-                  </CardTitle>
-                  <CardDescription className="text-xs">
-                    Parent or guardian details (optional)
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-4">
-                    <h3 className="text-xs font-medium text-muted-foreground">
-                      Father's Details
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="fatherName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-sm">Name</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Robert Doe" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="fatherPhone"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-sm">Phone</FormLabel>
-                            <FormControl>
-                              <Input placeholder="9876543210" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  <div className="space-y-4">
-                    <h3 className="text-xs font-medium text-muted-foreground">
-                      Mother's Details
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="motherName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-sm">Name</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Jane Doe" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="motherPhone"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-sm">Phone</FormLabel>
-                            <FormControl>
-                              <Input placeholder="9876543211" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  <div className="space-y-4">
-                    <h3 className="text-xs font-medium text-muted-foreground">
-                      Guardian's Details (if different)
-                    </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <FormField
-                        control={form.control}
-                        name="guardianName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-sm">Name</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Richard Roe" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="guardianPhone"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-sm">Phone</FormLabel>
-                            <FormControl>
-                              <Input placeholder="9876543212" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            {/* Account Info Tab */}
-            <TabsContent value="account" className="space-y-4">
-              <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Mail className="w-4 h-4" />
-                    Account Information
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 items-start">
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm">Email *</FormLabel>
-                          <FormControl>
-                            <Input
-                              type="email"
-                              placeholder="john@example.com"
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="phone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm">Phone *</FormLabel>
-                          <FormControl>
-                            <Input placeholder="9876543213" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="password"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-sm">Password *</FormLabel>
-                          <FormControl>
-                            <div className="relative">
-                              <Input
-                                type={showPassword ? "text" : "password"}
-                                placeholder="Enter password"
-                                {...field}
-                              />
-                              <Button
-                                type="button"
-                                variant="ghost"
-                                size="icon"
-                                className="absolute right-1 top-1/2 -translate-y-1/2 h-6 w-6"
-                                onClick={() => setShowPassword(!showPassword)}
-                              >
-                                {showPassword ? (
-                                  <EyeOff className="h-3 w-3" />
-                                ) : (
-                                  <Eye className="h-3 w-3" />
-                                )}
-                              </Button>
-                            </div>
-                          </FormControl>
-                          <FormDescription className="text-xs">
-                            Min. 6 characters
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
-
-          {/* Navigation and Action Buttons */}
-          <div className="bg-background border-t py-4 mt-6 -mx-6 px-6 ">
-            <div className="flex flex-col sm:flex-row gap-4 sm:items-center sm:justify-between">
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    if (activeTab === "guardian") setActiveTab("basic");
-                    if (activeTab === "account") setActiveTab("guardian");
-                  }}
-                  disabled={activeTab === "basic"}
-                >
-                  Previous
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    if (activeTab === "basic") setActiveTab("guardian");
-                    if (activeTab === "guardian") setActiveTab("account");
-                  }}
-                  disabled={activeTab === "account"}
-                >
-                  Next
-                </Button>
-              </div>
-
-              <div className="flex gap-3">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => router.push("/students")}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={isCreating}
-                  className="min-w-[120px]"
-                >
-                  {isCreating ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      Creating...
-                    </>
-                  ) : (
-                    "Create Student"
-                  )}
-                </Button>
-              </div>
+          {/* Action Buttons */}
+          <div className="bg-background border-t py-4 -mx-6 px-6 sticky bottom-0">
+            <div className="flex justify-end gap-3">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => router.push("/students")}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={isCreating}
+                className="min-w-[140px]"
+              >
+                {isCreating ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Creating Student...
+                  </>
+                ) : (
+                  "Create Student"
+                )}
+              </Button>
             </div>
           </div>
         </form>

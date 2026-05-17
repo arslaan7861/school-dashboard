@@ -144,10 +144,10 @@ export function DayDetailsSheet({
     unlockAttendance,
     isUpdating,
   } = useCalendarMutations();
+  console.log(apiData);
 
-  const data = apiData?.data;
-  const dayInfo = data?.dayInfo;
-  const classes = data?.classes || [];
+  const dayInfo = apiData?.data;
+  const classes = dayInfo?.classOverrides || [];
 
   // Memoized calculations
   const summary = useMemo(() => {

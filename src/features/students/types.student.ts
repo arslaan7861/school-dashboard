@@ -1,3 +1,5 @@
+// types.student.ts
+
 import {
   CreateStudentFormValues,
   UpdateStudentFormValues,
@@ -41,6 +43,8 @@ export interface StudentClass {
 // Main Student interface for listing
 export interface StudentListItem {
   id: number;
+  aadhaarNumber: string;
+  address?: string;
   admissionNo: string;
   name: string;
   gender: "male" | "female" | "other" | null;
@@ -58,6 +62,7 @@ export interface StudentListItem {
   createdAt: string;
   updatedAt: string;
 }
+
 // Class relation with details
 export interface StudentClassRelationDetail {
   id: number;
@@ -73,6 +78,8 @@ export interface StudentClassRelationDetail {
 export interface StudentDetail {
   id: number;
   admissionNo: string;
+  aadhaarNumber: string;
+  address?: string;
   name: string;
   gender: "male" | "female" | "other" | null;
   dob: string | null;

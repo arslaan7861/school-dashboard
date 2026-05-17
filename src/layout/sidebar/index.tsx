@@ -10,6 +10,7 @@ import {
   CalendarClock,
   CalendarDays,
   CalendarRange,
+  CheckLineIcon,
   Command,
   GalleryVerticalEnd,
   GraduationCap,
@@ -65,6 +66,11 @@ const data = {
       title: "Teachers",
       url: "/teachers",
       icon: Users,
+    },
+    {
+      title: "Attendance",
+      url: "/attendance",
+      icon: CheckLineIcon,
     },
     {
       title: "Timetable",
