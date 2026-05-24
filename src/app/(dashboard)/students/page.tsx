@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
   Users,
   Plus,
@@ -16,6 +16,8 @@ import {
   Loader2,
   X,
   RefreshCw,
+  BookOpen,
+  Share2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -88,22 +90,71 @@ const getInitials = (name: string) => {
     .slice(0, 2);
 };
 
+// Helper to safely parse query param
+const parseQueryParam = (param: string | null, defaultValue: any = "") => {
+  if (!param) return defaultValue;
+
+  if (defaultValue === false && param === "true") return true;
+  if (defaultValue === true && param === "false") return false;
+  if (typeof defaultValue === "number") return parseInt(param) || defaultValue;
+
+  return param;
+};
+
 export default function StudentsPage() {
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { user, activeSessionId } = useAuthStore();
 
-  // Filter state
-  const [filters, setFilters] = useState<StudentFilterForm>({
-    classId: "",
-    showUnenrolled: false,
-    search: "",
+  // Initialize filters from URL
+  const getInitialFilters = (): StudentFilterForm => ({
+    classId: parseQueryParam(searchParams.get("classId"), ""),
+    showUnenrolled: parseQueryParam(searchParams.get("showUnenrolled"), false),
+    search: parseQueryParam(searchParams.get("search"), ""),
   });
-  const [page, setPage] = useState(1);
+
+  const getInitialPage = () => {
+    const pageParam = searchParams.get("page");
+    return pageParam ? parseInt(pageParam) : 1;
+  };
+
+  // Filter state
+  const [filters, setFilters] = useState<StudentFilterForm>(getInitialFilters);
+  const [page, setPage] = useState(getInitialPage);
   const [selectedStudents, setSelectedStudents] = useState<number[]>([]);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [studentToDelete, setStudentToDelete] =
     useState<StudentListItem | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [searchInput, setSearchInput] = useState(filters.search);
+
+  // Update URL when filters or page change
+  const updateUrlParams = useCallback(
+    (newFilters: StudentFilterForm, newPage: number) => {
+      const params = new URLSearchParams();
+
+      if (newFilters.classId) {
+        params.set("classId", newFilters.classId);
+      }
+      if (newFilters.showUnenrolled) {
+        params.set("showUnenrolled", "true");
+      }
+      if (newFilters.search) {
+        params.set("search", newFilters.search);
+      }
+      if (newPage > 1) {
+        params.set("page", newPage.toString());
+      }
+
+      const queryString = params.toString();
+      const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
+
+      // Use replace to avoid adding to browser history for every filter change
+      router.replace(newUrl, { scroll: false });
+    },
+    [pathname, router],
+  );
 
   // Fetch students data
   const { data, isLoading, isFetching, refetch } = useStudents({
@@ -123,27 +174,60 @@ export default function StudentsPage() {
 
   // Handle filter changes
   const handleFilterChange = (key: keyof StudentFilterForm, value: any) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
-    setPage(1);
+    const newFilters = { ...filters, [key]: value };
+    setFilters(newFilters);
+    const newPage = 1;
+    setPage(newPage);
+    updateUrlParams(newFilters, newPage);
   };
 
   const handleClearFilters = () => {
-    setFilters({
+    const newFilters = {
       classId: "",
       showUnenrolled: false,
       search: "",
-    });
+    };
+    setFilters(newFilters);
+    setSearchInput("");
     setPage(1);
+    updateUrlParams(newFilters, 1);
+  };
+
+  // Handle page change
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    updateUrlParams(filters, newPage);
   };
 
   // Handle search with debounce
-  const [searchInput, setSearchInput] = useState("");
   useEffect(() => {
     const timer = setTimeout(() => {
-      handleFilterChange("search", searchInput);
+      if (searchInput !== filters.search) {
+        const newFilters = { ...filters, search: searchInput };
+        setFilters(newFilters);
+        const newPage = 1;
+        setPage(newPage);
+        updateUrlParams(newFilters, newPage);
+      }
     }, 500);
     return () => clearTimeout(timer);
-  }, [searchInput]);
+  }, [searchInput, filters, updateUrlParams]);
+
+  // Sync state with URL changes (for browser back/forward)
+  useEffect(() => {
+    const newFilters = getInitialFilters();
+    const newPage = getInitialPage();
+
+    if (JSON.stringify(newFilters) !== JSON.stringify(filters)) {
+      setFilters(newFilters);
+    }
+    if (newPage !== page) {
+      setPage(newPage);
+    }
+    if (newFilters.search !== searchInput) {
+      setSearchInput(newFilters.search);
+    }
+  }, [searchParams]); // Re-run when URL changes
 
   // Handle selection
   const handleSelectAll = () => {
@@ -177,6 +261,8 @@ export default function StudentsPage() {
       setSelectedStudents((prev) =>
         prev.filter((id) => id !== studentToDelete.id),
       );
+      // Refresh data after delete
+      refetch();
     } catch (error) {
       // Error handled in mutation
     } finally {
@@ -190,6 +276,7 @@ export default function StudentsPage() {
       await Promise.all(selectedStudents.map((id) => deleteStudentAsync(id)));
       toast.success(`${selectedStudents.length} students deleted successfully`);
       setSelectedStudents([]);
+      refetch();
     } catch (error) {
       // Error handled in mutation
     }
@@ -198,6 +285,17 @@ export default function StudentsPage() {
   // Handle refresh
   const handleRefresh = () => {
     refetch();
+  };
+
+  // Share current view URL
+  const handleShareView = async () => {
+    const url = window.location.href;
+    try {
+      await navigator.clipboard.writeText(url);
+      toast.success("Current view URL copied to clipboard!");
+    } catch (error) {
+      toast.error("Failed to copy URL");
+    }
   };
 
   // Check if user is admin
@@ -234,86 +332,70 @@ export default function StudentsPage() {
 
   return (
     <div className="h-full w-full space-y-6 py-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-4">
-          <div className="p-2 bg-primary/10 rounded-lg">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl">
             <Users className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-3xl font-bold tracking-tight">Students</h1>
-              {pagination && (
-                <Badge variant="outline" className="ml-2">
-                  {pagination.totalRecords} Total
-                </Badge>
-              )}
-            </div>
-            <p className="text-muted-foreground mt-1">
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
+              Students
+            </h1>
+            <p className="text-sm text-muted-foreground">
               Manage student records and class assignments
             </p>
           </div>
         </div>
 
-        {isAdmin && (
+        <div className="flex gap-2">
           <Button
-            onClick={() => router.push("/students/create")}
-            className="shrink-0"
-            size="lg"
+            variant="outline"
+            onClick={handleShareView}
+            size="default"
+            className="gap-2"
           >
-            <Plus className="w-4 h-4 mr-2" />
-            Add Student
+            <Share2 className="w-4 h-4" />
+            <span className="hidden sm:inline">Share</span>
           </Button>
-        )}
+          {isAdmin && (
+            <Button
+              onClick={() => router.push("/students/create")}
+              className="gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              <span className="hidden sm:inline">Add Student</span>
+            </Button>
+          )}
+        </div>
       </div>
 
-      {/* Filters Card */}
-      <Card className="border-none shadow-lg">
-        <CardHeader className="pb-3">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Filter className="w-5 h-5" />
-              Filters
-            </CardTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsFilterOpen(!isFilterOpen)}
-              className="lg:hidden"
-            >
-              {isFilterOpen ? "Hide" : "Show"} Filters
-            </Button>
+      {/* Unified Filter Bar - Compact and always visible */}
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 -mx-4 px-4 py-3 border-b">
+        <div className="flex flex-col lg:flex-row gap-3">
+          {/* Search - Full width on mobile */}
+          <div className="relative flex-1 max-w-xs ml-auto">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search by name, admission no, email, or phone..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="pl-9 pr-8 h-10"
+            />
+            {searchInput && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                onClick={() => setSearchInput("")}
+              >
+                <X className="h-3.5 w-3.5" />
+              </Button>
+            )}
           </div>
-        </CardHeader>
-        <CardContent
-          className={cn("space-y-4", !isFilterOpen && "hidden lg:block")}
-        >
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search by name, admission no, email, phone..."
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                className="pl-9 pr-20"
-              />
-              {searchInput && (
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
-                  onClick={() => {
-                    setSearchInput("");
-                    handleFilterChange("search", "");
-                  }}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-              )}
-            </div>
 
+          {/* Filter Group */}
+          <div className="flex flex-wrap gap-2">
             {/* Class Filter */}
             <Select
               value={filters.classId}
@@ -321,7 +403,7 @@ export default function StudentsPage() {
                 handleFilterChange("classId", value === "all" ? "" : value)
               }
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-[140px] h-10">
                 <SelectValue placeholder="All Classes" />
               </SelectTrigger>
               <SelectContent>
@@ -334,130 +416,92 @@ export default function StudentsPage() {
               </SelectContent>
             </Select>
 
-            {/* Unenrolled Toggle */}
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="showUnenrolled"
-                checked={filters.showUnenrolled}
-                onCheckedChange={(checked) =>
-                  handleFilterChange("showUnenrolled", checked === true)
-                }
-              />
-              <Label htmlFor="showUnenrolled">
-                Show unenrolled students only
-              </Label>
+            {/* Status Filter Dropdown */}
+            <Select
+              value={filters.showUnenrolled ? "unenrolled" : "all"}
+              onValueChange={(value) =>
+                handleFilterChange("showUnenrolled", value === "unenrolled")
+              }
+            >
+              <SelectTrigger className="w-[160px] h-10">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Students</SelectItem>
+                <SelectItem value="unenrolled">Unenrolled Only</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {/* Results Count Badge */}
+            <div className="hidden md:flex items-center px-3 h-10 rounded-md bg-muted/50 text-sm">
+              <span className="font-medium">
+                {pagination?.totalRecords || 0}
+              </span>
+              <span className="text-muted-foreground ml-1">students</span>
             </div>
 
-            {/* Clear Filters */}
+            {/* Refresh Button */}
             <Button
-              variant="outline"
-              onClick={handleClearFilters}
-              className="w-full"
+              variant="ghost"
+              size="icon"
+              onClick={handleRefresh}
+              disabled={isFetching}
+              className="h-10 w-10"
+              title="Refresh"
             >
-              Clear Filters
+              <RefreshCw
+                className={cn("h-4 w-4", isFetching && "animate-spin")}
+              />
             </Button>
-          </div>
 
-          {/* Active Filters Display */}
-          {(filters.classId || filters.search || filters.showUnenrolled) && (
-            <div className="flex items-center gap-2 flex-wrap pt-2">
-              <span className="text-sm text-muted-foreground">
-                Active filters:
-              </span>
-              {filters.classId && (
-                <Badge variant="secondary" className="gap-1">
-                  Class:{" "}
-                  {
-                    classes.find((c) => c.id.toString() === filters.classId)
-                      ?.displayName
-                  }
-                  <X
-                    className="w-3 h-3 ml-1 cursor-pointer"
-                    onClick={() => handleFilterChange("classId", "")}
-                  />
-                </Badge>
-              )}
-              {filters.search && (
-                <Badge variant="secondary" className="gap-1">
-                  Search: "{filters.search}"
-                  <X
-                    className="w-3 h-3 ml-1 cursor-pointer"
-                    onClick={() => {
-                      setSearchInput("");
-                      handleFilterChange("search", "");
-                    }}
-                  />
-                </Badge>
-              )}
-              {filters.showUnenrolled && (
-                <Badge variant="secondary" className="gap-1">
-                  Unenrolled only
-                  <X
-                    className="w-3 h-3 ml-1 cursor-pointer"
-                    onClick={() => handleFilterChange("showUnenrolled", false)}
-                  />
-                </Badge>
-              )}
+            {/* Clear Filters Button - Only shows when filters are active */}
+            {(filters.classId || filters.search || filters.showUnenrolled) && (
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={handleClearFilters}
-                className="h-7 text-xs"
+                className="h-10 gap-1 text-muted-foreground"
               >
-                Clear all
+                <X className="h-4 w-4" />
+                Clear
               </Button>
-            </div>
-          )}
-
-          {/* Results count and refresh */}
-          <div className="flex items-center justify-between pt-2">
-            <p className="text-sm text-muted-foreground">
-              Showing {students.length} of {pagination?.totalRecords || 0}{" "}
-              students
-            </p>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleRefresh}
-              disabled={isFetching}
-              className="gap-2"
-            >
-              <RefreshCw
-                className={cn("w-4 h-4", isFetching && "animate-spin")}
-              />
-              Refresh
-            </Button>
+            )}
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      {/* Bulk Actions */}
+      {/* Bulk Actions Bar - Sleeker design */}
       {selectedStudents.length > 0 && isAdmin && (
-        <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 flex items-center justify-between">
-          <span className="text-sm font-medium">
-            {selectedStudents.length} student
-            {selectedStudents.length !== 1 ? "s" : ""} selected
-          </span>
+        <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 flex items-center justify-between animate-in slide-in-from-top-1">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+              <Checkbox className="w-4 h-4" checked />
+            </div>
+            <span className="text-sm font-medium">
+              {selectedStudents.length} student
+              {selectedStudents.length !== 1 ? "s" : ""} selected
+            </span>
+          </div>
           <div className="flex gap-2">
             <Button
               variant="destructive"
               size="sm"
-              onClick={() => setDeleteDialogOpen(true)}
+              onClick={handleBulkDelete}
+              className="gap-2"
             >
-              <Trash2 className="w-4 h-4 mr-2" />
-              Delete Selected
+              <Trash2 className="w-4 h-4" />
+              Delete
             </Button>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => setSelectedStudents([])}
             >
-              Clear Selection
+              Cancel
             </Button>
           </div>
         </div>
       )}
-
       {/* Students Table */}
       <Card className="border-none shadow-lg">
         <CardContent className="p-0">
@@ -477,7 +521,6 @@ export default function StudentsPage() {
                     </TableHead>
                   )}
                   <TableHead>Student</TableHead>
-
                   <TableHead>Aadhaar No.</TableHead>
                   <TableHead>Admission No.</TableHead>
                   <TableHead>Class</TableHead>
@@ -586,7 +629,7 @@ export default function StudentsPage() {
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell>{student.aadhaarNumber}</TableCell>
+                      <TableCell>{student.aadhaarNumber || "-"}</TableCell>
                       <TableCell>
                         <Badge variant="outline" className="font-mono">
                           {student.admissionNo}
@@ -616,6 +659,7 @@ export default function StudentsPage() {
                           {student.user?.phone && (
                             <p className="text-xs">{student.user.phone}</p>
                           )}
+                          {!student.user?.phone && <p className="text-xs">-</p>}
                         </div>
                       </TableCell>
                       <TableCell>
@@ -697,7 +741,7 @@ export default function StudentsPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  onClick={() => handlePageChange(Math.max(1, page - 1))}
                   disabled={page === 1 || isFetching}
                 >
                   Previous
@@ -715,13 +759,16 @@ export default function StudentsPage() {
                           pageNum = pagination.totalPages - 4 + i;
                         }
                       }
+                      if (pageNum > pagination.totalPages || pageNum < 1) {
+                        return null;
+                      }
                       return (
                         <Button
                           key={pageNum}
                           variant={page === pageNum ? "default" : "outline"}
                           size="sm"
                           className="w-8"
-                          onClick={() => setPage(pageNum)}
+                          onClick={() => handlePageChange(pageNum)}
                           disabled={isFetching}
                         >
                           {pageNum}
@@ -733,7 +780,7 @@ export default function StudentsPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPage((p) => p + 1)}
+                  onClick={() => handlePageChange(page + 1)}
                   disabled={page === pagination.totalPages || isFetching}
                 >
                   Next

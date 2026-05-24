@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, Loader2, Camera, Save } from "lucide-react";
+import { ArrowLeft, Loader2, Camera } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -163,7 +163,8 @@ export default function EditStudentPage() {
         image: selectedImage || undefined,
       });
       toast.success("Student updated successfully");
-      router.push(`/students/${studentId}`);
+      // router.push(`/students/${studentId}`);
+      router.back();
     } catch (error) {
       // Error handled in mutation
     }

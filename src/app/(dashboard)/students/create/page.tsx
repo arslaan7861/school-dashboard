@@ -132,8 +132,27 @@ export default function CreateStudentPage() {
         data,
         image: selectedImage || undefined,
       });
+      form.reset({
+        admissionNo: "",
+        name: "",
+        aadhaarNumber: "",
+        gender: undefined,
+        dob: "",
+        sessionId: activeSessionId ? Number(activeSessionId) : undefined,
+        classId: undefined,
+        rollNumber: undefined,
+        fatherName: "",
+        fatherPhone: "",
+        motherName: "",
+        motherPhone: "",
+        guardianName: "",
+        guardianPhone: "",
+        email: "",
+        phone: "",
+        password: "",
+      });
       toast.success("Student created successfully");
-      router.push("/students");
+      // router.push("/students");
     } catch (error) {
       // Error handled in mutation
     }
