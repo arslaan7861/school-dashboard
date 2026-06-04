@@ -110,9 +110,6 @@ export const useStudentMutations = () => {
         queryKey: studentKeys.lists(),
       });
     },
-    onError: (error) => {
-      toast.error(error.message || "Failed to create student");
-    },
   });
 
   // Update student
@@ -138,9 +135,6 @@ export const useStudentMutations = () => {
       queryClient.invalidateQueries({
         queryKey: studentKeys.lists(),
       });
-    },
-    onError: (error) => {
-      toast.error(error.message || "Failed to update student");
     },
   });
 

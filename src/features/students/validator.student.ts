@@ -63,6 +63,12 @@ export const updateStudentFormSchema = z
       .string()
       .min(2, "Admission number must be at least 2 characters")
       .optional(),
+    classId: z.string().regex(/^\d+$/, "Class ID must be a number").optional(),
+    sessionId: z.string().regex(/^\d+$/, "Please provide session id"),
+    rollNumber: z
+      .string()
+      .regex(/^\d+$/, "Roll number must be a number")
+      .optional(),
     name: z
       .string()
       .min(2, "Student name must be at least 2 characters")
@@ -70,19 +76,45 @@ export const updateStudentFormSchema = z
     aadhaarNumber: z
       .string()
       .length(12, "Aadhaar number must be exactly 12 digits")
-      .regex(aadhaarRegex, "Aadhaar number must contain only digits")
+      .regex(/^\d+$/, "Aadhaar number must contain only digits")
       .optional(),
     address: z.string().optional(),
     gender: z.enum(["male", "female", "other"]).optional(),
-    dob: z.string().optional(),
+    dob: z
+      .string()
+      .optional()
+      .refine((val) => !val || !isNaN(Date.parse(val)), {
+        message: "Invalid date format. Use YYYY-MM-DD",
+      }),
     fatherName: z.string().optional(),
-    fatherPhone: optionalPhoneSchema,
+    fatherPhone: z
+      .string()
+      .regex(/^\d+$/, "Phone must contain only digits")
+      .min(10, "Phone must be at least 10 digits")
+      .max(15, "Phone must be maximum 15 digits")
+      .optional(),
     motherName: z.string().optional(),
-    motherPhone: optionalPhoneSchema,
+    motherPhone: z
+      .string()
+      .regex(/^\d+$/, "Phone must contain only digits")
+      .min(10, "Phone must be at least 10 digits")
+      .max(15, "Phone must be maximum 15 digits")
+      .optional(),
     guardianName: z.string().optional(),
-    guardianPhone: optionalPhoneSchema,
-    email: z.email("Please enter a valid email").optional(),
-    phone: optionalPhoneSchema,
+    guardianPhone: z
+      .string()
+      .regex(/^\d+$/, "Phone must contain only digits")
+      .min(10, "Phone must be at least 10 digits")
+      .max(15, "Phone must be maximum 15 digits")
+      .optional(),
+    email: z.string().email("Invalid email format").optional().nullable(),
+    phone: z
+      .string()
+      .regex(/^\d+$/, "Phone must contain only digits")
+      .min(10, "Phone must be at least 10 digits")
+      .max(15, "Phone must be maximum 15 digits")
+      .optional()
+      .nullable(),
     password: z
       .string()
       .min(6, "Password must be at least 6 characters")
@@ -90,6 +122,25 @@ export const updateStudentFormSchema = z
   })
   .refine((data) => Object.keys(data).length > 0, {
     message: "At least one field must be provided for update",
+  })
+  .superRefine((data, ctx) => {
+    if (data.classId) {
+      if (!data.sessionId) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["sessionId"],
+          message: "Session ID is required when changing class",
+        });
+      }
+
+      if (!data.rollNumber) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["rollNumber"],
+          message: "Roll number is required when changing class",
+        });
+      }
+    }
   });
 
 export type UpdateStudentFormValues = z.infer<typeof updateStudentFormSchema>;

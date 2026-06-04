@@ -73,7 +73,7 @@ export default function StudentDetailsPage() {
   // Loading state
   if (isLoading) {
     return (
-      <div className="h-full w-full space-y-6">
+      <div className="h-full w-full space-y-6 pt-6">
         {/* Header Skeleton */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -112,7 +112,7 @@ export default function StudentDetailsPage() {
 
   if (!student) {
     return (
-      <div className="h-full w-full flex items-center justify-center">
+      <div className="h-full w-full flex items-center justify-center pt-6">
         <Card className="max-w-md">
           <CardContent className="pt-6 text-center">
             <p className="text-muted-foreground">Student not found</p>
@@ -130,7 +130,7 @@ export default function StudentDetailsPage() {
   }
 
   return (
-    <div className="h-full w-full space-y-6">
+    <div className="h-full w-full space-y-6 pt-6">
       {/* Header with back button and actions */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">

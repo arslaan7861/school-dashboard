@@ -128,10 +128,24 @@ export default function CreateStudentPage() {
   // Handle form submission
   const onSubmit = async (data: CreateStudentFormValues) => {
     try {
-      await createStudentAsync({
-        data,
-        image: selectedImage || undefined,
-      });
+      await createStudentAsync(
+        {
+          data,
+          image: selectedImage || undefined,
+        },
+        {
+          onError: (e) => {
+            toast.error(e.message);
+            if (e.errors?.length) {
+              e.errors.forEach(({ field, message }) => {
+                form.setError(field as keyof CreateStudentFormValues, {
+                  message,
+                });
+              });
+            }
+          },
+        },
+      );
       form.reset({
         admissionNo: "",
         name: "",
