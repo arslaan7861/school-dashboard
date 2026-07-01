@@ -128,7 +128,7 @@ export default function AttendancePage() {
    * -------------------------------------------------------- */
 
   const { data: classesData, isLoading: classesLoading } = useClasses(
-    activeSessionId || undefined,
+    activeSessionId ? Number(activeSessionId) : undefined,
   );
 
   const {

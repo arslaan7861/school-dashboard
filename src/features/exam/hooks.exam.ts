@@ -6,7 +6,9 @@ import {
   AssignExamToClassRequest,
   AddExamSubjectRequest,
   AddExamComponentRequest,
+  UpdateExamComponentRequest,
   CreateExamScheduleRequest,
+  UpdateExamScheduleRequest,
   EnterMarksRequest,
   ExamFilters,
 } from "./types.exam";
@@ -29,6 +31,8 @@ export const examKeys = {
     [...examKeys.all, "eligibility", examId, studentId] as const,
   admitCard: (examId: number, studentId: number) =>
     [...examKeys.all, "admit-card", examId, studentId] as const,
+  policy: (examId: number) =>
+    [...examKeys.all, "policy", examId] as const,
 };
 
 // ==================== Query Hooks ====================
@@ -160,12 +164,69 @@ export const useAddExamComponent = () => {
   });
 };
 
+export const useUpdateExamComponent = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      examComponentId,
+      data,
+    }: {
+      examComponentId: number;
+      data: UpdateExamComponentRequest;
+    }) => examApi.updateComponent(examComponentId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: examKeys.details() });
+    },
+  });
+};
+
+export const useDeleteExamComponent = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (examComponentId: number) =>
+      examApi.deleteComponent(examComponentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: examKeys.details() });
+    },
+  });
+};
+
 export const useCreateExamSchedule = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
     mutationFn: (data: CreateExamScheduleRequest) =>
       examApi.createSchedule(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: examKeys.details() });
+    },
+  });
+};
+
+export const useUpdateExamSchedule = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      scheduleId,
+      data,
+    }: {
+      scheduleId: number;
+      data: UpdateExamScheduleRequest;
+    }) => examApi.updateSchedule(scheduleId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: examKeys.details() });
+    },
+  });
+};
+
+export const useDeleteExamSchedule = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (scheduleId: number) => examApi.deleteSchedule(scheduleId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: examKeys.details() });
     },
@@ -215,6 +276,35 @@ export const usePublishExamResults = () => {
       queryClient.invalidateQueries({ queryKey: examKeys.detail(examId) });
       queryClient.invalidateQueries({
         queryKey: examKeys.statusSummary(examId),
+      });
+    },
+  });
+};
+
+export const useAdmitCardPolicy = (examId: number) => {
+  return useQuery({
+    queryKey: examKeys.policy(examId),
+    queryFn: () => examApi.getAdmitCardPolicy(examId).then((res) => res.data),
+    enabled: !!examId,
+  });
+};
+
+export const useUpsertAdmitCardPolicy = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ examId, data }: { examId: number; data: any }) =>
+      examApi.upsertAdmitCardPolicy(examId, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: examKeys.policy(variables.examId),
+      });
+      // Invalidate all eligibility queries
+      queryClient.invalidateQueries({
+        queryKey: [...examKeys.all, "eligibility"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: [...examKeys.all, "admit-card"],
       });
     },
   });

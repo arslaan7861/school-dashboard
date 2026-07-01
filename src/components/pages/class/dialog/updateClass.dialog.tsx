@@ -78,7 +78,7 @@ export function UpdateClassDialog({
     defaultValues: {
       name: classData.name,
       section: classData.section,
-      sessionId: Number(classData.sessionId),
+      sessionId: classData.sessionId,
       classTeacherId: classData.classTeacherId,
     },
   });
@@ -89,14 +89,14 @@ export function UpdateClassDialog({
       form.reset({
         name: classData.name,
         section: classData.section,
-        sessionId: Number(classData.sessionId),
+        sessionId: classData.sessionId,
         classTeacherId: classData.classTeacherId,
       });
     }
   }, [classData, form]);
 
-  const getSelectedTeacher = (teacherId: string) => {
-    return teachers.find((t) => t.id.toString() === teacherId);
+  const getSelectedTeacher = (teacherId: number) => {
+    return teachers.find((t) => t.id === teacherId);
   };
 
   const onSubmit = async (data: updateClassSchemaType) => {
@@ -222,14 +222,14 @@ export function UpdateClassDialog({
                 <FormItem>
                   <FormLabel>Class Teacher</FormLabel>
                   <Select
-                    onValueChange={field.onChange}
-                    value={field.value || ""}
+                    onValueChange={(val) => field.onChange(val ? Number(val) : undefined)}
+                    value={field.value?.toString() ?? ""}
                     disabled={isLoadingTeachers}
                   >
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select teacher">
-                          {field.value && field.value !== "" && (
+                          {field.value && (
                             <div className="flex items-center gap-2">
                               {getSelectedTeacher(field.value) && (
                                 <>

@@ -17,7 +17,16 @@ import {
   Lock,
   X,
   Check,
+  Info,
 } from "lucide-react";
+
+import { format } from "date-fns";
+
+import {
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
+} from "@/components/ui/hover-card";
 
 import {
   Card,
@@ -137,6 +146,11 @@ export const AttendanceTable = forwardRef<
   const isLocked = attendance?.academicDay?.isAttendanceLocked;
   const isHoliday = attendance?.academicDay?.isHoliday;
   const summary = attendance?.summary;
+
+  const markerName = useMemo(() => {
+    const markedRecord = students.find((s: any) => s.marker?.name);
+    return markedRecord?.marker?.name;
+  }, [students]);
 
   // Derived hasChanges by comparing attendanceState with originalState
   const hasChanges = useMemo(() => {
@@ -412,6 +426,11 @@ export const AttendanceTable = forwardRef<
                   {summary?.notMarked} pending
                 </span>
               )}
+              {markerName && (
+                <span className="text-muted-foreground">
+                  • Marked by {markerName}
+                </span>
+              )}
               {hasChanges && (
                 <span className="text-amber-600 font-medium ml-2">
                   • Unsaved changes
@@ -419,14 +438,24 @@ export const AttendanceTable = forwardRef<
               )}
             </CardDescription>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2 w-full lg:w-auto">
+            {hasChanges && !isLocked && (
+              <Button
+                variant="outline"
+                onClick={resetToOriginal}
+                className="gap-2 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+                Clear Changes
+              </Button>
+            )}
+
             <Button
               disabled={!hasChanges || isLocked}
               onClick={handleSave}
               className={cn(
-                "gap-2 order-3 md:order-1 col-span-2 md:col-span-1",
-                !(hasChanges && !isLocked) &&
-                  "invisible hidden md:inline-flex ",
+                "gap-2",
+                !(hasChanges && !isLocked) && "hidden",
               )}
             >
               <Save className="h-4 w-4" />
@@ -437,8 +466,8 @@ export const AttendanceTable = forwardRef<
               <>
                 <Button
                   onClick={markAllAbsent}
-                  variant={"destructive"}
-                  className="gap-2 order-2 md:order-2"
+                  variant="destructive"
+                  className="gap-2"
                 >
                   <X className="h-4 w-4" />
                   Mark all absent
@@ -446,7 +475,7 @@ export const AttendanceTable = forwardRef<
 
                 <Button
                   onClick={markAllPresent}
-                  className="gap-2 bg-green-600 hover:bg-green-700 order-1 md:order-3"
+                  className="gap-2 bg-green-600 hover:bg-green-700"
                 >
                   <Check className="h-4 w-4" />
                   Mark all present
@@ -455,7 +484,7 @@ export const AttendanceTable = forwardRef<
             )}
 
             {isLocked && (
-              <Badge variant="outline" className="gap-1.5 order-1">
+              <Badge variant="outline" className="gap-1.5">
                 <Lock className="h-3 w-3" />
                 Locked
               </Badge>
@@ -521,8 +550,47 @@ export const AttendanceTable = forwardRef<
                     </TableCell>
 
                     <TableCell className="text-center md:text-left">
-                      <div>
-                        <p className="font-medium">{student.studentName}</p>
+                      <div className="flex items-center gap-2 justify-center md:justify-start">
+                        <span className="font-medium">{student.studentName}</span>
+                        {student.marker && (
+                          <HoverCard>
+                            <HoverCardTrigger asChild>
+                              <button className="inline-flex items-center justify-center rounded-full hover:bg-muted p-0.5 text-muted-foreground hover:text-foreground transition-colors cursor-pointer">
+                                <Info className="h-3.5 w-3.5" />
+                              </button>
+                            </HoverCardTrigger>
+                            <HoverCardContent className="w-80 p-4" align="start">
+                              <div className="space-y-3">
+                                <div className="flex items-start gap-3">
+                                  <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold uppercase text-sm">
+                                    {student.marker.name.charAt(0)}
+                                  </div>
+                                  <div className="space-y-0.5">
+                                    <h4 className="text-sm font-semibold text-left">{student.marker.name}</h4>
+                                    <p className="text-xs text-muted-foreground text-left capitalize">{student.marker.role}</p>
+                                  </div>
+                                </div>
+                                
+                                <div className="space-y-1.5 text-xs border-t pt-2">
+                                  {student.marker.email && (
+                                    <div className="flex items-center justify-between text-muted-foreground">
+                                      <span>Email</span>
+                                      <span className="text-foreground font-medium">{student.marker.email}</span>
+                                    </div>
+                                  )}
+                                  {student.markedAt && (
+                                    <div className="flex items-center justify-between text-muted-foreground">
+                                      <span>Marked At</span>
+                                      <span className="text-foreground font-medium">
+                                        {format(new Date(student.markedAt), "MMM d, yyyy h:mm a")}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            </HoverCardContent>
+                          </HoverCard>
+                        )}
                       </div>
                     </TableCell>
 

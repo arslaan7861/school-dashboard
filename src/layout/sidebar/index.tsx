@@ -11,6 +11,7 @@ import {
   CalendarDays,
   CalendarRange,
   CheckLineIcon,
+  Coins,
   Command,
   GalleryVerticalEnd,
   GraduationCap,
@@ -83,9 +84,19 @@ const data = {
       icon: CalendarCheck,
     },
     {
+      title: "Exams",
+      url: "/exams",
+      icon: BookOpen,
+    },
+    {
       title: "Transport",
       url: "/transport",
       icon: Truck,
+    },
+    {
+      title: "Fees",
+      url: "/fees",
+      icon: Coins,
     },
   ],
 };

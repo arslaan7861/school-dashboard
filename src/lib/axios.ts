@@ -21,10 +21,17 @@ api.interceptors.request.use((config) => {
 // response
 api.interceptors.response.use(
   (response) => {
-    console.log("respose interceptor", response.data);
+    console.log("response interceptor", response.data);
     return response.data;
   },
-  (error) => Promise.reject(parseApiError(error)),
+  (error) => {
+    const parsedError = parseApiError(error);
+    if (parsedError.status === 401) {
+      // Automatically log out when token expires or session invalidates
+      useAuthStore.getState().logout();
+    }
+    return Promise.reject(parsedError);
+  },
 );
 
 export function parseApiError(error: unknown): ApiError {

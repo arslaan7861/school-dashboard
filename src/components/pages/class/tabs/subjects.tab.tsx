@@ -29,9 +29,9 @@ function getInitials(name: string) {
     .toUpperCase();
 }
 
-function SubjectsTab({ classId }: { classId: string }) {
+function SubjectsTab({ classId }: { classId: number }) {
   const router = useRouter();
-  const { data, isLoading } = useSubjectsByClass(Number(classId));
+  const { data, isLoading } = useSubjectsByClass(classId);
 
   const subjects = data || [];
 

@@ -162,8 +162,9 @@ export default function TeachersPage() {
   }
 
   return (
-    <div className="space-y-6 pt-4">
+    <div className="space-y-6">
       {/* HEADER SECTION */}
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pt-4 pb-4 border-b">
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
@@ -178,6 +179,7 @@ export default function TeachersPage() {
           <Plus className="w-4 h-4 mr-2" />
           Add Teacher
         </Button>
+      </div>
       </div>
 
       {/* STATS CARDS */}
@@ -207,8 +209,8 @@ export default function TeachersPage() {
                 </p>
                 <p className="text-3xl font-bold">{activeTeachers}</p>
               </div>
-              <div className="p-2 bg-green-500/10 rounded-lg">
-                <Award className="w-6 h-6 text-green-500" />
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Award className="w-6 h-6 text-primary" />
               </div>
             </div>
           </CardContent>
@@ -225,8 +227,8 @@ export default function TeachersPage() {
                   {teachers.filter((t) => t.profilePic).length}
                 </p>
               </div>
-              <div className="p-2 bg-blue-500/10 rounded-lg">
-                <GraduationCap className="w-6 h-6 text-blue-500" />
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <GraduationCap className="w-6 h-6 text-primary" />
               </div>
             </div>
           </CardContent>
@@ -368,8 +370,8 @@ export default function TeachersPage() {
                           </p>
                           {teacher.classCount! > 0 && (
                             <Badge
-                              variant="outline"
-                              className="text-xs mt-1 bg-blue-50 text-blue-700 border-blue-200"
+                              variant="secondary"
+                              className="text-xs mt-1"
                             >
                               <Users className="w-3 h-3 mr-1" />
                               Class Teacher of {teacher.classCount}{" "}
@@ -401,7 +403,6 @@ export default function TeachersPage() {
                         <div className="absolute bottom-0 gap-1 right-0 flex items-center">
                           <Badge
                             variant={teacher.isActive ? "default" : "secondary"}
-                            className={teacher.isActive ? "bg-green-500" : ""}
                           >
                             {teacher.isActive ? "Active" : "Inactive"}
                           </Badge>
@@ -461,7 +462,7 @@ export default function TeachersPage() {
                               <Badge
                                 key={index}
                                 variant="secondary"
-                                className="px-2 py-0.5 text-xs bg-blue-50 text-blue-700 border-blue-100"
+                                className="px-2 py-0.5 text-xs"
                               >
                                 {edu}
                               </Badge>

@@ -71,6 +71,7 @@ import {
   updateAdminSchemaType,
 } from "@/features/admin/validators.admin";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useRouter } from "next/navigation";
 
 function Admins() {
   const { data, isLoading, isError, error, refetch } = useAdmins();
@@ -81,10 +82,21 @@ function Admins() {
     deleteAdminMutation,
   } = useAdminCrud();
   const user = useAuthStore((s) => s.user!);
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Admin | null>(null);
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");
+
+  React.useEffect(() => {
+    if (user && user.role !== "admin") {
+      router.replace("/unauthorized");
+    }
+  }, [user, router]);
+
+  if (!user || user.role !== "admin") {
+    return null;
+  }
 
   const admins = data?.data ?? [];
 
@@ -115,12 +127,12 @@ function Admins() {
   };
 
   const handleDelete = async (admin: Admin) => {
-    await deleteAdminMutation.mutate(Number(admin.id));
+    await deleteAdminMutation.mutate(admin.id);
   };
 
   const handleToggleStatus = (admin: Admin, checked: boolean) => {
     toggleAdminActiveStatusMutation.mutate({
-      userId: Number(admin.id),
+      userId: admin.id,
       isActive: checked, // Changed from 'active' to 'isActive'
     });
   };
@@ -205,8 +217,9 @@ function Admins() {
   }
 
   return (
-    <div className="space-y-6 pt-4">
+    <div className="space-y-6">
       {/* HEADER SECTION */}
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pt-4 pb-4 border-b">
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
@@ -221,6 +234,7 @@ function Admins() {
           <Plus className="w-4 h-4 mr-2" />
           Add Admin
         </Button>
+      </div>
       </div>
 
       {/* STATS CARDS */}
@@ -346,7 +360,7 @@ function Admins() {
             onUpdate={(id, data, form) =>
               updateAdminMutation.mutate(
                 {
-                  userId: Number(id),
+                  userId: id,
                   ...data,
                 },
                 {

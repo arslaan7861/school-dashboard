@@ -120,6 +120,7 @@ export interface OutstandingResult {
   overdueAmount: number;
   pendingAmount: number;
   partialAmount: number;
+  unallocatedAmount: number;
   invoices: OutstandingInvoice[];
 }
 

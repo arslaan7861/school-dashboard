@@ -78,13 +78,13 @@ export default function ClassesPage() {
   // Set default session to active session or first session
   useEffect(() => {
     if (sessions.length > 0 && !selectedSession) {
-      setSelectedSession(activeSessionId || sessions[0].id.toString());
+      setSelectedSession(activeSessionId ? activeSessionId.toString() : sessions[0].id.toString());
     }
   }, [sessions, activeSessionId]);
 
   // Fetch classes for selected session
-  const { data, isLoading } = useClasses(selectedSession, search);
-  const { deleteClassMutation } = useClassCrud(selectedSession);
+  const { data, isLoading } = useClasses(selectedSession ? Number(selectedSession) : undefined, search);
+  const { deleteClassMutation } = useClassCrud(selectedSession ? Number(selectedSession) : undefined);
 
   const classes: ClassType[] = data?.data || [];
 
@@ -128,8 +128,9 @@ export default function ClassesPage() {
   }
 
   return (
-    <div className="space-y-6 pt-4">
+    <div className="space-y-6">
       {/* Header */}
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pt-4 pb-4 border-b">
       <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">
@@ -146,6 +147,7 @@ export default function ClassesPage() {
             Create Class
           </Button>
         </Link>
+      </div>
       </div>
 
       {/* Stats Cards */}
@@ -175,8 +177,8 @@ export default function ClassesPage() {
                 </p>
                 <p className="text-3xl font-bold">{totalSubjects}</p>
               </div>
-              <div className="p-2 bg-green-500/10 rounded-lg">
-                <BookOpen className="w-6 h-6 text-green-500" />
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <BookOpen className="w-6 h-6 text-primary" />
               </div>
             </div>
           </CardContent>
@@ -195,8 +197,8 @@ export default function ClassesPage() {
                   )?.name || "N/A"}
                 </p>
               </div>
-              <div className="p-2 bg-blue-500/10 rounded-lg">
-                <Calendar className="w-6 h-6 text-blue-500" />
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Calendar className="w-6 h-6 text-primary" />
               </div>
             </div>
           </CardContent>
@@ -227,7 +229,7 @@ export default function ClassesPage() {
                     <SelectItem key={session.id} value={session.id.toString()}>
                       {session.name}
                       {session.isActive && (
-                        <Badge className="ml-2 bg-green-100 text-green-800">
+                        <Badge variant="default" className="ml-2">
                           Active
                         </Badge>
                       )}
@@ -352,7 +354,7 @@ export default function ClassesPage() {
                               <Badge
                                 key={subject.id}
                                 variant="secondary"
-                                className="text-xs bg-blue-50 text-blue-700 border-blue-100"
+                                className="text-xs"
                               >
                                 {subject.name}
                               </Badge>

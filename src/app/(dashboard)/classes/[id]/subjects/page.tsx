@@ -56,11 +56,17 @@ import {
   useSubjectCrud,
 } from "@/features/subjects/hooks.subject";
 import { useClass } from "@/features/class/hooks.class";
+import { useAuthStore } from "@/store/authStore";
+import {
+  openCreateSubjectModal,
+  openEditSubjectModal,
+} from "@/store/modals/subject.modal.store";
 
 export default function SubjectsPage() {
   const params = useParams();
   const router = useRouter();
   const classId = Number(params.id);
+  const sessionId = useAuthStore((s) => s.activeSessionId);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSubjects, setSelectedSubjects] = useState<number[]>([]);
@@ -71,7 +77,7 @@ export default function SubjectsPage() {
   >("all");
 
   const { data: classData, isLoading: isLoadingClass } = useClass(
-    String(classId),
+    classId,
   );
   const { data: subjects = [], isLoading: isLoadingSubjects } =
     useSubjectsByClass(classId, {
@@ -150,13 +156,13 @@ export default function SubjectsPage() {
     setTypeFilter("all");
   };
 
-  const getMarksTypeBadge = (type: string) => {
-    const variants: Record<string, string> = {
-      number: "bg-blue-100 text-blue-800",
-      grade: "bg-green-100 text-green-800",
-      none: "bg-gray-100 text-gray-800",
+  const getMarksTypeBadgeVariant = (type: string): "default" | "secondary" | "outline" => {
+    const variants: Record<string, "default" | "secondary" | "outline"> = {
+      number: "default",
+      grade: "secondary",
+      none: "outline",
     };
-    return variants[type] || "bg-gray-100 text-gray-800";
+    return variants[type] || "outline";
   };
 
   if (isLoading) {
@@ -173,8 +179,9 @@ export default function SubjectsPage() {
   const hasActiveFilters = searchTerm !== "" || typeFilter !== "all";
 
   return (
-    <div className="space-y-6 pt-6">
+    <div className="space-y-6">
       {/* Header */}
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pt-4 pb-4 border-b">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Subjects</h1>
@@ -205,12 +212,18 @@ export default function SubjectsPage() {
             </Button>
           )}
           <Button
-            onClick={() => router.push(`/classes/${classId}/subjects/create`)}
+            onClick={() =>
+              openCreateSubjectModal({
+                classId,
+                sessionId: Number(sessionId),
+              })
+            }
           >
             <Plus className="w-4 h-4 mr-2" />
             Add Subject
           </Button>
         </div>
+      </div>
       </div>
 
       {/* Search and Filters */}
@@ -346,7 +359,10 @@ export default function SubjectsPage() {
                         <Button
                           variant="link"
                           onClick={() =>
-                            router.push(`/classes/${classId}/subjects/create`)
+                            openCreateSubjectModal({
+                              classId,
+                              sessionId: Number(sessionId),
+                            })
                           }
                         >
                           Add your first subject
@@ -391,10 +407,8 @@ export default function SubjectsPage() {
                     </TableCell>
                     <TableCell>
                       <Badge
-                        className={cn(
-                          "font-normal",
-                          getMarksTypeBadge(subject.marksType),
-                        )}
+                        variant={getMarksTypeBadgeVariant(subject.marksType)}
+                        className="font-normal"
                       >
                         {subject.marksType}
                       </Badge>
@@ -474,9 +488,10 @@ export default function SubjectsPage() {
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() =>
-                              router.push(
-                                `/classes/${classId}/subjects/${subject.id}/edit`,
-                              )
+                              openEditSubjectModal({
+                                classId,
+                                subjectId: subject.id,
+                              })
                             }
                           >
                             <Edit className="w-4 h-4 mr-2" />

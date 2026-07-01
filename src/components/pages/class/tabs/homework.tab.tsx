@@ -68,7 +68,7 @@ import {
 import { useSubjectsByClass } from "@/features/subjects/hooks.subject";
 
 interface HomeworkTabProps {
-  classId: string;
+  classId: number;
   sessionId?: number;
 }
 
@@ -84,12 +84,12 @@ export default function HomeworkTab({ classId, sessionId }: HomeworkTabProps) {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [view, setView] = useState<"grid" | "list">("grid");
-  const { data: subjects } = useSubjectsByClass(Number(classId));
+  const { data: subjects } = useSubjectsByClass(classId);
   const {
     data: homework,
     isLoading,
     refetch,
-  } = useHomeworkByClass(parseInt(classId), {
+  } = useHomeworkByClass(classId, {
     sessionId,
   });
 
@@ -174,7 +174,7 @@ export default function HomeworkTab({ classId, sessionId }: HomeworkTabProps) {
           <Button
             onClick={() =>
               openCreateHomeworkModal({
-                classId: parseInt(classId),
+                classId: classId,
                 sessionId: sessionId || 1,
                 onSuccess: () => {
                   refetch();
@@ -191,7 +191,7 @@ export default function HomeworkTab({ classId, sessionId }: HomeworkTabProps) {
             variant="outline"
             onClick={() =>
               openBulkCreateHomeworkModal({
-                classId: parseInt(classId),
+                classId: classId,
                 sessionId: sessionId || 1,
                 onSuccess: () => {
                   refetch();
@@ -307,7 +307,7 @@ export default function HomeworkTab({ classId, sessionId }: HomeworkTabProps) {
                 variant="outline"
                 onClick={() =>
                   openCreateHomeworkModal({
-                    classId: parseInt(classId),
+                    classId: classId,
                     sessionId: sessionId || 1,
                     onSuccess: () => refetch(),
                   })

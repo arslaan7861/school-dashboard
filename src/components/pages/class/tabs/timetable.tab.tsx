@@ -327,13 +327,13 @@ const TimetableSkeleton = () => (
 
 /* ─── Main Component ─────────────────────────────────────────────────────────── */
 
-export default function TimetableTab({ classId }: { classId: string }) {
+export default function TimetableTab({ classId }: { classId: number }) {
   const router = useRouter();
   const sessionId = useAuthStore((s) => s.activeSessionId);
   const [selectedDay, setSelectedDay] = useState<WeekDay>(getCurrentDay());
 
   const { data, isLoading } = useClassTimetable(
-    Number(classId),
+    classId,
     Number(sessionId),
   );
 

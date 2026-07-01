@@ -63,8 +63,8 @@ export const updateStudentFormSchema = z
       .string()
       .min(2, "Admission number must be at least 2 characters")
       .optional(),
-    classId: z.string().regex(/^\d+$/, "Class ID must be a number").optional(),
-    sessionId: z.string().regex(/^\d+$/, "Please provide session id"),
+    classId: z.number().int().positive("Class ID must be a number").optional(),
+    sessionId: z.number().int().positive("Please provide session id"),
     rollNumber: z
       .string()
       .regex(/^\d+$/, "Roll number must be a number")

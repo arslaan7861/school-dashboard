@@ -80,7 +80,7 @@ export default function EditStudentPage() {
   const sessionId = useAuthStore((s) => s.activeSessionId);
 
   const { data: classesData, isLoading: isLoadingClasses } = useClasses(
-    sessionId?.toString(),
+    sessionId ? Number(sessionId) : undefined,
   );
   const classes = classesData?.data || [];
 
@@ -114,7 +114,7 @@ export default function EditStudentPage() {
       phone: "",
       password: undefined,
       classId: undefined,
-      sessionId: sessionId?.toString(),
+      sessionId: sessionId ? Number(sessionId) : undefined,
       rollNumber: undefined,
       address: undefined,
     },
@@ -142,9 +142,9 @@ export default function EditStudentPage() {
         phone: student.user?.phone ?? "",
         password: undefined,
         address: student.address ?? undefined,
-        classId: student.classRelation?.classId?.toString() ?? undefined,
+        classId: student.classRelation?.classId ? Number(student.classRelation.classId) : undefined,
         sessionId:
-          student.classRelation?.sessionId?.toString() ?? sessionId?.toString(),
+          student.classRelation?.sessionId ? Number(student.classRelation.sessionId) : (sessionId ? Number(sessionId) : undefined),
         rollNumber: student.classRelation?.rollNumber?.toString() ?? undefined,
         aadhaarNumber: student.aadhaarNumber ?? "",
       });
@@ -427,7 +427,7 @@ export default function EditStudentPage() {
                         <FormLabel>Academic Session</FormLabel>
                         <FormControl>
                           <Input
-                            value={field.value ?? ""}
+                            value={field.value?.toString() ?? ""}
                             disabled
                             className="bg-muted"
                           />
@@ -445,9 +445,9 @@ export default function EditStudentPage() {
                         <FormLabel>Class</FormLabel>
                         <Select
                           key={`classId-${selectKey}`}
-                          value={field.value ?? ""}
+                          value={field.value?.toString() ?? ""}
                           onValueChange={(value) =>
-                            field.onChange(value || undefined)
+                            field.onChange(value ? Number(value) : undefined)
                           }
                           disabled={isLoadingClasses}
                         >

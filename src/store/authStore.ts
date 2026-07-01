@@ -6,7 +6,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 type Role = "admin" | "user" | string;
 
 type User = {
-  id: string;
+  id: number;
   name: string;
   email: string;
   phone: string;
@@ -26,7 +26,7 @@ type AuthState = {
   isAuthenticated: boolean;
   hasHydrated: boolean;
 
-  activeSessionId: string | null;
+  activeSessionId: number | null;
 
   // THEME
   dark: boolean;
@@ -38,7 +38,7 @@ type AuthState = {
   logout: () => void;
   setHasHydrated: (state: boolean) => void;
 
-  setActiveSession: (id: string) => void;
+  setActiveSession: (id: number) => void;
 };
 
 export const useAuthStore = create<AuthState>()(
@@ -59,11 +59,11 @@ export const useAuthStore = create<AuthState>()(
       toggleTheme: () => set((s) => ({ dark: !s.dark })),
 
       setAuth: (data) =>
-        set({
-          user: data.user,
-          token: data.token,
-          isAuthenticated: true,
-        }),
+         set({
+           user: data.user,
+           token: data.token,
+           isAuthenticated: true,
+         }),
 
       updateUser: (partialUser) =>
         set((state) => ({

@@ -29,11 +29,11 @@ function getInitials(name: string) {
     .toUpperCase();
 }
 
-function StudentsTab({ classId }: { classId: string }) {
+function StudentsTab({ classId }: { classId: number }) {
   const router = useRouter();
 
   const { data, isLoading } = useStudentsByClass({
-    classId: Number(classId),
+    classId: classId,
     page: 1,
     limit: 10,
   });

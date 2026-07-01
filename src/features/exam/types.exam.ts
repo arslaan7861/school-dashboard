@@ -92,6 +92,11 @@ export interface ExamSubject {
     id: number;
     name: string;
     marksType: string;
+    components?: Array<{
+      id: number;
+      name: string;
+      type: string;
+    }>;
   };
   components?: ExamComponent[];
 }
@@ -199,6 +204,7 @@ export interface AdmitCard {
   }>;
   instructions: string[];
   isEligible: boolean;
+  reasons: string[];
   generatedAt: string;
 }
 
@@ -349,6 +355,12 @@ export interface AddExamComponentRequest {
   marksType?: MarksType;
 }
 
+export interface UpdateExamComponentRequest {
+  maxMarks: number;
+  passingMarks: number;
+  marksType: MarksType;
+}
+
 export interface CreateExamScheduleRequest {
   examComponentId: number;
   academicBatchId: number;
@@ -357,6 +369,15 @@ export interface CreateExamScheduleRequest {
   endTime: string;
   room?: string;
   invigilatorId?: number;
+}
+
+export interface UpdateExamScheduleRequest {
+  academicBatchId?: number;
+  academicDayId?: number;
+  startTime?: string;
+  endTime?: string;
+  room?: string;
+  invigilatorId?: number | null;
 }
 
 export interface EnterMarksRequest {

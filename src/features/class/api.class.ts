@@ -13,7 +13,7 @@ export async function createClassService(
 }
 
 export async function getAllClasses(
-  sessionId: string,
+  sessionId: number,
   search?: string,
 ): Promise<ApiSuccess<ClassType[]>> {
   return api.get(`/classes/${sessionId}`, {
@@ -22,7 +22,7 @@ export async function getAllClasses(
 }
 
 export async function getClassById(
-  classId: string,
+  classId: number,
 ): Promise<ApiSuccess<ClassType>> {
   return api.get(`/classes/get/${classId}`);
 }
@@ -30,14 +30,14 @@ export async function getClassById(
 export async function updateClassService({
   classId,
   ...payload
-}: updateClassSchemaType & { classId: string }): Promise<
+}: updateClassSchemaType & { classId: number }): Promise<
   ApiSuccess<ClassType>
 > {
   return api.put(`/classes/${classId}`, payload);
 }
 
 export async function deleteClassService(
-  classId: string,
+  classId: number,
 ): Promise<ApiSuccess<never>> {
   return api.delete(`/classes/${classId}`);
 }

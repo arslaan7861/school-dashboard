@@ -34,7 +34,7 @@ export default function CalendarPage() {
   const { data: monthData, isLoading } = useCalendarMonth({
     year,
     month,
-    sessionId: Number(activeSessionId),
+    sessionId: activeSessionId as number,
   });
 
   // Handle day click (opens full details sheet)
@@ -73,11 +73,11 @@ export default function CalendarPage() {
 
   const activeSession = useMemo(
     () =>
-      sessions.find((s) => String(s.id) === activeSessionId) ||
+      sessions.find((s) => s.id === activeSessionId) ||
       sessions.find((s) => s.isActive) ||
       sessions[0] ||
       null,
-    [activeSessionId],
+    [activeSessionId, sessions],
   );
 
   return (

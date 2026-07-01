@@ -18,9 +18,20 @@ import { Input } from "@/components/ui/input";
 import { loginSchema, LoginFormValues } from "@/schemas/login.schema";
 import { useLogin } from "@/features/auth/hooks";
 import { toast } from "sonner";
+import { useAuthStore } from "@/store/authStore";
+import { useEffect } from "react";
 
 export default function LoginPage() {
   const login = useLogin();
+  const user = useAuthStore((s) => s.user);
+  const hasHydrated = useAuthStore((s) => s.hasHydrated);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (hasHydrated && user) {
+      router.replace("/");
+    }
+  }, [user, hasHydrated, router]);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -31,21 +42,29 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (values: LoginFormValues) => {
-    await login.mutate(
-      { ...values },
-      {
-        onError: (e) => {
-          console.log(e);
-          toast.error(e.message);
-          if (e.errors && e.errors.length) {
-            e.errors.forEach(({ field, message }) => {
-              form.setError(field as keyof LoginFormValues, { message });
-            });
-          }
+    try {
+      await login.mutateAsync(
+        { ...values },
+        {
+          onError: (e) => {
+            console.log(e);
+            toast.error(e.message);
+            if (e.errors && e.errors.length) {
+              e.errors.forEach(({ field, message }) => {
+                form.setError(field as keyof LoginFormValues, { message });
+              });
+            }
+          },
         },
-      },
-    );
+      );
+    } catch (err) {
+      // Suppress uncaught rejection; handled inside onError
+    }
   };
+
+  if (hasHydrated && user) {
+    return null;
+  }
 
   return (
     <div className="space-y-6">

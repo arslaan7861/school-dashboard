@@ -88,7 +88,7 @@ export default function ClassDetailsPage() {
   const router = useRouter();
   const params = useParams();
   const searchParams = useSearchParams();
-  const classId = params.id as string;
+  const classId = Number(params.id);
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
   const { user } = useAuthStore();
   const isAdmin = user?.role === "admin";
@@ -127,13 +127,13 @@ export default function ClassDetailsPage() {
   const classInfo = classData?.data;
 
   const { data: classTeacherData } = useTeacher(
-    Number(classInfo?.classTeacherId),
+    classInfo?.classTeacherId,
   );
   const classTeacher = classTeacherData?.data;
 
   const { data: sessions } = useSessions();
   const classSession = sessions?.data.find(
-    (s) => s.id === Number(classInfo?.sessionId),
+    (s) => s.id === classInfo?.sessionId,
   );
 
   if (isLoading) {
@@ -338,7 +338,7 @@ export default function ClassDetailsPage() {
         <TabsContent value="homework">
           <HomeworkTab
             classId={classId}
-            sessionId={Number(classData.data.sessionId)}
+            sessionId={classInfo.sessionId}
           />
         </TabsContent>
       </Tabs>

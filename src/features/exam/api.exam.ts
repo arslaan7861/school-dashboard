@@ -12,12 +12,15 @@ import {
   ExamStatusSummary,
   AdmitCardEligibility,
   AdmitCard,
+  AdmitCardPolicy,
   CreateExamRequest,
   UpdateExamRequest,
   AssignExamToClassRequest,
   AddExamSubjectRequest,
   AddExamComponentRequest,
+  UpdateExamComponentRequest,
   CreateExamScheduleRequest,
+  UpdateExamScheduleRequest,
   EnterMarksRequest,
   ExamFilters,
 } from "./types.exam";
@@ -72,11 +75,35 @@ export const examApi = {
   ): Promise<ApiResponse<ExamComponent>> =>
     api.post(`${BASE_URL}/components`, data),
 
+  // Update component marks/type
+  updateComponent: (
+    examComponentId: number,
+    data: UpdateExamComponentRequest,
+  ): Promise<ApiResponse<ExamComponent>> =>
+    api.put(`${BASE_URL}/components/${examComponentId}`, data),
+
+  // Delete component
+  deleteComponent: (
+    examComponentId: number,
+  ): Promise<ApiResponse<void>> =>
+    api.delete(`${BASE_URL}/components/${examComponentId}`),
+
   // Create exam schedule
   createSchedule: (
     data: CreateExamScheduleRequest,
   ): Promise<ApiResponse<ExamSchedule>> =>
     api.post(`${BASE_URL}/schedules`, data),
+
+  // Update exam schedule
+  updateSchedule: (
+    scheduleId: number,
+    data: UpdateExamScheduleRequest,
+  ): Promise<ApiResponse<ExamSchedule>> =>
+    api.put(`${BASE_URL}/schedules/${scheduleId}`, data),
+
+  // Delete exam schedule
+  deleteSchedule: (scheduleId: number): Promise<ApiResponse<void>> =>
+    api.delete(`${BASE_URL}/schedules/${scheduleId}`),
 
   // ==================== Marks APIs ====================
 
@@ -121,4 +148,17 @@ export const examApi = {
     classStudentId: number,
   ): Promise<ApiResponse<AdmitCard>> =>
     api.get(`${BASE_URL}/${examId}/student/${classStudentId}/admit-card`),
+
+  // Get admit card policy
+  getAdmitCardPolicy: (
+    examId: number,
+  ): Promise<ApiResponse<AdmitCardPolicy | null>> =>
+    api.get(`${BASE_URL}/${examId}/policy`),
+
+  // Upsert admit card policy
+  upsertAdmitCardPolicy: (
+    examId: number,
+    data: any,
+  ): Promise<ApiResponse<AdmitCardPolicy>> =>
+    api.post(`${BASE_URL}/${examId}/policy`, data),
 };

@@ -36,7 +36,7 @@ export function SessionSwitcher() {
 
   // decide active session
   const activeSession =
-    sessions.find((s) => String(s.id) === activeSessionId) ||
+    sessions.find((s) => s.id === activeSessionId) ||
     sessions.find((s) => s.isActive) ||
     sessions[0] ||
     null;
@@ -44,7 +44,7 @@ export function SessionSwitcher() {
   // if no stored active session but backend has one → store it
   React.useEffect(() => {
     if (!activeSessionId && activeSession) {
-      setActiveSession(String(activeSession.id));
+      setActiveSession(activeSession.id);
     }
   }, [activeSessionId, activeSession, setActiveSession]);
 
@@ -102,7 +102,7 @@ export function SessionSwitcher() {
                 <DropdownMenuItem
                   key={session.id}
                   className="gap-2 p-2 flex justify-between items-center cursor-pointer"
-                  onClick={() => setActiveSession(String(session.id))}
+                  onClick={() => setActiveSession(session.id)}
                 >
                   <div className="flex flex-col">
                     <span className="font-medium">{session.name}</span>

@@ -40,7 +40,7 @@ type Props = {
   onOpenChange: (v: boolean) => void;
   initial?: any;
   onCreate: (data: any, form: FormType) => Promise<any> | void;
-  onUpdate: (id: string, data: any, form: FormType) => Promise<any> | void;
+  onUpdate: (id: number, data: any, form: FormType) => Promise<any> | void;
   isCreatePending?: boolean;
   isUpdatePending?: boolean;
 };

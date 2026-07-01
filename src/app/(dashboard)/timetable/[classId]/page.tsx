@@ -966,7 +966,7 @@ export default function TimetablePage() {
 
   // Data Fetching
   const { data: classData, isLoading: isLoadingClass } = useClass(
-    String(classId),
+    classId,
   );
   const { data: timetable, isLoading: isLoadingTimetable } =
     useClassTimetable(classId);

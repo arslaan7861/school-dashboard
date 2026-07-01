@@ -67,7 +67,7 @@ export default function CreateStudentPage() {
 
   // Fetch classes for the active session
   const { data: classesData, isLoading: isLoadingClasses } = useClasses(
-    activeSessionId?.toString(),
+    activeSessionId ? Number(activeSessionId) : undefined,
   );
   const { data: sessionsData } = useSessions();
   const { createStudentAsync, isCreating } = useStudentMutations();

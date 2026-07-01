@@ -4,7 +4,7 @@ export const createClassSchema = z.object({
   name: z.string().min(1, "Class name is required"),
   section: z.string().min(1, "Section is required"),
   sessionId: z.number().int().positive(),
-  classTeacherId: z.string().min(1, "Class teacher is required"), // Changed to string
+  classTeacherId: z.number().int().positive("Class teacher is required"),
 });
 
 export const updateClassSchema = z
@@ -12,7 +12,7 @@ export const updateClassSchema = z
     name: z.string().min(1).optional(),
     section: z.string().min(1).optional(),
     sessionId: z.number().int().positive().optional(),
-    classTeacherId: z.string().min(1).optional(), // Changed to string
+    classTeacherId: z.number().int().positive().optional(),
   })
   .strict()
   .refine((body) => Object.keys(body).length > 0, {

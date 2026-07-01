@@ -87,7 +87,7 @@ export function AcademicDaySelector({
 
   const activeSession = useMemo(
     () =>
-      sessions.find((s) => String(s.id) === sessionId) ||
+      sessions.find((s) => s.id === sessionId) ||
       sessions.find((s) => s.isActive) ||
       sessions[0] ||
       null,
@@ -127,7 +127,7 @@ export function AcademicDaySelector({
   const { data: monthData = [], isLoading } = useCalendarMonth({
     year,
     month,
-    sessionId: Number(sessionId),
+    sessionId: sessionId as number,
   });
 
   const dayMap = useMemo(() => {

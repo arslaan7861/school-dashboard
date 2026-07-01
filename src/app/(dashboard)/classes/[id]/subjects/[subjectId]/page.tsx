@@ -44,6 +44,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 import { useSubject, useSubjectCrud } from "@/features/subjects/hooks.subject";
+import { openEditSubjectModal } from "@/store/modals/subject.modal.store";
 
 export default function SubjectDetailsPage() {
   const params = useParams();
@@ -66,25 +67,25 @@ export default function SubjectDetailsPage() {
     }
   };
 
-  const getMarksTypeBadge = (type: string) => {
-    const variants: Record<string, string> = {
-      number: "bg-blue-100 text-blue-800",
-      grade: "bg-green-100 text-green-800",
-      none: "bg-gray-100 text-gray-800",
+  const getMarksTypeBadgeVariant = (type: string): "default" | "secondary" | "outline" => {
+    const variants: Record<string, "default" | "secondary" | "outline"> = {
+      number: "default",
+      grade: "secondary",
+      none: "outline",
     };
-    return variants[type] || "bg-gray-100 text-gray-800";
+    return variants[type] || "outline";
   };
 
-  const getComponentTypeBadge = (type: string) => {
-    const variants: Record<string, string> = {
-      theory: "bg-purple-100 text-purple-800",
-      practical: "bg-orange-100 text-orange-800",
-      internal: "bg-teal-100 text-teal-800",
-      project: "bg-indigo-100 text-indigo-800",
-      viva: "bg-pink-100 text-pink-800",
-      other: "bg-gray-100 text-gray-800",
+  const getComponentTypeBadgeVariant = (type: string): "default" | "secondary" | "outline" => {
+    const variants: Record<string, "default" | "secondary" | "outline"> = {
+      theory: "default",
+      practical: "secondary",
+      internal: "outline",
+      project: "secondary",
+      viva: "default",
+      other: "outline",
     };
-    return variants[type] || "bg-gray-100 text-gray-800";
+    return variants[type] || "secondary";
   };
 
   if (isLoading) {
@@ -144,25 +145,21 @@ export default function SubjectDetailsPage() {
                 {subject.name}
               </h1>
               <Badge
-                className={cn(
-                  "capitalize",
-                  getMarksTypeBadge(subject.marksType),
-                )}
+                variant={getMarksTypeBadgeVariant(subject.marksType)}
+                className="capitalize"
               >
                 {subject.marksType}
               </Badge>
               {subject.isOptional && (
                 <Badge
-                  variant="outline"
-                  className="border-amber-500 text-amber-700"
+                  variant="secondary"
                 >
                   Optional
                 </Badge>
               )}
               {subject.isElective && (
                 <Badge
-                  variant="outline"
-                  className="border-purple-500 text-purple-700"
+                  variant="secondary"
                 >
                   Elective
                 </Badge>
@@ -178,7 +175,10 @@ export default function SubjectDetailsPage() {
           <Button
             variant="outline"
             onClick={() =>
-              router.push(`/classes/${classId}/subjects/${subjectId}/edit`)
+              openEditSubjectModal({
+                classId,
+                subjectId,
+              })
             }
           >
             <Edit className="w-4 h-4 mr-2" />
@@ -288,10 +288,8 @@ export default function SubjectDetailsPage() {
                         <CardTitle>{component.name}</CardTitle>
                         <CardDescription className="flex items-center gap-2 mt-1 flex-wrap">
                           <Badge
-                            className={cn(
-                              "capitalize",
-                              getComponentTypeBadge(component.type),
-                            )}
+                            variant={getComponentTypeBadgeVariant(component.type)}
+                            className="capitalize"
                           >
                             {component.type}
                           </Badge>

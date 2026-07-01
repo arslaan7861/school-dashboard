@@ -117,7 +117,7 @@ export default function CreateClassPage() {
       name: "",
       section: "",
       sessionId: activeSessionId ? Number(activeSessionId) : undefined,
-      classTeacherId: "",
+      classTeacherId: undefined as any,
     },
     mode: "onChange",
   });
@@ -130,8 +130,8 @@ export default function CreateClassPage() {
     setTouchedFields((prev) => new Set(prev).add(fieldName));
   };
 
-  const getSelectedTeacher = (teacherId: string) => {
-    return teachers.find((t) => t.id.toString() === teacherId);
+  const getSelectedTeacher = (teacherId: number) => {
+    return teachers.find((t) => t.id === teacherId);
   };
 
   const isFormValid =
@@ -329,16 +329,16 @@ export default function CreateClassPage() {
                       </FormLabel>
                       <Select
                         onValueChange={(value) => {
-                          field.onChange(value);
+                          field.onChange(parseInt(value, 10));
                           handleFieldTouch("classTeacherId");
                         }}
-                        value={field.value || ""}
+                        value={field.value?.toString() || ""}
                         disabled={isLoadingTeachers || isSubmitting}
                       >
                         <FormControl>
                           <SelectTrigger className="w-full h-10">
                             <SelectValue placeholder="Select teacher">
-                              {field.value && field.value !== "" && (
+                              {field.value && (
                                 <div className="flex items-center gap-2">
                                   {getSelectedTeacher(field.value) && (
                                     <>

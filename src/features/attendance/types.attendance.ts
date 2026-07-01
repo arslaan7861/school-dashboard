@@ -20,7 +20,7 @@ export interface Attendance {
   updatedAt: string;
   academicDay?: AcademicDay;
   student?: ClassStudentRelation;
-  marker?: Teacher;
+  marker?: User;
 }
 
 export interface AcademicDay {
@@ -162,8 +162,9 @@ export interface AttendanceByDayResponse {
     section: string;
     status: string;
     remarks: string | null;
-    markedBy: string;
+    markedBy: number;
     markedAt: string;
+    marker?: User;
   }>;
   summary: {
     totalStudents: number;
@@ -192,7 +193,8 @@ export interface AttendanceByStudentResponse {
     isHoliday: boolean;
     holidayTitle: string | null;
     event: string | null;
-    markedBy: string;
+    markedBy: number;
+    marker?: User;
   }>;
   summary: {
     totalDays: number;

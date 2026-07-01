@@ -303,27 +303,24 @@ export default function StudentsPage() {
 
   if (!activeSessionId) {
     return (
-      <div className="h-full w-full">
-        <Card className="border-amber-200 bg-gradient-to-br from-amber-50 to-amber-100/50">
-          <CardContent className="py-16">
-            <div className="text-center max-w-md mx-auto">
-              <div className="w-20 h-20 rounded-full bg-amber-100 mx-auto mb-6 flex items-center justify-center">
-                <Users className="w-10 h-10 text-amber-600" />
-              </div>
-              <h2 className="text-2xl font-semibold text-amber-800 mb-3">
-                No Active Session
-              </h2>
-              <p className="text-amber-600/80 mb-6">
-                Please select an active academic session to view and manage
-                students.
-              </p>
-              <Button
-                onClick={() => router.push("/dashboard/sessions")}
-                className="bg-amber-600 hover:bg-amber-700 text-white"
-              >
-                Go to Sessions
-              </Button>
+      <div className="h-full w-full flex items-center justify-center p-6">
+        <Card className="max-w-md w-full text-center border-border">
+          <CardContent className="pt-10 pb-10">
+            <div className="w-16 h-16 rounded-full bg-muted mx-auto mb-6 flex items-center justify-center">
+              <Users className="w-8 h-8 text-muted-foreground" />
             </div>
+            <h2 className="text-xl font-semibold mb-2">
+              No Active Session
+            </h2>
+            <p className="text-muted-foreground mb-6">
+              Please select an active academic session to view and manage
+              students.
+            </p>
+            <Button
+              onClick={() => router.push("/dashboard/sessions")}
+            >
+              Go to Sessions
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -331,46 +328,135 @@ export default function StudentsPage() {
   }
 
   return (
-    <div className="h-full w-full space-y-6 py-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="p-2.5 bg-gradient-to-br from-primary/10 to-primary/5 rounded-xl">
-            <Users className="w-6 h-6 text-primary" />
+    <div className="h-full w-full space-y-6">
+      {/* Unified sticky header: title + search + filters all in one bar */}
+      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b">
+        {/* Title row */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 px-1 pt-4 pb-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="p-2 bg-primary/10 rounded-lg shrink-0">
+              <Users className="w-5 h-5 text-primary" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="text-xl md:text-2xl font-bold tracking-tight leading-none">
+                Students
+              </h1>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                {pagination?.totalRecords ?? 0} records &middot; Manage student records and class assignments
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-              Students
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Manage student records and class assignments
-            </p>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={handleRefresh}
+              disabled={isFetching}
+              className="h-9 w-9"
+              title="Refresh"
+            >
+              <RefreshCw className={cn("h-4 w-4", isFetching && "animate-spin")} />
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleShareView}
+              size="sm"
+              className="gap-1.5 h-9"
+            >
+              <Share2 className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Share</span>
+            </Button>
+            {isAdmin && (
+              <Button
+                onClick={() => router.push("/students/create")}
+                size="sm"
+                className="gap-1.5 h-9"
+              >
+                <Plus className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Add Student</span>
+              </Button>
+            )}
           </div>
         </div>
 
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            onClick={handleShareView}
-            size="default"
-            className="gap-2"
-          >
-            <Share2 className="w-4 h-4" />
-            <span className="hidden sm:inline">Share</span>
-          </Button>
-          {isAdmin && (
-            <Button
-              onClick={() => router.push("/students/create")}
-              className="gap-2"
+        {/* Filter + search row */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 pb-3 px-1">
+          {/* Search */}
+          <div className="relative w-full sm:max-w-xs">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+            <Input
+              placeholder="Search students..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="pl-8 pr-8 h-9 text-sm"
+            />
+            {searchInput && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                onClick={() => setSearchInput("")}
+              >
+                <X className="h-3 w-3" />
+              </Button>
+            )}
+          </div>
+
+          {/* Filters */}
+          <div className="flex items-center gap-2 flex-wrap">
+            <Select
+              value={filters.classId}
+              onValueChange={(value) =>
+                handleFilterChange("classId", value === "all" ? "" : value)
+              }
             >
-              <Plus className="w-4 h-4" />
-              <span className="hidden sm:inline">Add Student</span>
-            </Button>
-          )}
+              <SelectTrigger className="w-[130px] h-9 text-sm">
+                <SelectValue placeholder="All Classes" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Classes</SelectItem>
+                {classes.map((cls) => (
+                  <SelectItem key={cls.id} value={cls.id.toString()}>
+                    {cls.displayName}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={filters.showUnenrolled ? "unenrolled" : "all"}
+              onValueChange={(value) =>
+                handleFilterChange("showUnenrolled", value === "unenrolled")
+              }
+            >
+              <SelectTrigger className="w-[140px] h-9 text-sm">
+                <SelectValue placeholder="Status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Students</SelectItem>
+                <SelectItem value="unenrolled">Unenrolled Only</SelectItem>
+              </SelectContent>
+            </Select>
+
+            {(filters.classId || filters.search || filters.showUnenrolled) && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleClearFilters}
+                className="h-9 gap-1 text-muted-foreground px-2"
+              >
+                <X className="h-3.5 w-3.5" />
+                Clear
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* Unified Filter Bar - Compact and always visible */}
-      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 -mx-4 px-4 py-3 border-b">
+      {/* phantom div to replace removed sticky filter bar */}
+      <div className="hidden">
         <div className="flex flex-col lg:flex-row gap-3">
           {/* Search - Full width on mobile */}
           <div className="relative flex-1 max-w-xs ml-auto">
@@ -645,7 +731,6 @@ export default function StudentsPage() {
                         ) : (
                           <Badge
                             variant="secondary"
-                            className="bg-amber-100 text-amber-700"
                           >
                             Not Assigned
                           </Badge>
@@ -667,11 +752,6 @@ export default function StudentsPage() {
                           variant={
                             student.user?.isActive ? "default" : "secondary"
                           }
-                          className={cn(
-                            student.user?.isActive
-                              ? "bg-green-100 text-green-700 hover:bg-green-200"
-                              : "bg-gray-100 text-gray-700 hover:bg-gray-200",
-                          )}
                         >
                           {student.user?.isActive ? "Active" : "Inactive"}
                         </Badge>

@@ -38,7 +38,7 @@ export default function TimetableOverviewPage() {
     data: classes,
     isLoading,
     error,
-  } = useClasses(activeSessionId?.toString(), search);
+  } = useClasses(activeSessionId ? Number(activeSessionId) : undefined, search);
 
   // Filter classes based on search only (session is fixed)
   const filteredClasses = classes?.data?.filter((cls: any) => {

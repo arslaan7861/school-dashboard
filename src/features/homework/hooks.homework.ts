@@ -74,7 +74,7 @@ export const useCreateHomework = () => {
 };
 // Update the useAllHomework hook to include sessionId
 export const useAllHomework = (
-  sessionId?: string,
+  sessionId?: number,
   filters?: {
     subjectId?: number;
     fromDate?: string;
@@ -87,7 +87,7 @@ export const useAllHomework = (
     queryKey: [...homeworkKeys.all, "all", sessionId, filters],
     queryFn: () =>
       homeworkApi
-        .getAll({ ...filters, sessionId: Number(sessionId) })
+        .getAll({ ...filters, sessionId: sessionId as number })
         .then((res) => res.data),
 
     enabled: !!sessionId,

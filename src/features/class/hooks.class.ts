@@ -11,26 +11,26 @@ import {
 
 /* ------------------ QUERIES ------------------ */
 
-export const useClasses = (sessionId?: string, search?: string) => {
+export const useClasses = (sessionId?: number, search?: string) => {
   return useQuery({
     queryKey: ["classes", sessionId, search],
-    queryFn: () => getAllClasses(sessionId as string, search),
+    queryFn: () => getAllClasses(sessionId as number, search),
     enabled: !!sessionId,
     staleTime: 1000 * 60 * 5,
   });
 };
 
-export const useClass = (classId?: string) => {
+export const useClass = (classId?: number) => {
   return useQuery({
     queryKey: ["class", classId],
-    queryFn: () => getClassById(classId as string),
+    queryFn: () => getClassById(classId as number),
     enabled: !!classId,
   });
 };
 
 /* ------------------ CRUD MUTATIONS ------------------ */
 
-export const useClassCrud = (sessionId?: string) => {
+export const useClassCrud = (sessionId?: number) => {
   const qc = useQueryClient();
 
   const invalidateClasses = () => {

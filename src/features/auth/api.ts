@@ -9,7 +9,7 @@ export type LoginPayload = {
 
 export type LoginData = {
   user: {
-    id: string;
+    id: number;
     name: string;
     email: string;
     phone: string;

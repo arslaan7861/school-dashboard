@@ -22,6 +22,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import {
   AreaChart,
   Area,
@@ -74,11 +75,11 @@ const FEE_COLLECTION_DATA = [
 ];
 
 const SUBJECT_PERFORMANCE = [
-  { name: "Mathematics", average: 78, color: "#0088FE" },
-  { name: "Science", average: 82, color: "#00C49F" },
-  { name: "English", average: 85, color: "#FFBB28" },
-  { name: "Social Studies", average: 76, color: "#FF8042" },
-  { name: "Computer Science", average: 88, color: "#8884D8" },
+  { name: "Mathematics", average: 78, color: "var(--color-chart-1)" },
+  { name: "Science", average: 82, color: "var(--color-chart-2)" },
+  { name: "English", average: 85, color: "var(--color-chart-3)" },
+  { name: "Social Studies", average: 76, color: "var(--color-chart-4)" },
+  { name: "Computer Science", average: 88, color: "var(--color-chart-5)" },
 ];
 
 const RECENT_ACTIVITIES = [
@@ -207,7 +208,7 @@ export default function DashboardPage() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold">{greeting}, Admin!</h1>
-          <p className="text-gray-500 mt-1">
+          <p className="text-muted-foreground mt-1">
             Welcome back to your school management dashboard
           </p>
         </div>
@@ -236,7 +237,6 @@ export default function DashboardPage() {
           icon={Users}
           trend={STATS_DATA.studentsTrend}
           trendUp={true}
-          color="bg-blue-500"
         />
         <StatCard
           title="Total Teachers"
@@ -244,7 +244,6 @@ export default function DashboardPage() {
           icon={GraduationCap}
           trend={STATS_DATA.teachersTrend}
           trendUp={true}
-          color="bg-green-500"
         />
         <StatCard
           title="Total Classes"
@@ -252,7 +251,6 @@ export default function DashboardPage() {
           icon={School}
           trend={STATS_DATA.classesTrend}
           trendUp={true}
-          color="bg-purple-500"
         />
         <StatCard
           title="Total Subjects"
@@ -260,7 +258,6 @@ export default function DashboardPage() {
           icon={BookOpen}
           trend={STATS_DATA.subjectsTrend}
           trendUp={false}
-          color="bg-orange-500"
         />
       </div>
 
@@ -292,16 +289,16 @@ export default function DashboardPage() {
               <>
                 <ResponsiveContainer width="100%" height={300}>
                   <AreaChart data={ATTENDANCE_DATA}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="month" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                    <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}%`} />
+                    <Tooltip cursor={{ fill: "transparent" }} />
                     <Area
                       type="monotone"
                       dataKey="present"
                       stackId="1"
-                      stroke="#0088FE"
-                      fill="#0088FE"
+                      stroke="var(--color-chart-1)"
+                      fill="var(--color-chart-1)"
                       fillOpacity={0.6}
                       name="Present (%)"
                     />
@@ -309,8 +306,8 @@ export default function DashboardPage() {
                       type="monotone"
                       dataKey="absent"
                       stackId="1"
-                      stroke="#FF8042"
-                      fill="#FF8042"
+                      stroke="var(--color-chart-2)"
+                      fill="var(--color-chart-2)"
                       fillOpacity={0.6}
                       name="Absent (%)"
                     />
@@ -318,12 +315,12 @@ export default function DashboardPage() {
                 </ResponsiveContainer>
                 <div className="flex justify-center gap-6 mt-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full" />
-                    <span className="text-sm">Present</span>
+                    <div className="w-3 h-3 bg-chart-1 rounded-full" />
+                    <span className="text-sm text-muted-foreground">Present</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-orange-500 rounded-full" />
-                    <span className="text-sm">Absent</span>
+                    <div className="w-3 h-3 bg-chart-2 rounded-full" />
+                    <span className="text-sm text-muted-foreground">Absent</span>
                   </div>
                 </div>
               </>
@@ -331,26 +328,32 @@ export default function DashboardPage() {
               <>
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={FEE_COLLECTION_DATA}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip />
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                    <XAxis dataKey="month" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+                    <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value / 1000}k`} />
+                    <Tooltip cursor={{ fill: "transparent" }} />
                     <Bar
                       dataKey="collected"
-                      fill="#00C49F"
+                      fill="var(--color-chart-1)"
                       name="Collected (₹)"
+                      radius={[4, 4, 0, 0]}
                     />
-                    <Bar dataKey="pending" fill="#FFBB28" name="Pending (₹)" />
+                    <Bar
+                      dataKey="pending"
+                      fill="var(--color-chart-2)"
+                      name="Pending (₹)"
+                      radius={[4, 4, 0, 0]}
+                    />
                   </BarChart>
                 </ResponsiveContainer>
                 <div className="flex justify-center gap-6 mt-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-green-500 rounded-full" />
-                    <span className="text-sm">Collected</span>
+                    <div className="w-3 h-3 bg-chart-1 rounded-full" />
+                    <span className="text-sm text-muted-foreground">Collected</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 bg-yellow-500 rounded-full" />
-                    <span className="text-sm">Pending</span>
+                    <div className="w-3 h-3 bg-chart-2 rounded-full" />
+                    <span className="text-sm text-muted-foreground">Pending</span>
                   </div>
                 </div>
               </>
@@ -398,10 +401,11 @@ export default function DashboardPage() {
               layout="vertical"
               margin={{ left: 100 }}
             >
-              <XAxis type="number" domain={[0, 100]} />
-              <YAxis type="category" dataKey="name" />
-              <Tooltip />
-              <Bar dataKey="average" fill="#8884D8" radius={[0, 4, 4, 0]}>
+              <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+              <XAxis type="number" domain={[0, 100]} stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+              <YAxis type="category" dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
+              <Tooltip cursor={{ fill: "transparent" }} />
+              <Bar dataKey="average" fill="var(--color-primary)" radius={[0, 4, 4, 0]}>
                 {SUBJECT_PERFORMANCE.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={entry.color} />
                 ))}
@@ -428,26 +432,26 @@ export default function DashboardPage() {
           <CardContent className="space-y-4 max-h-[400px] overflow-y-auto">
             {RECENT_ACTIVITIES.map((activity) => (
               <div key={activity.id} className="flex items-start gap-3">
-                <div className="p-2 bg-gray-100 rounded-full shrink-0">
+                <div className="p-2 bg-secondary rounded-full shrink-0">
                   {activity.type === "homework" && (
-                    <FileText className="h-4 w-4 text-blue-500" />
+                    <FileText className="h-4 w-4 text-chart-1" />
                   )}
                   {activity.type === "attendance" && (
-                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <CheckCircle className="h-4 w-4 text-chart-2" />
                   )}
                   {activity.type === "fee" && (
-                    <DollarSign className="h-4 w-4 text-yellow-500" />
+                    <DollarSign className="h-4 w-4 text-chart-3" />
                   )}
                   {activity.type === "message" && (
-                    <MessageSquare className="h-4 w-4 text-purple-500" />
+                    <MessageSquare className="h-4 w-4 text-chart-4" />
                   )}
                 </div>
                 <div className="flex-1">
                   <p className="text-sm font-medium">{activity.title}</p>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-muted-foreground">
                     {activity.description}
                   </p>
-                  <p className="text-xs text-gray-400 mt-1">{activity.time}</p>
+                  <p className="text-xs text-muted-foreground/70 mt-1">{activity.time}</p>
                 </div>
               </div>
             ))}
@@ -471,15 +475,15 @@ export default function DashboardPage() {
             <CardContent className="space-y-4">
               {UPCOMING_EVENTS.map((event) => (
                 <div key={event.id} className="flex items-center gap-3">
-                  <div className="text-center min-w-[60px]">
-                    <div className="text-xl font-bold text-blue-600">
+                  <div className="text-center min-w-[60px] p-2 bg-secondary rounded-md">
+                    <div className="text-xl font-bold text-primary">
                       {event.day}
                     </div>
-                    <div className="text-xs text-gray-500">{event.month}</div>
+                    <div className="text-xs text-muted-foreground">{event.month}</div>
                   </div>
                   <div className="flex-1">
                     <p className="text-sm font-medium">{event.title}</p>
-                    <p className="text-xs text-gray-500">{event.description}</p>
+                    <p className="text-xs text-muted-foreground">{event.description}</p>
                   </div>
                   <Badge
                     variant={
@@ -513,7 +517,7 @@ export default function DashboardPage() {
               {NOTICES.map((notice) => (
                 <div
                   key={notice.id}
-                  className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
+                  className="p-3 bg-secondary/50 rounded-lg hover:bg-secondary transition-colors cursor-pointer"
                   onClick={() => router.push(`/notices/${notice.id}`)}
                 >
                   <div className="flex items-start justify-between">
@@ -526,14 +530,14 @@ export default function DashboardPage() {
                           </Badge>
                         )}
                       </p>
-                      <p className="text-xs text-gray-500 mt-1 line-clamp-1">
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
                         {notice.content}
                       </p>
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p className="text-xs text-muted-foreground/70 mt-1">
                         {notice.date}
                       </p>
                     </div>
-                    <Bell className="h-4 w-4 text-gray-400" />
+                    <Bell className="h-4 w-4 text-muted-foreground/50" />
                   </div>
                 </div>
               ))}
@@ -594,7 +598,6 @@ interface StatCardProps {
   icon: any;
   trend: string;
   trendUp: boolean;
-  color: string;
 }
 
 function StatCard({
@@ -603,35 +606,32 @@ function StatCard({
   icon: Icon,
   trend,
   trendUp,
-  color,
 }: StatCardProps) {
   return (
     <Card>
       <CardContent className="p-6">
         <div className="flex justify-between items-start">
           <div>
-            <p className="text-sm text-gray-500">{title}</p>
+            <p className="text-sm text-muted-foreground">{title}</p>
             <p className="text-2xl md:text-3xl font-bold mt-2">
               {value.toLocaleString()}
             </p>
             <div className="flex items-center gap-1 mt-2">
               {trendUp ? (
-                <TrendingUp className="h-4 w-4 text-green-500" />
+                <TrendingUp className="h-4 w-4 text-emerald-500" />
               ) : (
-                <TrendingDown className="h-4 w-4 text-red-500" />
+                <TrendingDown className="h-4 w-4 text-destructive" />
               )}
               <span
-                className={`text-sm ${trendUp ? "text-green-500" : "text-red-500"}`}
+                className={`text-sm ${trendUp ? "text-emerald-500" : "text-destructive"}`}
               >
                 {trend}
               </span>
-              <span className="text-sm text-gray-500">vs last month</span>
+              <span className="text-sm text-muted-foreground">vs last month</span>
             </div>
           </div>
-          <div className={`p-3 rounded-full ${color} bg-opacity-10`}>
-            <Icon
-              className={`h-5 w-5 md:h-6 md:w-6 ${color.replace("bg-", "text-")}`}
-            />
+          <div className="p-3 rounded-full bg-primary/10">
+            <Icon className="h-5 w-5 md:h-6 md:w-6 text-primary" />
           </div>
         </div>
       </CardContent>
@@ -651,14 +651,23 @@ function QuickActionButton({
   onClick,
 }: QuickActionButtonProps) {
   return (
-    <Button
-      variant="outline"
-      className="h-auto py-3 md:py-4 flex flex-col gap-1 md:gap-2"
-      onClick={onClick}
-    >
-      <Icon className="h-4 w-4 md:h-5 md:w-5" />
-      <span className="text-xs md:text-sm">{label}</span>
-    </Button>
+    <TooltipProvider>
+      <UITooltip>
+        <TooltipTrigger asChild>
+          <Button
+            variant="outline"
+            className="h-auto py-3 md:py-4 flex flex-col gap-1 md:gap-2 hover:bg-secondary/80 hover:text-primary transition-colors"
+            onClick={onClick}
+          >
+            <Icon className="h-4 w-4 md:h-5 md:w-5" />
+            <span className="text-xs md:text-sm">{label}</span>
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Quick access to {label}</p>
+        </TooltipContent>
+      </UITooltip>
+    </TooltipProvider>
   );
 }
 

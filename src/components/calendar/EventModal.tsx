@@ -78,7 +78,7 @@ export function EventModal({
 
   // Fetch actual classes using the hook
   const { data: classesData, isLoading: isLoadingClasses } = useClasses(
-    activeSessionId?.toString(),
+    activeSessionId ? Number(activeSessionId) : undefined,
   );
 
   const form = useForm<EventFormValues>({
