@@ -32,6 +32,7 @@ export const useAnnouncements = (filters?: AnnouncementFilters) => {
   return useQuery({
     queryKey: announcementKeys.list(filters),
     queryFn: () => announcementApi.getAll(filters).then((res) => res.data),
+    enabled: !!filters?.sessionId,
   });
 };
 
@@ -87,8 +88,7 @@ export const useCreateAnnouncement = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: CreateAnnouncementRequest) =>
-      announcementApi.create(data),
+    mutationFn: (data: FormData) => announcementApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: announcementKeys.lists() });
     },
@@ -141,6 +141,46 @@ export const useMarkAnnouncementRead = () => {
       queryClient.invalidateQueries({
         queryKey: announcementKeys.userList(userId),
       });
+    },
+  });
+};
+
+export const useAddAnnouncementAttachment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      announcementId,
+      data,
+    }: {
+      announcementId: number;
+      data: FormData;
+    }) => announcementApi.addAttachment(announcementId, data),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: announcementKeys.detail(variables.announcementId),
+      });
+      queryClient.invalidateQueries({ queryKey: announcementKeys.lists() });
+    },
+  });
+};
+
+export const useDeleteAnnouncementAttachment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({
+      announcementId,
+      attachmentId,
+    }: {
+      announcementId: number;
+      attachmentId: number;
+    }) => announcementApi.deleteAttachment(attachmentId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: announcementKeys.detail(variables.announcementId),
+      });
+      queryClient.invalidateQueries({ queryKey: announcementKeys.lists() });
     },
   });
 };

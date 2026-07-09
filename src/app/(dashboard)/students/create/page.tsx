@@ -47,6 +47,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { ImageCropper } from "@/components/ui/image-cropper";
 
 import { useAuthStore } from "@/store/authStore";
 import { useStudentMutations } from "@/features/students/hooks.student";
@@ -63,6 +64,8 @@ export default function CreateStudentPage() {
 
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [cropDialogOpen, setCropDialogOpen] = useState(false);
+  const [currentImageToCrop, setCurrentImageToCrop] = useState<File | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
   // Fetch classes for the active session
@@ -103,7 +106,6 @@ export default function CreateStudentPage() {
   const watchClassId = form.watch("classId");
   const watchName = form.watch("name");
 
-  // Handle image selection
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -111,13 +113,11 @@ export default function CreateStudentPage() {
         toast.error("Image size must be less than 5MB");
         return;
       }
-      setSelectedImage(file);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      setCurrentImageToCrop(file);
+      setCropDialogOpen(true);
     }
+    // Reset the input so the same file can be selected again
+    e.target.value = "";
   };
 
   const handleRemoveImage = () => {
@@ -728,6 +728,21 @@ export default function CreateStudentPage() {
           </div>
         </form>
       </Form>
+      
+      <ImageCropper
+        open={cropDialogOpen}
+        onOpenChange={setCropDialogOpen}
+        imageFile={currentImageToCrop}
+        onCropComplete={(croppedFile) => {
+          setSelectedImage(croppedFile);
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setImagePreview(reader.result as string);
+          };
+          reader.readAsDataURL(croppedFile);
+          setCurrentImageToCrop(null);
+        }}
+      />
     </div>
   );
 }

@@ -26,6 +26,18 @@ export interface AnnouncementClass {
   };
 }
 
+export interface AnnouncementAttachment {
+  id: number;
+  announcementId: number;
+  url: string;
+  key: string;
+  fileName: string | null;
+  fileType: string | null;
+  size: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Announcement {
   id: number;
   title: string;
@@ -46,6 +58,7 @@ export interface Announcement {
     role: string;
   };
   classLinks?: AnnouncementClass[];
+  attachments?: AnnouncementAttachment[];
   isRead?: boolean;
 }
 
@@ -58,6 +71,7 @@ export interface AnnouncementWithReadStatus extends Announcement {
 export interface CreateAnnouncementRequest {
   title: string;
   message: string;
+  sessionId: number;
   audienceType: AnnouncementAudience;
   classIds?: number[];
   sendNotification?: boolean;

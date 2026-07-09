@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   useStudentOutstanding,
@@ -61,6 +61,9 @@ import {
   Coins,
   AlertTriangle,
   FileText,
+  ChevronDown,
+  ChevronRight,
+  Layers,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -89,6 +92,7 @@ export function StudentFeeLedger({
 
   const [activeTab, setActiveTab] = useState("dues");
   const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [expandedRow, setExpandedRow] = useState<string | null>(null);
 
   // Payment Form State
   const [payAmount, setPayAmount] = useState("");
@@ -918,6 +922,7 @@ export function StudentFeeLedger({
                     <Table>
                       <TableHeader className="bg-muted/20">
                         <TableRow>
+                          <TableHead className="py-2">Type</TableHead>
                           <TableHead className="py-2">Fee Name</TableHead>
                           <TableHead className="py-2">Allocated Amt</TableHead>
                           <TableHead className="py-2 text-right">
@@ -926,41 +931,105 @@ export function StudentFeeLedger({
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {studentFees && studentFees.length > 0 ? (
-                          studentFees.map((sf: any) => (
-                            <TableRow key={sf.id}>
-                              <TableCell className="py-2 text-xs font-medium">
-                                {sf.classFee?.name || "Standard Fee Rule"}
-                              </TableCell>
-                              <TableCell className="py-2 text-xs">
-                                ₹{sf.amount}
-                              </TableCell>
-                              <TableCell className="py-2 text-xs text-right text-emerald-600 font-semibold">
-                                {sf.discountType ? (
-                                  <span>
-                                    {sf.discountValue}
-                                    {sf.discountType === DiscountType.PERCENTAGE
-                                      ? "%"
-                                      : "₹"}{" "}
-                                    off
-                                  </span>
-                                ) : (
-                                  "—"
+                        {(() => {
+                           const allAssignments = [
+                             ...(studentFees || []).map((f: any) => ({ ...f, _type: "class" })),
+                             ...(studentExamFees || []).map((f: any) => ({ ...f, _type: "exam" })),
+                             ...(studentOptionalFees || []).map((f: any) => ({ ...f, _type: "optional" })),
+                           ];
+                           
+                           if (allAssignments.length === 0) {
+                              return (
+                                <TableRow>
+                                  <TableCell colSpan={4} className="h-16 text-center text-xs text-muted-foreground">
+                                    No active fee assignments.
+                                  </TableCell>
+                                </TableRow>
+                              );
+                           }
+
+                           return allAssignments.map((sf: any, index: number) => {
+                             const rowId = `${sf._type}-${sf.id || index}`;
+                             const isExpanded = expandedRow === rowId;
+                             
+                             let name = "";
+                             let badge = null;
+                             let detailLabel = "";
+                             
+                             if (sf._type === "class") {
+                               name = sf.classFee?.name || "Standard Fee Rule";
+                               detailLabel = sf.classFee?.type?.replace("_", " ") + " class fee";
+                               badge = <Badge variant="outline" className="text-[10px] bg-pink-50 text-pink-700 border-pink-200 dark:bg-pink-950/30 dark:text-pink-400 dark:border-pink-900">Class</Badge>;
+                             } else if (sf._type === "exam") {
+                               name = sf.examFee?.exam?.name || "Exam Fee";
+                               detailLabel = "Exam fee";
+                               badge = <Badge variant="outline" className="text-[10px] bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-950/30 dark:text-blue-400 dark:border-blue-900">Exam</Badge>;
+                             } else if (sf._type === "optional") {
+                               name = sf.optionalFee?.name || "Optional Fee";
+                               detailLabel = sf.optionalFee?.type + " fee";
+                               badge = <Badge variant="outline" className="text-[10px] bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/30 dark:text-indigo-400 dark:border-indigo-900">Optional</Badge>;
+                             }
+                             
+                             return (
+                              <React.Fragment key={rowId}>
+                                <TableRow 
+                                  className="cursor-pointer hover:bg-muted/30"
+                                  onClick={() => setExpandedRow(isExpanded ? null : rowId)}
+                                >
+                                  <TableCell className="py-2">
+                                    <div className="flex items-center gap-2">
+                                      {isExpanded ? (
+                                        <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+                                      ) : (
+                                        <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
+                                      )}
+                                      {badge}
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className="py-2 text-xs font-medium">{name}</TableCell>
+                                  <TableCell className="py-2 text-xs">₹{sf.amount}</TableCell>
+                                  <TableCell className="py-2 text-xs text-right text-emerald-600 font-semibold">
+                                    {sf.discountType ? (
+                                      <span>
+                                        {sf.discountValue}
+                                        {sf.discountType === DiscountType.PERCENTAGE ? "%" : "₹"} off
+                                      </span>
+                                    ) : "—"}
+                                  </TableCell>
+                                </TableRow>
+                                {isExpanded && (
+                                  <TableRow className="bg-muted/10">
+                                    <TableCell colSpan={4} className="p-3">
+                                      <div className="text-xs font-semibold text-muted-foreground mb-2">Origin Details</div>
+                                      <div className="flex items-center justify-between p-3 bg-card border rounded-xl max-w-md shadow-sm">
+                                        <div className="flex items-center gap-3">
+                                          <div className={`p-2 rounded-lg ${
+                                            sf._type === 'class' ? 'bg-pink-100 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400' :
+                                            sf._type === 'exam' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' :
+                                            'bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400'
+                                          }`}>
+                                            <Layers className="w-4 h-4" />
+                                          </div>
+                                          <div className="flex flex-col">
+                                            <span className="text-sm font-bold">{name}</span>
+                                            <span className="text-xs text-muted-foreground capitalize">{detailLabel}</span>
+                                          </div>
+                                        </div>
+                                        <div className={`font-bold text-sm ${
+                                            sf._type === 'class' ? 'text-pink-600 dark:text-pink-400' :
+                                            sf._type === 'exam' ? 'text-blue-600 dark:text-blue-400' :
+                                            'text-indigo-600 dark:text-indigo-400'
+                                        }`}>
+                                          ₹{sf.amount}
+                                        </div>
+                                      </div>
+                                    </TableCell>
+                                  </TableRow>
                                 )}
-                              </TableCell>
-                            </TableRow>
-                          ))
-                        ) : (
-                          <TableRow>
-                            <TableCell
-                              colSpan={3}
-                              className="h-16 text-center text-xs text-muted-foreground"
-                            >
-                              No special class fee assignments. Default rules
-                              apply.
-                            </TableCell>
-                          </TableRow>
-                        )}
+                              </React.Fragment>
+                             );
+                           });
+                        })()}
                       </TableBody>
                     </Table>
                   </div>

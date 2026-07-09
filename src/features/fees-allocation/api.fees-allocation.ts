@@ -5,6 +5,7 @@ import {
   StudentExamFee,
   StudentOptionalFee,
   Invoice,
+  InvoiceWithDetail,
   AssignStudentFeeRequest,
   AssignStudentExamFeeRequest,
   AssignStudentOptionalFeeRequest,
@@ -67,13 +68,13 @@ export const allocationApi = {
   ): Promise<ApiResponse<Invoice[]>> =>
     api.post(`${BASE_URL}/invoices/generate-one-time`, data),
 
-  // Get all invoices for a student
+  // Get all invoices for a student (enriched with source detail)
   getStudentInvoices: (
     classStudentId: number,
-  ): Promise<ApiResponse<Invoice[]>> =>
+  ): Promise<ApiResponse<InvoiceWithDetail[]>> =>
     api.get(`${BASE_URL}/student/${classStudentId}/invoices`),
 
-  // Get invoice by ID
-  getInvoiceById: (invoiceId: number): Promise<ApiResponse<Invoice>> =>
+  // Get invoice by ID (enriched with source detail)
+  getInvoiceById: (invoiceId: number): Promise<ApiResponse<InvoiceWithDetail>> =>
     api.get(`${BASE_URL}/invoices/${invoiceId}`),
 };

@@ -23,6 +23,7 @@ import {
   Truck,
   User,
   Users,
+  Megaphone,
 } from "lucide-react";
 
 import {
@@ -97,6 +98,11 @@ const data = {
       title: "Fees",
       url: "/fees",
       icon: Coins,
+    },
+    {
+      title: "Announcements",
+      url: "/announcements",
+      icon: Megaphone,
     },
   ],
 };

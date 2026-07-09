@@ -17,6 +17,39 @@ export enum OptionalFeeStatus {
   CANCELLED = "cancelled",
 }
 
+// ==================== Invoice Source Detail Types ====================
+
+export interface ClassFeeDetail {
+  kind: "fee";
+  feeName: string;
+  feeType: string;
+}
+
+export interface TransportDetail {
+  kind: "transport";
+  routeName: string;
+  stopName: string;
+  monthlyFee: number;
+}
+
+export interface ExamFeeDetail {
+  kind: "exam";
+  examName: string;
+  examStartDate: string | null;
+}
+
+export interface OptionalFeeDetail {
+  kind: "optional";
+  feeName: string;
+  feeType: string;
+}
+
+export type InvoiceSourceDetail =
+  | ClassFeeDetail
+  | TransportDetail
+  | ExamFeeDetail
+  | OptionalFeeDetail;
+
 // ==================== Student Fee Types ====================
 
 export interface StudentFee {
@@ -99,6 +132,13 @@ export interface Invoice {
       admissionNo: string;
     };
   };
+}
+
+// ==================== Enriched Invoice (with source detail) ====================
+
+export interface InvoiceWithDetail {
+  invoice: Invoice;
+  sourceDetail: InvoiceSourceDetail | null;
 }
 
 // ==================== Request/Response Types ====================

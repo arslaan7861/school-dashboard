@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { allocationApi } from "./api.fees-allocation";
+import { InvoiceWithDetail } from "./types.fees-allocation";
 import {
   AssignStudentFeeRequest,
   AssignStudentExamFeeRequest,

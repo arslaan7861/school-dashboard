@@ -67,6 +67,7 @@ import {
   UpdateStudentFormValues,
 } from "@/features/students/validator.student";
 import { useClasses } from "@/features/class/hooks.class";
+import { ImageCropper } from "@/components/ui/image-cropper";
 
 const formatDateForInput = (dateString: string | null | undefined) => {
   if (!dateString) return "";
@@ -86,6 +87,8 @@ export default function EditStudentPage() {
 
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [cropDialogOpen, setCropDialogOpen] = useState(false);
+  const [currentImageToCrop, setCurrentImageToCrop] = useState<File | null>(null);
   const [showCancelDialog, setShowCancelDialog] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [selectKey, setSelectKey] = useState(0);
@@ -166,10 +169,9 @@ export default function EditStudentPage() {
       toast.error("Image size must be less than 5MB");
       return;
     }
-    setSelectedImage(file);
-    const reader = new FileReader();
-    reader.onloadend = () => setImagePreview(reader.result as string);
-    reader.readAsDataURL(file);
+    setCurrentImageToCrop(file);
+    setCropDialogOpen(true);
+    e.target.value = "";
   };
 
   const handleRemoveImage = () => {
@@ -778,6 +780,21 @@ export default function EditStudentPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <ImageCropper
+        open={cropDialogOpen}
+        onOpenChange={setCropDialogOpen}
+        imageFile={currentImageToCrop}
+        onCropComplete={(croppedFile) => {
+          setSelectedImage(croppedFile);
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setImagePreview(reader.result as string);
+          };
+          reader.readAsDataURL(croppedFile);
+          setCurrentImageToCrop(null);
+        }}
+      />
     </div>
   );
 }

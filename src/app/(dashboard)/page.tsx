@@ -22,7 +22,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Tooltip as UITooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Tooltip as UITooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   AreaChart,
   Area,
@@ -33,158 +39,107 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
-  Cell,
 } from "recharts";
 import { useRouter } from "next/navigation";
+import { useSessions } from "@/features/session/hooks.session";
+import { useDashboardStats } from "@/features/dashboard/hooks.dashboard";
 
-// ==================== PLACEHOLDER DATA ====================
+// ==================== SKELETON COMPONENTS ====================
 
-const STATS_DATA = {
-  totalStudents: 1248,
-  totalTeachers: 86,
-  totalClasses: 42,
-  totalSubjects: 18,
-  studentsTrend: "+8%",
-  teachersTrend: "+3%",
-  classesTrend: "+5%",
-  subjectsTrend: "0%",
-};
+function StatCardSkeleton() {
+  return (
+    <Card>
+      <CardContent className="p-6">
+        <div className="flex justify-between items-start">
+          <div className="space-y-2 flex-1">
+            <Skeleton className="h-4 w-24" />
+            <Skeleton className="h-9 w-20" />
+            <Skeleton className="h-4 w-32" />
+          </div>
+          <Skeleton className="h-12 w-12 rounded-full" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
-const ATTENDANCE_DATA = [
-  { month: "Jan", present: 85, absent: 15 },
-  { month: "Feb", present: 88, absent: 12 },
-  { month: "Mar", present: 90, absent: 10 },
-  { month: "Apr", present: 87, absent: 13 },
-  { month: "May", present: 92, absent: 8 },
-  { month: "Jun", present: 89, absent: 11 },
-  { month: "Jul", present: 91, absent: 9 },
-  { month: "Aug", present: 86, absent: 14 },
-  { month: "Sep", present: 88, absent: 12 },
-  { month: "Oct", present: 90, absent: 10 },
-  { month: "Nov", present: 87, absent: 13 },
-  { month: "Dec", present: 91, absent: 9 },
-];
+function ChartSkeleton() {
+  return (
+    <div className="space-y-3 pt-2">
+      <div className="flex gap-2 justify-end">
+        <Skeleton className="h-8 w-24" />
+        <Skeleton className="h-8 w-28" />
+      </div>
+      <Skeleton className="h-[300px] w-full" />
+    </div>
+  );
+}
 
-const FEE_COLLECTION_DATA = [
-  { month: "Jan", collected: 85000, pending: 15000 },
-  { month: "Feb", collected: 92000, pending: 8000 },
-  { month: "Mar", collected: 88000, pending: 12000 },
-  { month: "Apr", collected: 95000, pending: 5000 },
-  { month: "May", collected: 91000, pending: 9000 },
-  { month: "Jun", collected: 89000, pending: 11000 },
-];
+function AttendanceSummarySkeleton() {
+  return (
+    <div className="space-y-4">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className="space-y-1">
+          <div className="flex justify-between">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-4 w-10" />
+          </div>
+          <Skeleton className="h-2 w-full" />
+        </div>
+      ))}
+    </div>
+  );
+}
 
-const SUBJECT_PERFORMANCE = [
-  { name: "Mathematics", average: 78, color: "var(--color-chart-1)" },
-  { name: "Science", average: 82, color: "var(--color-chart-2)" },
-  { name: "English", average: 85, color: "var(--color-chart-3)" },
-  { name: "Social Studies", average: 76, color: "var(--color-chart-4)" },
-  { name: "Computer Science", average: 88, color: "var(--color-chart-5)" },
-];
+function ActivityListSkeleton() {
+  return (
+    <div className="space-y-4">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className="flex items-start gap-3">
+          <Skeleton className="h-9 w-9 rounded-full shrink-0" />
+          <div className="flex-1 space-y-1">
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-3 w-48" />
+            <Skeleton className="h-3 w-20" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
-const RECENT_ACTIVITIES = [
-  {
-    id: 1,
-    type: "homework",
-    title: "Homework Assigned",
-    description: "Mathematics homework assigned to Class 10-A",
-    time: "2 hours ago",
-  },
-  {
-    id: 2,
-    type: "attendance",
-    title: "Attendance Marked",
-    description: "Class 9-B attendance marked for today",
-    time: "5 hours ago",
-  },
-  {
-    id: 3,
-    type: "fee",
-    title: "Fee Payment Received",
-    description: "₹25,000 fee payment from John Doe",
-    time: "1 day ago",
-  },
-  {
-    id: 4,
-    type: "message",
-    title: "Notice Published",
-    description: "Parent-Teacher meeting scheduled for next week",
-    time: "2 days ago",
-  },
-  {
-    id: 5,
-    type: "homework",
-    title: "Homework Submitted",
-    description: "15 students submitted Science homework",
-    time: "3 days ago",
-  },
-];
+function EventListSkeleton() {
+  return (
+    <div className="space-y-4">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="flex items-center gap-3">
+          <Skeleton className="h-14 w-[60px] rounded-md shrink-0" />
+          <div className="flex-1 space-y-1">
+            <Skeleton className="h-4 w-36" />
+            <Skeleton className="h-3 w-48" />
+          </div>
+          <Skeleton className="h-6 w-16 rounded-full" />
+        </div>
+      ))}
+    </div>
+  );
+}
 
-const UPCOMING_EVENTS = [
-  {
-    id: 1,
-    day: "15",
-    month: "May",
-    title: "Mid-Term Exams Start",
-    description: "First day of mid-term examinations",
-    type: "exam",
-  },
-  {
-    id: 2,
-    day: "20",
-    month: "May",
-    title: "Parent-Teacher Meeting",
-    description: "Annual parent-teacher interaction",
-    type: "meeting",
-  },
-  {
-    id: 3,
-    day: "25",
-    month: "May",
-    title: "Sports Day",
-    description: "Annual sports competition",
-    type: "event",
-  },
-  {
-    id: 4,
-    day: "01",
-    month: "Jun",
-    title: "Summer Vacation",
-    description: "School closes for summer break",
-    type: "holiday",
-  },
-];
-
-const NOTICES = [
-  {
-    id: 1,
-    title: "School Reopening",
-    content: "School will reopen on June 15th after summer break",
-    date: "2024-05-01",
-    isNew: true,
-  },
-  {
-    id: 2,
-    title: "Fee Submission Deadline",
-    content: "Last date for fee submission is May 20th",
-    date: "2024-04-28",
-    isNew: false,
-  },
-  {
-    id: 3,
-    title: "Uniform Change",
-    content: "New uniform will be mandatory from next session",
-    date: "2024-04-25",
-    isNew: false,
-  },
-];
-
-const ATTENDANCE_SUMMARY = {
-  today: 92,
-  week: 88,
-  month: 89,
-  overall: 87,
-};
+function NoticeListSkeleton() {
+  return (
+    <div className="space-y-3">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="p-3 rounded-lg border">
+          <div className="space-y-1">
+            <Skeleton className="h-4 w-40" />
+            <Skeleton className="h-3 w-full" />
+            <Skeleton className="h-3 w-20" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 // ==================== MAIN COMPONENT ====================
 
@@ -195,12 +150,47 @@ export default function DashboardPage() {
     "attendance",
   );
 
+  const { data: sessionsResponse, isLoading: sessionsLoading } = useSessions();
+  // The axios interceptor returns response.data, so useSessions gives { data: Session[] }
+  const sessions: any[] = sessionsResponse?.data ?? [];
+  const activeSession = sessions.find((s) => s.isActive);
+  const sessionId = activeSession?.id;
+
+  const { data: dashboardResponse, isLoading: dashboardLoading } =
+    useDashboardStats(sessionId);
+  // Backend returns { message, data: { STATS_DATA, ATTENDANCE_DATA, ... } }
+  const stats = dashboardResponse?.data;
+
+  const isLoading = sessionsLoading || (!!sessionId && dashboardLoading);
+
   useEffect(() => {
     const hour = new Date().getHours();
     if (hour < 12) setGreeting("Good Morning");
     else if (hour < 18) setGreeting("Good Afternoon");
     else setGreeting("Good Evening");
   }, []);
+
+  const STATS_DATA = stats?.STATS_DATA ?? {
+    totalStudents: 0,
+    totalTeachers: 0,
+    totalClasses: 0,
+    totalSubjects: 0,
+    studentsTrend: "—",
+    teachersTrend: "—",
+    classesTrend: "—",
+    subjectsTrend: "—",
+  };
+  const ATTENDANCE_DATA = stats?.ATTENDANCE_DATA ?? [];
+  const FEE_COLLECTION_DATA = stats?.FEE_COLLECTION_DATA ?? [];
+  const ATTENDANCE_SUMMARY = stats?.ATTENDANCE_SUMMARY ?? {
+    today: 0,
+    week: 0,
+    month: 0,
+    overall: 0,
+  };
+  const UPCOMING_EVENTS = stats?.UPCOMING_EVENTS ?? [];
+  const NOTICES = stats?.NOTICES ?? [];
+  const RECENT_ACTIVITIES = stats?.RECENT_ACTIVITIES ?? [];
 
   return (
     <div className="space-y-6">
@@ -231,34 +221,45 @@ export default function DashboardPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          title="Total Students"
-          value={STATS_DATA.totalStudents}
-          icon={Users}
-          trend={STATS_DATA.studentsTrend}
-          trendUp={true}
-        />
-        <StatCard
-          title="Total Teachers"
-          value={STATS_DATA.totalTeachers}
-          icon={GraduationCap}
-          trend={STATS_DATA.teachersTrend}
-          trendUp={true}
-        />
-        <StatCard
-          title="Total Classes"
-          value={STATS_DATA.totalClasses}
-          icon={School}
-          trend={STATS_DATA.classesTrend}
-          trendUp={true}
-        />
-        <StatCard
-          title="Total Subjects"
-          value={STATS_DATA.totalSubjects}
-          icon={BookOpen}
-          trend={STATS_DATA.subjectsTrend}
-          trendUp={false}
-        />
+        {isLoading ? (
+          <>
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+            <StatCardSkeleton />
+          </>
+        ) : (
+          <>
+            <StatCard
+              title="Total Students"
+              value={STATS_DATA.totalStudents}
+              icon={Users}
+              trend={STATS_DATA.studentsTrend}
+              trendUp={true}
+            />
+            <StatCard
+              title="Total Teachers"
+              value={STATS_DATA.totalTeachers}
+              icon={GraduationCap}
+              trend={STATS_DATA.teachersTrend}
+              trendUp={true}
+            />
+            <StatCard
+              title="Total Classes"
+              value={STATS_DATA.totalClasses}
+              icon={School}
+              trend={STATS_DATA.classesTrend}
+              trendUp={true}
+            />
+            <StatCard
+              title="Total Subjects"
+              value={STATS_DATA.totalSubjects}
+              icon={BookOpen}
+              trend={STATS_DATA.subjectsTrend}
+              trendUp={false}
+            />
+          </>
+        )}
       </div>
 
       {/* Charts Row */}
@@ -285,75 +286,121 @@ export default function DashboardPage() {
             </div>
           </CardHeader>
           <CardContent>
-            {selectedChart === "attendance" ? (
+            {isLoading ? (
+              <ChartSkeleton />
+            ) : selectedChart === "attendance" ? (
               <>
-                <ResponsiveContainer width="100%" height={300}>
-                  <AreaChart data={ATTENDANCE_DATA}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="month" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                    <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `${value}%`} />
-                    <Tooltip cursor={{ fill: "transparent" }} />
-                    <Area
-                      type="monotone"
-                      dataKey="present"
-                      stackId="1"
-                      stroke="var(--color-chart-1)"
-                      fill="var(--color-chart-1)"
-                      fillOpacity={0.6}
-                      name="Present (%)"
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="absent"
-                      stackId="1"
-                      stroke="var(--color-chart-2)"
-                      fill="var(--color-chart-2)"
-                      fillOpacity={0.6}
-                      name="Absent (%)"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
+                {ATTENDANCE_DATA.length === 0 ? (
+                  <div className="h-[300px] flex items-center justify-center text-muted-foreground text-sm">
+                    No attendance data for this session yet.
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <AreaChart data={ATTENDANCE_DATA}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis
+                        dataKey="month"
+                        stroke="#888888"
+                        fontSize={12}
+                        tickLine={false}
+                        axisLine={false}
+                      />
+                      <YAxis
+                        stroke="#888888"
+                        fontSize={12}
+                        tickLine={false}
+                        axisLine={false}
+                        tickFormatter={(v) => `${v}%`}
+                      />
+                      <Tooltip cursor={{ fill: "transparent" }} />
+                      <Area
+                        type="monotone"
+                        dataKey="present"
+                        stackId="1"
+                        stroke="var(--color-chart-1)"
+                        fill="var(--color-chart-1)"
+                        fillOpacity={0.6}
+                        name="Present (%)"
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="absent"
+                        stackId="1"
+                        stroke="var(--color-chart-2)"
+                        fill="var(--color-chart-2)"
+                        fillOpacity={0.6}
+                        name="Absent (%)"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                )}
                 <div className="flex justify-center gap-6 mt-4">
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 bg-chart-1 rounded-full" />
-                    <span className="text-sm text-muted-foreground">Present</span>
+                    <span className="text-sm text-muted-foreground">
+                      Present
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 bg-chart-2 rounded-full" />
-                    <span className="text-sm text-muted-foreground">Absent</span>
+                    <span className="text-sm text-muted-foreground">
+                      Absent
+                    </span>
                   </div>
                 </div>
               </>
             ) : (
               <>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={FEE_COLLECTION_DATA}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="month" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-                    <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} tickFormatter={(value) => `₹${value / 1000}k`} />
-                    <Tooltip cursor={{ fill: "transparent" }} />
-                    <Bar
-                      dataKey="collected"
-                      fill="var(--color-chart-1)"
-                      name="Collected (₹)"
-                      radius={[4, 4, 0, 0]}
-                    />
-                    <Bar
-                      dataKey="pending"
-                      fill="var(--color-chart-2)"
-                      name="Pending (₹)"
-                      radius={[4, 4, 0, 0]}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
+                {FEE_COLLECTION_DATA.length === 0 ? (
+                  <div className="h-[300px] flex items-center justify-center text-muted-foreground text-sm">
+                    No fee collection data for this session yet.
+                  </div>
+                ) : (
+                  <ResponsiveContainer width="100%" height={300}>
+                    <BarChart data={FEE_COLLECTION_DATA}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis
+                        dataKey="month"
+                        stroke="#888888"
+                        fontSize={12}
+                        tickLine={false}
+                        axisLine={false}
+                      />
+                      <YAxis
+                        stroke="#888888"
+                        fontSize={12}
+                        tickLine={false}
+                        axisLine={false}
+                        tickFormatter={(v) => `₹${v / 1000}k`}
+                      />
+                      <Tooltip cursor={{ fill: "transparent" }} />
+                      <Bar
+                        dataKey="collected"
+                        fill="var(--color-chart-1)"
+                        name="Collected (₹)"
+                        radius={[4, 4, 0, 0]}
+                      />
+                      <Bar
+                        dataKey="pending"
+                        fill="var(--color-chart-2)"
+                        name="Pending (₹)"
+                        radius={[4, 4, 0, 0]}
+                      />
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
                 <div className="flex justify-center gap-6 mt-4">
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 bg-chart-1 rounded-full" />
-                    <span className="text-sm text-muted-foreground">Collected</span>
+                    <span className="text-sm text-muted-foreground">
+                      Collected
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-3 h-3 bg-chart-2 rounded-full" />
-                    <span className="text-sm text-muted-foreground">Pending</span>
+                    <span className="text-sm text-muted-foreground">
+                      Pending
+                    </span>
                   </div>
                 </div>
               </>
@@ -367,53 +414,31 @@ export default function DashboardPage() {
             <CardTitle className="text-lg">Attendance Summary</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <AttendanceSummaryItem
-              label="Today"
-              value={ATTENDANCE_SUMMARY.today}
-            />
-            <AttendanceSummaryItem
-              label="This Week"
-              value={ATTENDANCE_SUMMARY.week}
-            />
-            <AttendanceSummaryItem
-              label="This Month"
-              value={ATTENDANCE_SUMMARY.month}
-            />
-            <AttendanceSummaryItem
-              label="Overall"
-              value={ATTENDANCE_SUMMARY.overall}
-            />
+            {isLoading ? (
+              <AttendanceSummarySkeleton />
+            ) : (
+              <>
+                <AttendanceSummaryItem
+                  label="Today"
+                  value={ATTENDANCE_SUMMARY.today}
+                />
+                <AttendanceSummaryItem
+                  label="This Week"
+                  value={ATTENDANCE_SUMMARY.week}
+                />
+                <AttendanceSummaryItem
+                  label="This Month"
+                  value={ATTENDANCE_SUMMARY.month}
+                />
+                <AttendanceSummaryItem
+                  label="Overall"
+                  value={ATTENDANCE_SUMMARY.overall}
+                />
+              </>
+            )}
           </CardContent>
         </Card>
       </div>
-
-      {/* Subject Performance */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">
-            Subject Performance (Average Marks)
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart
-              data={SUBJECT_PERFORMANCE}
-              layout="vertical"
-              margin={{ left: 100 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-              <XAxis type="number" domain={[0, 100]} stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-              <YAxis type="category" dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-              <Tooltip cursor={{ fill: "transparent" }} />
-              <Bar dataKey="average" fill="var(--color-primary)" radius={[0, 4, 4, 0]}>
-                {SUBJECT_PERFORMANCE.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={entry.color} />
-                ))}
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
 
       {/* Bottom Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -430,31 +455,41 @@ export default function DashboardPage() {
             </Button>
           </CardHeader>
           <CardContent className="space-y-4 max-h-[400px] overflow-y-auto">
-            {RECENT_ACTIVITIES.map((activity) => (
-              <div key={activity.id} className="flex items-start gap-3">
-                <div className="p-2 bg-secondary rounded-full shrink-0">
-                  {activity.type === "homework" && (
-                    <FileText className="h-4 w-4 text-chart-1" />
-                  )}
-                  {activity.type === "attendance" && (
-                    <CheckCircle className="h-4 w-4 text-chart-2" />
-                  )}
-                  {activity.type === "fee" && (
-                    <DollarSign className="h-4 w-4 text-chart-3" />
-                  )}
-                  {activity.type === "message" && (
-                    <MessageSquare className="h-4 w-4 text-chart-4" />
-                  )}
+            {isLoading ? (
+              <ActivityListSkeleton />
+            ) : RECENT_ACTIVITIES.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-8">
+                No recent activities.
+              </p>
+            ) : (
+              RECENT_ACTIVITIES.map((activity: any) => (
+                <div key={activity.id} className="flex items-start gap-3">
+                  <div className="p-2 bg-secondary rounded-full shrink-0">
+                    {activity.type === "homework" && (
+                      <FileText className="h-4 w-4 text-chart-1" />
+                    )}
+                    {activity.type === "attendance" && (
+                      <CheckCircle className="h-4 w-4 text-chart-2" />
+                    )}
+                    {activity.type === "fee" && (
+                      <DollarSign className="h-4 w-4 text-chart-3" />
+                    )}
+                    {activity.type === "message" && (
+                      <MessageSquare className="h-4 w-4 text-chart-4" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">{activity.title}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {activity.description}
+                    </p>
+                    <p className="text-xs text-muted-foreground/70 mt-1">
+                      {activity.time}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm font-medium">{activity.title}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {activity.description}
-                  </p>
-                  <p className="text-xs text-muted-foreground/70 mt-1">{activity.time}</p>
-                </div>
-              </div>
-            ))}
+              ))
+            )}
           </CardContent>
         </Card>
 
@@ -473,31 +508,43 @@ export default function DashboardPage() {
               </Button>
             </CardHeader>
             <CardContent className="space-y-4">
-              {UPCOMING_EVENTS.map((event) => (
-                <div key={event.id} className="flex items-center gap-3">
-                  <div className="text-center min-w-[60px] p-2 bg-secondary rounded-md">
-                    <div className="text-xl font-bold text-primary">
-                      {event.day}
+              {isLoading ? (
+                <EventListSkeleton />
+              ) : UPCOMING_EVENTS.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-6">
+                  No upcoming events or holidays.
+                </p>
+              ) : (
+                UPCOMING_EVENTS.map((event: any) => (
+                  <div key={event.id} className="flex items-center gap-3">
+                    <div className="text-center min-w-[60px] p-2 bg-secondary rounded-md">
+                      <div className="text-xl font-bold text-primary">
+                        {event.day}
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        {event.month}
+                      </div>
                     </div>
-                    <div className="text-xs text-muted-foreground">{event.month}</div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium">{event.title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {event.description}
+                      </p>
+                    </div>
+                    <Badge
+                      variant={
+                        event.type === "exam"
+                          ? "destructive"
+                          : event.type === "holiday"
+                            ? "secondary"
+                            : "default"
+                      }
+                    >
+                      {event.type}
+                    </Badge>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">{event.title}</p>
-                    <p className="text-xs text-muted-foreground">{event.description}</p>
-                  </div>
-                  <Badge
-                    variant={
-                      event.type === "exam"
-                        ? "destructive"
-                        : event.type === "holiday"
-                          ? "secondary"
-                          : "default"
-                    }
-                  >
-                    {event.type}
-                  </Badge>
-                </div>
-              ))}
+                ))
+              )}
             </CardContent>
           </Card>
 
@@ -508,39 +555,47 @@ export default function DashboardPage() {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => router.push("/notices")}
+                onClick={() => router.push("/announcements")}
               >
                 View All
               </Button>
             </CardHeader>
             <CardContent className="space-y-3">
-              {NOTICES.map((notice) => (
-                <div
-                  key={notice.id}
-                  className="p-3 bg-secondary/50 rounded-lg hover:bg-secondary transition-colors cursor-pointer"
-                  onClick={() => router.push(`/notices/${notice.id}`)}
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <p className="text-sm font-medium flex items-center gap-2">
-                        {notice.title}
-                        {notice.isNew && (
-                          <Badge variant="default" className="text-xs">
-                            New
-                          </Badge>
-                        )}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
-                        {notice.content}
-                      </p>
-                      <p className="text-xs text-muted-foreground/70 mt-1">
-                        {notice.date}
-                      </p>
+              {isLoading ? (
+                <NoticeListSkeleton />
+              ) : NOTICES.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-6">
+                  No recent notices.
+                </p>
+              ) : (
+                NOTICES.map((notice: any) => (
+                  <div
+                    key={notice.id}
+                    className="p-3 bg-secondary/50 rounded-lg hover:bg-secondary transition-colors cursor-pointer"
+                    onClick={() => router.push(`/announcements`)}
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium flex items-center gap-2">
+                          {notice.title}
+                          {notice.isNew && (
+                            <Badge variant="default" className="text-xs">
+                              New
+                            </Badge>
+                          )}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                          {notice.content}
+                        </p>
+                        <p className="text-xs text-muted-foreground/70 mt-1">
+                          {notice.date}
+                        </p>
+                      </div>
+                      <Bell className="h-4 w-4 text-muted-foreground/50 shrink-0 ml-2" />
                     </div>
-                    <Bell className="h-4 w-4 text-muted-foreground/50" />
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </CardContent>
           </Card>
         </div>
@@ -595,18 +650,12 @@ export default function DashboardPage() {
 interface StatCardProps {
   title: string;
   value: number;
-  icon: any;
+  icon: React.ElementType;
   trend: string;
   trendUp: boolean;
 }
 
-function StatCard({
-  title,
-  value,
-  icon: Icon,
-  trend,
-  trendUp,
-}: StatCardProps) {
+function StatCard({ title, value, icon: Icon, trend, trendUp }: StatCardProps) {
   return (
     <Card>
       <CardContent className="p-6">
@@ -627,7 +676,9 @@ function StatCard({
               >
                 {trend}
               </span>
-              <span className="text-sm text-muted-foreground">vs last month</span>
+              <span className="text-sm text-muted-foreground">
+                vs last month
+              </span>
             </div>
           </div>
           <div className="p-3 rounded-full bg-primary/10">
@@ -640,16 +691,12 @@ function StatCard({
 }
 
 interface QuickActionButtonProps {
-  icon: any;
+  icon: React.ElementType;
   label: string;
   onClick: () => void;
 }
 
-function QuickActionButton({
-  icon: Icon,
-  label,
-  onClick,
-}: QuickActionButtonProps) {
+function QuickActionButton({ icon: Icon, label, onClick }: QuickActionButtonProps) {
   return (
     <TooltipProvider>
       <UITooltip>

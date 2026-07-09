@@ -17,8 +17,10 @@ const BASE_URL = "/announcements";
 export const announcementApi = {
   // Create announcement (admin only)
   create: (
-    data: CreateAnnouncementRequest,
-  ): Promise<ApiResponse<Announcement>> => api.post(`${BASE_URL}/`, data),
+    data: FormData,
+  ): Promise<ApiResponse<Announcement>> => api.post(`${BASE_URL}/`, data, {
+    headers: { "Content-Type": "multipart/form-data" },
+  }),
 
   // Get all announcements (admin view)
   getAll: (
@@ -40,6 +42,16 @@ export const announcementApi = {
   // Delete announcement (admin only)
   delete: (announcementId: number): Promise<ApiResponse<void>> =>
     api.delete(`${BASE_URL}/${announcementId}`),
+
+  // Add attachment
+  addAttachment: (announcementId: number, data: FormData): Promise<ApiResponse<any>> =>
+    api.post(`${BASE_URL}/${announcementId}/attachments`, data, {
+      headers: { "Content-Type": "multipart/form-data" },
+    }),
+
+  // Delete attachment
+  deleteAttachment: (attachmentId: number): Promise<ApiResponse<void>> =>
+    api.delete(`${BASE_URL}/attachments/${attachmentId}`),
 
   // ==================== User APIs ====================
 

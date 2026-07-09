@@ -7,6 +7,8 @@ import { EditHomeworkModal } from "./homework/edit.homework.modal";
 import { ViewHomeworkModal } from "./homework/view.homework.modal";
 import { CreateSubjectModal } from "./subject/create.subject.modal";
 import { EditSubjectModal } from "./subject/edit.subject.modal";
+import { CreateAnnouncementModal } from "./announcement/create.announcement.modal";
+import { DeleteAnnouncementModal } from "./announcement/delete.announcement.modal";
 
 export function ModalRenderer() {
   return (
@@ -18,6 +20,8 @@ export function ModalRenderer() {
       <ViewHomeworkModal />
       <CreateSubjectModal />
       <EditSubjectModal />
+      <CreateAnnouncementModal />
+      <DeleteAnnouncementModal />
     </>
   );
 }
