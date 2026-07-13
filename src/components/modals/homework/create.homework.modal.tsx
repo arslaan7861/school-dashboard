@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -44,25 +44,40 @@ import {
   CreateHomeworkFormData,
   createHomeworkSchema,
 } from "@/features/homework/schema.homework";
+import { useClasses } from "@/features/class/hooks.class";
 
 export function CreateHomeworkModal() {
   const { isOpen, classId, sessionId, onSuccess, defaultValues } =
     useHomeworkModalStore((state) => state.createHomeworkModal);
 
+  const [selectedClassId, setSelectedClassId] = useState<number | null>(classId || null);
+
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedClassId(classId || null);
+    }
+  }, [isOpen, classId]);
+
+  const { data: classesData, isLoading: classesLoading } = useClasses(
+    isOpen && sessionId ? sessionId : undefined
+  );
+  const classes = classesData?.data || [];
+
   const { data: subjects, isLoading: subjectsLoading } = useSubjectsByClass(
-    classId || 0,
-    { includeDetails: true },
+    selectedClassId || 0,
+    { includeDetails: true, enabled: isOpen && !!selectedClassId },
   );
 
   const createHomework = useCreateHomework();
 
-  const form = useForm<CreateHomeworkFormData>({
+  const form = useForm<CreateHomeworkFormData & { classId?: number }>({
     resolver: zodResolver(createHomeworkSchema),
     defaultValues: {
       title: defaultValues?.title || "",
       description: defaultValues?.description || "",
       dueDate: defaultValues?.dueDate || "",
       subjectId: defaultValues?.subjectId,
+      classId: classId || undefined,
       files: [],
     },
   });
@@ -70,16 +85,21 @@ export function CreateHomeworkModal() {
   useEffect(() => {
     if (!isOpen) {
       form.reset();
+      setSelectedClassId(null);
     }
   }, [isOpen, form]);
 
-  const onSubmit = async (values: CreateHomeworkFormData) => {
-    if (!classId || !sessionId) return;
+  const onSubmit = async (values: CreateHomeworkFormData & { classId?: number }) => {
+    const finalClassId = classId || selectedClassId;
+    if (!finalClassId || !sessionId) {
+      toast.error("Please select a class");
+      return;
+    }
 
     await createHomework.mutateAsync(
       {
         ...values,
-        classId,
+        classId: finalClassId,
         sessionId,
       },
       {
@@ -118,8 +138,8 @@ export function CreateHomeworkModal() {
 
   return (
     <Dialog open={isOpen} onOpenChange={closeCreateHomeworkModal}>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] flex flex-col p-0 gap-0">
+        <DialogHeader className="px-6 py-4 border-b shrink-0">
           <DialogTitle>Create Homework</DialogTitle>
           <DialogDescription>
             Assign homework to students. You can attach multiple files.
@@ -127,7 +147,8 @@ export function CreateHomeworkModal() {
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col overflow-hidden flex-1">
+            <div className="flex-1 overflow-y-auto p-6 space-y-4">
             <FormField
               control={form.control}
               name="title"
@@ -159,6 +180,51 @@ export function CreateHomeworkModal() {
                 </FormItem>
               )}
             />
+
+            {/* Conditionally render class dropdown if classId is not provided */}
+            {!classId && (
+              <FormField
+                control={form.control}
+                name="classId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Class *</FormLabel>
+                    <Select
+                      onValueChange={(val) => {
+                        const newClassId = Number(val);
+                        field.onChange(newClassId);
+                        setSelectedClassId(newClassId);
+                        form.setValue("subjectId", 0); // reset subject
+                      }}
+                      value={field.value?.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select class" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {classesLoading ? (
+                          <SelectItem value="loading" disabled>
+                            Loading...
+                          </SelectItem>
+                        ) : (
+                          classes.map((cls) => (
+                            <SelectItem
+                              key={cls.id}
+                              value={cls.id.toString()}
+                            >
+                              {cls.name} {cls.section}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             <div className="grid grid-cols-2 gap-4">
               <FormField
@@ -261,7 +327,9 @@ export function CreateHomeworkModal() {
               )}
             </div>
 
-            <DialogFooter>
+            </div>
+
+            <DialogFooter className="px-6 py-4 border-t bg-gray-50/50 shrink-0">
               <Button
                 type="button"
                 variant="outline"

@@ -33,6 +33,8 @@ export const examKeys = {
     [...examKeys.all, "admit-card", examId, studentId] as const,
   policy: (examId: number) =>
     [...examKeys.all, "policy", examId] as const,
+  teacherDuties: (teacherId: number, sessionId?: number) =>
+    [...examKeys.all, "teacher-duties", teacherId, sessionId] as const,
 };
 
 // ==================== Query Hooks ====================
@@ -41,6 +43,14 @@ export const useExams = (filters?: ExamFilters) => {
   return useQuery({
     queryKey: examKeys.list(filters),
     queryFn: () => examApi.getAll(filters).then((res) => res.data),
+  });
+};
+
+export const useTeacherExamDuties = (teacherId: number, sessionId?: number) => {
+  return useQuery({
+    queryKey: examKeys.teacherDuties(teacherId, sessionId),
+    queryFn: () => examApi.getTeacherExamDuties(teacherId, sessionId).then((res) => res.data),
+    enabled: !!teacherId,
   });
 };
 

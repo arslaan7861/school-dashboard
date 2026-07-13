@@ -60,6 +60,11 @@ const data = {
       icon: School,
     },
     {
+      title: "Homework",
+      url: "/homework",
+      icon: BookOpen,
+    },
+    {
       title: "Students",
       url: "/students",
       icon: GraduationCap,

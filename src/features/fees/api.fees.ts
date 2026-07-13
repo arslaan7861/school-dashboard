@@ -148,9 +148,9 @@ export const invoiceApi = {
     }),
 
   getStudentInvoices: (
-    classStudentId: number,
+    studentId: number,
   ): Promise<ApiResponse<Invoice[]>> =>
-    api.get(`${BASE_URL}/student/${classStudentId}/invoices`),
+    api.get(`${BASE_URL}/student/${studentId}/invoices`),
 
   getInvoiceById: (invoiceId: number): Promise<ApiResponse<Invoice>> =>
     api.get(`${BASE_URL}/invoices/${invoiceId}`),

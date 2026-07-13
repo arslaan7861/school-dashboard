@@ -31,6 +31,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useAllHomework } from "@/features/homework/hooks.homework";
 import { useClasses } from "@/features/class/hooks.class";
 import { HomeworkStatusBadge } from "@/components/pages/homework/HomeworkStatusBadge";
+import { openCreateHomeworkModal, openViewHomeworkModal } from "@/store/modals/homework.modal.store";
 
 export default function GlobalHomeworkPage() {
   const router = useRouter();
@@ -98,7 +99,7 @@ export default function GlobalHomeworkPage() {
   );
 
   const handleViewHomework = (homeworkId: number) => {
-    router.push(`/homework/${homeworkId}`);
+    openViewHomeworkModal({ homeworkId });
   };
 
   if (isLoading) {
@@ -131,7 +132,7 @@ export default function GlobalHomeworkPage() {
           </p>
         </div>
         <Button
-          onClick={() => router.push("/homework/create")}
+          onClick={() => openCreateHomeworkModal({ classId: 0, sessionId: activeSessionId || 0 })}
           className="gap-2"
         >
           <Plus className="h-4 w-4" />
@@ -237,7 +238,7 @@ export default function GlobalHomeworkPage() {
             <Button
               variant="outline"
               className="mt-4"
-              onClick={() => router.push("/homework/create")}
+              onClick={() => openCreateHomeworkModal({ classId: 0, sessionId: activeSessionId || 0 })}
             >
               Create First Homework
             </Button>

@@ -68,6 +68,7 @@ import {
 import { toast } from "sonner";
 
 interface StudentFeeLedgerProps {
+  studentId: number | null;
   classStudentId: number | null;
   studentName: string;
   admissionNo: string;
@@ -79,6 +80,7 @@ interface StudentFeeLedgerProps {
 }
 
 export function StudentFeeLedger({
+  studentId,
   classStudentId,
   studentName,
   admissionNo,
@@ -119,9 +121,9 @@ export function StudentFeeLedger({
 
   // Hooks
   const { data: outstandingData, isLoading: loadingOutstanding } =
-    useStudentOutstanding(classStudentId || 0);
+    useStudentOutstanding(studentId || 0);
   const { data: payments, isLoading: loadingPayments } = useStudentPayments(
-    classStudentId || 0,
+    studentId || 0,
   );
 
   const { data: studentFees, isLoading: loadingStudentFees } = useStudentFees(
@@ -170,7 +172,7 @@ export function StudentFeeLedger({
 
     collectPaymentMutation.mutate(
       {
-        classStudentId,
+        studentId: studentId!,
         sessionId,
         totalAmount: Number(payAmount),
         paymentDate: payDate,

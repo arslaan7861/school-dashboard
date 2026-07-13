@@ -7,6 +7,7 @@ import {
   getAllClasses,
   getClassById,
   updateClassService,
+  promoteClassService,
 } from "./api.class";
 
 /* ------------------ QUERIES ------------------ */
@@ -77,9 +78,22 @@ export const useClassCrud = (sessionId?: number) => {
     },
   });
 
+  /* PROMOTE */
+  const promoteClassMutation = useMutation({
+    mutationFn: promoteClassService,
+    onSuccess: (res) => {
+      toast.success(res.message || "Class promoted successfully");
+      invalidateClasses();
+    },
+    onError: (error: any) => {
+      toast.error(error?.message || "Failed to promote class");
+    },
+  });
+
   return {
     createClassMutation,
     updateClassMutation,
     deleteClassMutation,
+    promoteClassMutation,
   };
 };

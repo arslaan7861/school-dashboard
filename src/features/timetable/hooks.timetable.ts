@@ -8,12 +8,32 @@ import {
   CreateEntryDto,
   UpdateSlotDto,
   UpdateEntryDto,
+  CopyDayDto,
+  MoveEntryDto,
 } from "./types.timetable";
 
 export const timetableKeys = {
   all: ["timetable"] as const,
   class: (classId?: number, sessionId?: number) =>
     [...timetableKeys.all, "class", classId, sessionId] as const,
+  teacher: (teacherId?: number, sessionId?: number) =>
+    [...timetableKeys.all, "teacher", teacherId, sessionId] as const,
+};
+
+// Get teacher timetable
+export const useTeacherTimetable = (
+  teacherId?: number,
+  sessionId?: number,
+  enabled: boolean = true,
+) => {
+  return useQuery({
+    queryKey: timetableKeys.teacher(teacherId, sessionId),
+    queryFn: async () => {
+      if (!teacherId) throw new Error("Teacher ID is required");
+      return timetableApi.getTeacherTimetable(teacherId, sessionId);
+    },
+    enabled: enabled && !!teacherId,
+  });
 };
 
 // Get class timetable
@@ -122,6 +142,34 @@ export const useTimetableCrud = (classId?: number, sessionId?: number) => {
     },
   });
 
+  // Copy Day
+  const copyDay = useMutation({
+    mutationFn: (data: CopyDayDto) => {
+      if (!classId) throw new Error("Class ID is required");
+      return timetableApi.copyDay(classId, data);
+    },
+    onSuccess: (response) => {
+      toast.success(response.message || "Schedule copied successfully");
+      invalidateTimetable();
+    },
+    onError: (error: any) => {
+      toast.error(error?.message || "Failed to copy schedule");
+    },
+  });
+
+  // Move Entry
+  const moveEntry = useMutation({
+    mutationFn: ({ entryId, data }: { entryId: number; data: MoveEntryDto }) =>
+      timetableApi.moveEntry(entryId, data),
+    onSuccess: (response) => {
+      toast.success(response.message || "Entry moved successfully");
+      invalidateTimetable();
+    },
+    onError: (error: any) => {
+      toast.error(error?.message || "Failed to move entry");
+    },
+  });
+
   return {
     createSlot: createSlot.mutate,
     createSlotAsync: createSlot.mutateAsync,
@@ -141,5 +189,11 @@ export const useTimetableCrud = (classId?: number, sessionId?: number) => {
     isCreatingEntry: createEntry.isPending,
     isUpdatingEntry: updateEntry.isPending,
     isDeletingEntry: deleteEntry.isPending,
+    copyDay: copyDay.mutate,
+    copyDayAsync: copyDay.mutateAsync,
+    isCopyingDay: copyDay.isPending,
+    moveEntry: moveEntry.mutate,
+    moveEntryAsync: moveEntry.mutateAsync,
+    isMovingEntry: moveEntry.isPending,
   };
 };

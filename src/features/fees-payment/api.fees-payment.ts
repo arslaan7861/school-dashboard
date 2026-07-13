@@ -33,9 +33,9 @@ export const paymentApi = {
 
   // Get all payments for a student
   getStudentPayments: (
-    classStudentId: number,
+    studentId: number,
   ): Promise<ApiResponse<Payment[]>> =>
-    api.get(`${BASE_URL}/student/${classStudentId}`),
+    api.get(`${BASE_URL}/student/${studentId}`),
 
   // Get payment by ID with allocations
   getPaymentById: (paymentId: number): Promise<ApiResponse<Payment>> =>
@@ -43,7 +43,7 @@ export const paymentApi = {
 
   // Get student outstanding amount and invoices
   getStudentOutstanding: (
-    classStudentId: number,
+    studentId: number,
   ): Promise<ApiResponse<OutstandingResult>> =>
-    api.get(`${BASE_URL}/student/${classStudentId}/outstanding`),
+    api.get(`${BASE_URL}/student/${studentId}/outstanding`),
 };

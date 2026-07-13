@@ -32,13 +32,15 @@ export function ViewHomeworkModal() {
 
   return (
     <Dialog open={isOpen} onOpenChange={closeViewHomeworkModal}>
-      <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[700px] max-h-[90vh] flex flex-col p-0 gap-0">
+        <DialogHeader className="px-6 py-4 border-b shrink-0">
           <DialogTitle>Homework Details</DialogTitle>
           <DialogDescription>
             View complete homework information and attachments.
           </DialogDescription>
         </DialogHeader>
+
+        <div className="flex-1 overflow-y-auto p-6">
 
         {isLoading ? (
           <div className="space-y-4">
@@ -134,6 +136,7 @@ export function ViewHomeworkModal() {
             Homework not found
           </div>
         )}
+        </div>
       </DialogContent>
     </Dialog>
   );

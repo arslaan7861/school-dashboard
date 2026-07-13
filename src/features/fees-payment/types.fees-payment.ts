@@ -4,7 +4,7 @@ import { InvoiceStatus, PaymentMode } from "../fees/types.fees";
 
 export interface Payment {
   id: number;
-  classStudentId: number;
+  studentId: number;
   sessionId: number;
   totalAmount: number;
   paymentDate: string;
@@ -44,7 +44,7 @@ export interface PaymentAllocation {
 // ==================== Request/Response Types ====================
 
 export interface CreatePaymentRequest {
-  classStudentId: number;
+  studentId: number;
   sessionId: number;
   totalAmount: number;
   paymentDate: string;

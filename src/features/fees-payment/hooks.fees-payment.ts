@@ -9,22 +9,22 @@ import {
 
 export const paymentKeys = {
   all: ["fees-payment"] as const,
-  studentPayments: (classStudentId: number) =>
-    [...paymentKeys.all, "student", classStudentId] as const,
+  studentPayments: (studentId: number) =>
+    [...paymentKeys.all, "student", studentId] as const,
   payment: (paymentId: number) =>
     [...paymentKeys.all, "payment", paymentId] as const,
-  outstanding: (classStudentId: number) =>
-    [...paymentKeys.all, "outstanding", classStudentId] as const,
+  outstanding: (studentId: number) =>
+    [...paymentKeys.all, "outstanding", studentId] as const,
 };
 
 // ==================== Query Hooks ====================
 
-export const useStudentPayments = (classStudentId: number) => {
+export const useStudentPayments = (studentId: number) => {
   return useQuery({
-    queryKey: paymentKeys.studentPayments(classStudentId),
+    queryKey: paymentKeys.studentPayments(studentId),
     queryFn: () =>
-      paymentApi.getStudentPayments(classStudentId).then((res) => res.data),
-    enabled: !!classStudentId,
+      paymentApi.getStudentPayments(studentId).then((res) => res.data),
+    enabled: !!studentId,
   });
 };
 
@@ -36,12 +36,12 @@ export const usePayment = (paymentId: number) => {
   });
 };
 
-export const useStudentOutstanding = (classStudentId: number) => {
+export const useStudentOutstanding = (studentId: number) => {
   return useQuery({
-    queryKey: paymentKeys.outstanding(classStudentId),
+    queryKey: paymentKeys.outstanding(studentId),
     queryFn: () =>
-      paymentApi.getStudentOutstanding(classStudentId).then((res) => res.data),
-    enabled: !!classStudentId,
+      paymentApi.getStudentOutstanding(studentId).then((res) => res.data),
+    enabled: !!studentId,
   });
 };
 
@@ -55,16 +55,16 @@ export const useCreatePayment = () => {
     onSuccess: (_, variables) => {
       // Invalidate relevant queries
       queryClient.invalidateQueries({
-        queryKey: paymentKeys.studentPayments(variables.classStudentId),
+        queryKey: paymentKeys.studentPayments(variables.studentId),
       });
       queryClient.invalidateQueries({
-        queryKey: paymentKeys.outstanding(variables.classStudentId),
+        queryKey: paymentKeys.outstanding(variables.studentId),
       });
       queryClient.invalidateQueries({
         queryKey: [
           "fees-allocation",
           "student-invoices",
-          variables.classStudentId,
+          variables.studentId,
         ],
       });
     },

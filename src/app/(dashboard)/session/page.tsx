@@ -14,8 +14,10 @@ import {
   Users,
   BookOpen,
   TrendingUp,
+  FastForward,
 } from "lucide-react";
 
+import { useRouter } from "next/navigation";
 import { useSessions, useSessionCrud } from "@/features/session/hooks.session";
 import { Session } from "@/features/session/types.session";
 
@@ -60,6 +62,7 @@ export default function SessionsPage() {
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Session | null>(null);
   const [activeTab, setActiveTab] = useState("all");
+  const router = useRouter();
 
   const sessions: Session[] = data?.data ?? [];
   const activeSession = sessions.find((s) => s.isActive); // Changed
@@ -301,7 +304,15 @@ export default function SessionsPage() {
                   <Pencil className="w-4 h-4 mr-2" />
                   Edit Session
                 </Button>
-                <Button size="lg" className="gap-2">
+                <Button 
+                  size="lg" 
+                  className="gap-2 bg-blue-600 hover:bg-blue-700 text-white"
+                  onClick={() => router.push('/session/rollover')}
+                >
+                  <FastForward className="w-4 h-4" />
+                  Start Rollover Wizard
+                </Button>
+                <Button size="lg" variant="secondary" className="gap-2">
                   View Details
                   <ChevronRight className="w-4 h-4" />
                 </Button>

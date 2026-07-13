@@ -23,6 +23,7 @@ export const createSessionSchema = z
       }),
 
     isActive: z.boolean().optional(), // Changed from is_active
+    rolloverFromSessionId: z.number().optional(),
   })
   .refine((data) => new Date(data.endDate) > new Date(data.startDate), {
     // Changed

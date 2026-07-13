@@ -38,6 +38,13 @@ export const examApi = {
   getAll: (filters?: ExamFilters): Promise<ApiResponse<Exam[]>> =>
     api.get(`${BASE_URL}/`, { params: filters }),
 
+  // Get teacher exam duties
+  getTeacherExamDuties: (
+    teacherId: number,
+    sessionId?: number,
+  ): Promise<ApiResponse<any[]>> =>
+    api.get(`${BASE_URL}/teacher/${teacherId}/duties`, { params: { sessionId } }),
+
   // Get exam by ID
   getById: (
     examId: number,

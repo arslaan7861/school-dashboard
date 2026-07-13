@@ -61,9 +61,7 @@ export const homeworkApi = {
       },
       data.files,
     );
-    return api.post(`${BASE_URL}/`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    return api.post(`${BASE_URL}/`, formData);
   },
   getAll: (filters?: {
     subjectId?: number;
@@ -86,9 +84,7 @@ export const homeworkApi = {
       },
       data.files,
     );
-    return api.post(`${BASE_URL}/bulk`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    return api.post(`${BASE_URL}/bulk`, formData);
   },
 
   // Get homework by class
@@ -127,9 +123,7 @@ export const homeworkApi = {
   ): Promise<ApiResponse<HomeworkAttachment>> => {
     const formData = new FormData();
     formData.append("file", file);
-    return api.post(`${BASE_URL}/${homeworkId}/attachments`, formData, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
+    return api.post(`${BASE_URL}/${homeworkId}/attachments`, formData);
   },
 
   // Delete attachment

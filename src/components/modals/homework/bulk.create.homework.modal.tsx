@@ -170,8 +170,8 @@ export function BulkCreateHomeworkModal() {
 
   return (
     <Dialog open={isOpen} onOpenChange={closeBulkCreateHomeworkModal}>
-      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[800px] max-h-[90vh] flex flex-col p-0 gap-0">
+        <DialogHeader className="px-6 py-4 border-b shrink-0">
           <DialogTitle>Bulk Create Homework</DialogTitle>
           <DialogDescription>
             Create multiple homework assignments for different subjects at once.
@@ -179,7 +179,8 @@ export function BulkCreateHomeworkModal() {
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col overflow-hidden flex-1">
+            <div className="flex-1 overflow-y-auto p-6 space-y-6">
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-semibold">Assignments</h3>
               <Button
@@ -354,7 +355,9 @@ export function BulkCreateHomeworkModal() {
               ))}
             </div>
 
-            <DialogFooter>
+            </div>
+
+            <DialogFooter className="px-6 py-4 border-t bg-gray-50/50 shrink-0">
               <Button
                 type="button"
                 variant="outline"

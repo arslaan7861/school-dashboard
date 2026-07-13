@@ -1,0 +1,188 @@
+node_modules/@dnd-kit/core/dist/components/Accessibility/Accessibility.d.ts(9,129): error TS2503: Cannot find namespace 'JSX'.
+node_modules/@dnd-kit/core/dist/components/DndContext/DndContext.d.ts(1,8): error TS1259: Module '"/home/arslaan/Desktop/School-project/schooldashboard/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/@dnd-kit/core/dist/components/DragOverlay/DragOverlay.d.ts(1,8): error TS1259: Module '"/home/arslaan/Desktop/School-project/schooldashboard/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/@dnd-kit/core/dist/components/DragOverlay/DragOverlay.d.ts(8,28): error TS2503: Cannot find namespace 'JSX'.
+node_modules/@dnd-kit/core/dist/components/DragOverlay/DragOverlay.d.ts(11,201): error TS2503: Cannot find namespace 'JSX'.
+node_modules/@dnd-kit/core/dist/components/DragOverlay/components/AnimationManager/AnimationManager.d.ts(1,8): error TS1259: Module '"/home/arslaan/Desktop/School-project/schooldashboard/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/@dnd-kit/core/dist/components/DragOverlay/components/AnimationManager/AnimationManager.d.ts(8,75): error TS2503: Cannot find namespace 'JSX'.
+node_modules/@dnd-kit/core/dist/components/DragOverlay/components/NullifiedContextProvider/NullifiedContextProvider.d.ts(1,8): error TS1259: Module '"/home/arslaan/Desktop/School-project/schooldashboard/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/@dnd-kit/core/dist/components/DragOverlay/components/NullifiedContextProvider/NullifiedContextProvider.d.ts(5,72): error TS2503: Cannot find namespace 'JSX'.
+node_modules/@dnd-kit/core/dist/components/DragOverlay/components/PositionedOverlay/PositionedOverlay.d.ts(1,8): error TS1259: Module '"/home/arslaan/Desktop/School-project/schooldashboard/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/@dnd-kit/core/dist/components/DragOverlay/components/PositionedOverlay/PositionedOverlay.d.ts(6,15): error TS2503: Cannot find namespace 'JSX'.
+node_modules/next/dist/build/templates/app-page.d.ts(3,25): error TS2307: Cannot find module 'VAR_MODULE_GLOBAL_ERROR' or its corresponding type declarations.
+node_modules/next/dist/build/webpack-config.d.ts(10,104): error TS2694: Namespace '"/home/arslaan/Desktop/School-project/schooldashboard/node_modules/next/dist/compiled/webpack/webpack".webpack' has no exported member 'RuleSetUseItem'.
+node_modules/next/dist/build/webpack/loaders/next-app-loader/index.d.ts(1,13): error TS2613: Module '"/home/arslaan/Desktop/School-project/schooldashboard/node_modules/next/dist/compiled/webpack/webpack"' has no default export. Did you mean to use 'import { webpack } from "/home/arslaan/Desktop/School-project/schooldashboard/node_modules/next/dist/compiled/webpack/webpack"' instead?
+node_modules/next/dist/client/components/error-boundary.d.ts(1,8): error TS1259: Module '"/home/arslaan/Desktop/School-project/schooldashboard/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/components/http-access-fallback/error-boundary.d.ts(11,8): error TS1259: Module '"/home/arslaan/Desktop/School-project/schooldashboard/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/components/layout-router.d.ts(2,8): error TS1259: Module '"/home/arslaan/Desktop/School-project/schooldashboard/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/client/with-router.d.ts(1,8): error TS1259: Module '"/home/arslaan/Desktop/School-project/schooldashboard/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/lib/metadata/metadata.d.ts(1,8): error TS1259: Module '"/home/arslaan/Desktop/School-project/schooldashboard/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/next-devtools/userspace/pages/pages-dev-overlay-setup.d.ts(1,8): error TS1259: Module '"/home/arslaan/Desktop/School-project/schooldashboard/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/server/app-render/entry-base.d.ts(1,114): error TS2307: Cannot find module 'react-server-dom-webpack/server' or its corresponding type declarations.
+node_modules/next/dist/server/app-render/entry-base.d.ts(2,27): error TS2307: Cannot find module 'react-server-dom-webpack/static' or its corresponding type declarations.
+node_modules/next/dist/server/web/spec-extension/adapters/headers.d.ts(39,16): error TS2304: Cannot find name 'HeadersIterator'.
+node_modules/next/dist/server/web/spec-extension/adapters/headers.d.ts(40,13): error TS2304: Cannot find name 'HeadersIterator'.
+node_modules/next/dist/server/web/spec-extension/adapters/headers.d.ts(41,15): error TS2304: Cannot find name 'HeadersIterator'.
+node_modules/next/dist/server/web/spec-extension/adapters/headers.d.ts(42,26): error TS2304: Cannot find name 'HeadersIterator'.
+node_modules/next/dist/shared/lib/app-router-context.shared-runtime.d.ts(4,8): error TS1259: Module '"/home/arslaan/Desktop/School-project/schooldashboard/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/app-router-types.d.ts(7,13): error TS1259: Module '"/home/arslaan/Desktop/School-project/schooldashboard/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/head-manager-context.shared-runtime.d.ts(1,8): error TS1259: Module '"/home/arslaan/Desktop/School-project/schooldashboard/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/image-config-context.shared-runtime.d.ts(1,8): error TS1259: Module '"/home/arslaan/Desktop/School-project/schooldashboard/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/loadable-context.shared-runtime.d.ts(1,8): error TS1259: Module '"/home/arslaan/Desktop/School-project/schooldashboard/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/loadable.shared-runtime.d.ts(21,8): error TS1259: Module '"/home/arslaan/Desktop/School-project/schooldashboard/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/router-context.shared-runtime.d.ts(1,8): error TS1259: Module '"/home/arslaan/Desktop/School-project/schooldashboard/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/server-inserted-html.shared-runtime.d.ts(1,8): error TS1259: Module '"/home/arslaan/Desktop/School-project/schooldashboard/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+node_modules/next/dist/shared/lib/utils.d.ts(10,13): error TS1192: Module '"fs"' has no default export.
+node_modules/sonner/dist/index.d.ts(1,8): error TS1259: Module '"/home/arslaan/Desktop/School-project/schooldashboard/node_modules/@types/react/index"' can only be default-imported using the 'esModuleInterop' flag
+src/app/(dashboard)/timetable/[classId]/page.tsx(24,24): error TS2307: Cannot find module '@/components/ui/button' or its corresponding type declarations.
+src/app/(dashboard)/timetable/[classId]/page.tsx(32,8): error TS2307: Cannot find module '@/components/ui/dialog' or its corresponding type declarations.
+src/app/(dashboard)/timetable/[classId]/page.tsx(39,8): error TS2307: Cannot find module '@/components/ui/select' or its corresponding type declarations.
+src/app/(dashboard)/timetable/[classId]/page.tsx(40,23): error TS2307: Cannot find module '@/components/ui/input' or its corresponding type declarations.
+src/app/(dashboard)/timetable/[classId]/page.tsx(41,23): error TS2307: Cannot find module '@/components/ui/badge' or its corresponding type declarations.
+src/app/(dashboard)/timetable/[classId]/page.tsx(42,26): error TS2307: Cannot find module '@/components/ui/skeleton' or its corresponding type declarations.
+src/app/(dashboard)/timetable/[classId]/page.tsx(52,8): error TS2307: Cannot find module '@/components/ui/alert-dialog' or its corresponding type declarations.
+src/app/(dashboard)/timetable/[classId]/page.tsx(53,33): error TS2307: Cannot find module '@/components/ui/tooltip' or its corresponding type declarations.
+src/app/(dashboard)/timetable/[classId]/page.tsx(55,20): error TS2307: Cannot find module '@/lib/utils' or its corresponding type declarations.
+src/app/(dashboard)/timetable/[classId]/page.tsx(60,8): error TS2307: Cannot find module '@/features/timetable/hooks.timetable' or its corresponding type declarations.
+src/app/(dashboard)/timetable/[classId]/page.tsx(61,26): error TS2307: Cannot find module '@/features/class/hooks.class' or its corresponding type declarations.
+src/app/(dashboard)/timetable/[classId]/page.tsx(62,36): error TS2307: Cannot find module '@/features/subjects/hooks.subject' or its corresponding type declarations.
+src/app/(dashboard)/timetable/[classId]/page.tsx(63,29): error TS2307: Cannot find module '@/features/teachers/hooks.teacher' or its corresponding type declarations.
+src/app/(dashboard)/timetable/[classId]/page.tsx(64,67): error TS2307: Cannot find module '@/features/timetable/types.timetable' or its corresponding type declarations.
+src/app/(dashboard)/timetable/[classId]/page.tsx(67,94): error TS2307: Cannot find module '@/features/timetable/utils.timetable' or its corresponding type declarations.
+src/app/(dashboard)/timetable/[classId]/page.tsx(68,27): error TS2307: Cannot find module '@/features/timetable/components/day-column' or its corresponding type declarations.
+src/app/(dashboard)/timetable/[classId]/page.tsx(69,37): error TS2307: Cannot find module '@/features/timetable/components/entries-detail-dialog' or its corresponding type declarations.
+src/app/(dashboard)/timetable/[classId]/page.tsx(70,31): error TS2307: Cannot find module '@/features/timetable/components/copy-day-dialog' or its corresponding type declarations.
+src/app/(dashboard)/timetable/[classId]/page.tsx(71,27): error TS2307: Cannot find module '@/features/timetable/components/entry-item' or its corresponding type declarations.
+src/app/(dashboard)/timetable/[classId]/page.tsx(482,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(483,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(484,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(485,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(486,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(487,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(490,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(492,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(502,5): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(508,7): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(509,9): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(511,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(512,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(513,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(519,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(521,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(522,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(523,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(524,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(525,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(529,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(530,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(531,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(532,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(538,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(539,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(540,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(541,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(542,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(544,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(545,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(547,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(557,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(558,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(564,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(582,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(584,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(585,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(596,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(605,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(614,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(615,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(616,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(617,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(618,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(622,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(623,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(624,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(625,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(631,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(632,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(633,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(640,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(641,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(642,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(643,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(651,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(652,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(653,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(654,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(655,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(657,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(658,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(659,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(660,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(661,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(661,55): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(662,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(664,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(669,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(670,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(671,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(672,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(672,55): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(673,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(675,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(680,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(681,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(682,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(684,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(685,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(686,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(689,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(690,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(691,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(692,37): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(701,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(704,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(705,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(706,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(707,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(709,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(710,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(711,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(712,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(713,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(713,55): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(714,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(716,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(722,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(723,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(724,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(725,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(725,57): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(726,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(728,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(735,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(736,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(737,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(738,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(738,57): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(739,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(741,27): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(747,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(748,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(749,19): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(750,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(751,23): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(753,21): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(755,25): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(761,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(762,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(763,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(764,82): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(772,11): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(773,13): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(774,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(775,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(776,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(781,15): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(782,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(783,17): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.
+src/app/(dashboard)/timetable/[classId]/page.tsx(784,56): error TS17004: Cannot use JSX unless the '--jsx' flag is provided.

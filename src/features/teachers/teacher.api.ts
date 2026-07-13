@@ -1,6 +1,6 @@
 import { api } from "@/lib/axios";
 import { ApiSuccess } from "@/types/api";
-import { Teacher, TeachersResponse } from "./type.teacher";
+import { Teacher, TeacherDetail, TeachersResponse } from "./type.teacher";
 import {
   createTeacherSchemaType,
   updateTeacherSchemaType,
@@ -12,7 +12,7 @@ export async function getAllTeachers(): Promise<ApiSuccess<TeachersResponse>> {
 
 export async function getTeacherById(
   teacherId: number,
-): Promise<ApiSuccess<Teacher>> {
+): Promise<ApiSuccess<TeacherDetail>> {
   return api.get(`/teacher/${teacherId}`);
 }
 

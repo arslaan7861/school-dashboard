@@ -41,16 +41,18 @@ export function DeleteHomeworkModal() {
 
   return (
     <AlertDialog open={isOpen} onOpenChange={closeDeleteHomeworkModal}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Delete Homework</AlertDialogTitle>
-          <AlertDialogDescription>
-            Are you sure you want to delete "{homeworkTitle}"? This action
-            cannot be undone. All attachments will also be permanently deleted.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+      <AlertDialogContent className="max-h-[90vh] flex flex-col p-0 gap-0">
+        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Homework</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{homeworkTitle}"? This action
+              cannot be undone. All attachments will also be permanently deleted.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+        </div>
+        <AlertDialogFooter className="px-6 py-4 border-t bg-gray-50/50 shrink-0">
+          <AlertDialogCancel className="mt-0">Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={handleDelete}
             className="bg-red-600 hover:bg-red-700"

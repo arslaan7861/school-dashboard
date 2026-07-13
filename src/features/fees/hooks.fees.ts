@@ -36,10 +36,10 @@ export const feesKeys = {
   optionalFee: (id: number) => [...feesKeys.optionalFees(), id] as const,
   studentFees: (classStudentId: number) =>
     [...feesKeys.all, "student", classStudentId] as const,
-  invoices: (classStudentId: number) =>
-    [...feesKeys.all, "invoices", classStudentId] as const,
-  payments: (classStudentId: number) =>
-    [...feesKeys.all, "payments", classStudentId] as const,
+  invoices: (studentId: number) =>
+    [...feesKeys.all, "invoices", studentId] as const,
+  payments: (studentId: number) =>
+    [...feesKeys.all, "payments", studentId] as const,
 };
 
 // ==================== Class Fee Hooks ====================
@@ -297,12 +297,12 @@ export const useGenerateOneTimeInvoices = () => {
   });
 };
 
-export const useStudentInvoices = (classStudentId: number) => {
+export const useStudentInvoices = (studentId: number) => {
   return useQuery({
-    queryKey: feesKeys.invoices(classStudentId),
+    queryKey: feesKeys.invoices(studentId),
     queryFn: () =>
-      invoiceApi.getStudentInvoices(classStudentId).then((res) => res.data),
-    enabled: !!classStudentId,
+      invoiceApi.getStudentInvoices(studentId).then((res) => res.data),
+    enabled: !!studentId,
   });
 };
 
@@ -315,10 +315,10 @@ export const useCreatePayment = () => {
     mutationFn: (data: CreatePaymentRequest) => paymentApi.create(data),
     onSuccess: (_, data) => {
       queryClient.invalidateQueries({
-        queryKey: feesKeys.payments(data.classStudentId),
+        queryKey: feesKeys.payments(data.studentId),
       });
       queryClient.invalidateQueries({
-        queryKey: feesKeys.invoices(data.classStudentId),
+        queryKey: feesKeys.invoices(data.studentId),
       });
     },
   });
@@ -340,11 +340,11 @@ export const useAllocatePayment = () => {
   });
 };
 
-export const useStudentPayments = (classStudentId: number) => {
+export const useStudentPayments = (studentId: number) => {
   return useQuery({
-    queryKey: feesKeys.payments(classStudentId),
+    queryKey: feesKeys.payments(studentId),
     queryFn: () =>
-      paymentApi.getStudentPayments(classStudentId).then((res) => res.data),
-    enabled: !!classStudentId,
+      paymentApi.getStudentPayments(studentId).then((res) => res.data),
+    enabled: !!studentId,
   });
 };

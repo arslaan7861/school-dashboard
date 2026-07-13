@@ -294,7 +294,7 @@ export interface Invoice {
 
 export interface Payment {
   id: number;
-  classStudentId: number;
+  studentId: number;
   sessionId: number;
   totalAmount: number;
   paymentDate: string;
@@ -306,7 +306,7 @@ export interface Payment {
 }
 
 export interface CreatePaymentRequest {
-  classStudentId: number;
+  studentId: number;
   sessionId: number;
   totalAmount: number;
   paymentDate: string;

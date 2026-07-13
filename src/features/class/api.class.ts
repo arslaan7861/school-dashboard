@@ -41,3 +41,13 @@ export async function deleteClassService(
 ): Promise<ApiSuccess<never>> {
   return api.delete(`/classes/${classId}`);
 }
+
+export async function promoteClassService(payload: {
+  fromClassId: number;
+  fromSessionId: number;
+  toClassId: number;
+  toSessionId: number;
+  studentIds: number[];
+}): Promise<ApiSuccess<any>> {
+  return api.post("/classes/promote", payload);
+}

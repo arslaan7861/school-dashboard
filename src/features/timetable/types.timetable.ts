@@ -87,6 +87,24 @@ export interface ClassTimetableResponse {
   }>;
 }
 
+export interface TeacherTimetableResponse {
+  teacherId: number;
+  teacherName: string;
+  timetable: Array<{
+    day: WeekDay;
+    slots: Array<{
+      id: number;
+      lectureNo: number;
+      startTime?: string;
+      endTime?: string;
+      class: { id: number; name: string; section: string };
+      subject: { id: number; name: string };
+      component: { id: number; name: string; type: string };
+      batch: { id: number; name: string };
+    }>;
+  }>;
+}
+
 export interface CreateSlotDto {
   classId: number;
   day: WeekDay;
@@ -116,4 +134,14 @@ export interface UpdateEntryDto {
   subjectComponentId?: number;
   academicBatchId?: number;
   teacherId?: number;
+}
+
+export interface CopyDayDto {
+  sourceDay: WeekDay;
+  targetDay: WeekDay;
+}
+
+export interface MoveEntryDto {
+  targetDay: WeekDay;
+  targetLectureNo: number;
 }

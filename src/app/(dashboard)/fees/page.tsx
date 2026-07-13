@@ -78,6 +78,7 @@ export default function FeesDashboard() {
 
   // Selected Student for Ledger Sheet
   const [ledgerStudent, setLedgerStudent] = useState<{
+    studentId: number;
     classStudentId: number;
     name: string;
     admissionNo: string;
@@ -337,6 +338,7 @@ export default function FeesDashboard() {
                                   onClick={() =>
                                     isEnrolled &&
                                     setLedgerStudent({
+                                      studentId: student.id,
                                       classStudentId: student.classRelation!.id,
                                       name: student.name,
                                       admissionNo: student.admissionNo,
@@ -406,6 +408,7 @@ export default function FeesDashboard() {
       {/* STUDENT FEE DETAIL SHEET */}
       {ledgerStudent && (
         <StudentFeeLedger
+          studentId={ledgerStudent.studentId}
           classStudentId={ledgerStudent.classStudentId}
           studentName={ledgerStudent.name}
           admissionNo={ledgerStudent.admissionNo}
