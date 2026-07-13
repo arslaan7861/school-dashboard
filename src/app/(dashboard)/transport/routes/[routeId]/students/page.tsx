@@ -53,16 +53,14 @@ import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { AssignStudentModal } from "@/components/modals/transport/AssignStudentModal";
-import { BulkAssignModal } from "@/components/modals/transport/BulkAssignModal";
+import { AssignStudentsModal } from "@/components/modals/transport/AssignStudentsModal";
 
 export default function RouteStudentsTab() {
   const params = useParams();
   const routeId = parseInt(params.routeId as string);
 
   // Modal states
-  const [isAssignModalOpen, setIsAssignModalOpen] = useState(false);
-  const [isBulkAssignModalOpen, setIsBulkAssignModalOpen] = useState(false);
+  const [isAssignStudentsModalOpen, setIsAssignStudentsModalOpen] = useState(false);
   const [selectedTransportId, setSelectedTransportId] = useState<number | null>(
     null,
   );
@@ -228,7 +226,7 @@ export default function RouteStudentsTab() {
   const summary = studentsData?.summary;
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pt-6">
       {/* Header with Summary */}
       <div className="flex justify-between items-start">
         <div>
@@ -257,19 +255,12 @@ export default function RouteStudentsTab() {
         </div>
         <div className="flex gap-2">
           <Button
-            onClick={() => setIsAssignModalOpen(true)}
+            onClick={() => setIsAssignStudentsModalOpen(true)}
             size="sm"
             className="gap-1"
           >
             <Plus className="w-4 h-4" />
-            Assign Student
-          </Button>
-          <Button
-            onClick={() => setIsBulkAssignModalOpen(true)}
-            size="sm"
-            variant="outline"
-          >
-            Bulk Assign
+            Assign Students
           </Button>
         </div>
       </div>
@@ -285,22 +276,22 @@ export default function RouteStudentsTab() {
         <Card>
           <CardContent className="p-0">
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Student Name</TableHead>
-                  <TableHead>Admission No</TableHead>
-                  <TableHead>Stop</TableHead>
-                  <TableHead>Monthly Fee</TableHead>
-                  <TableHead>Start Date</TableHead>
-                  <TableHead>End Date</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
+              <TableHeader className="bg-gray-50/50">
+                <TableRow className="border-gray-100 hover:bg-transparent">
+                  <TableHead className="font-medium text-gray-500">Student Name</TableHead>
+                  <TableHead className="font-medium text-gray-500">Admission No</TableHead>
+                  <TableHead className="font-medium text-gray-500">Stop</TableHead>
+                  <TableHead className="font-medium text-gray-500">Monthly Fee</TableHead>
+                  <TableHead className="font-medium text-gray-500">Start Date</TableHead>
+                  <TableHead className="font-medium text-gray-500">End Date</TableHead>
+                  <TableHead className="font-medium text-gray-500">Status</TableHead>
+                  <TableHead className="text-right font-medium text-gray-500">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {students.map((student) => (
-                  <TableRow key={student.transportDetails.id}>
-                    <TableCell className="font-medium">
+                  <TableRow key={student.transportDetails.id} className="border-gray-100 hover:bg-blue-50/30 transition-colors">
+                    <TableCell className="font-medium text-gray-900">
                       {student.name}
                     </TableCell>
                     <TableCell>{student.admissionNo}</TableCell>
@@ -323,24 +314,22 @@ export default function RouteStudentsTab() {
                         : "-"}
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant={
-                          student.transportDetails.isActive
-                            ? "default"
-                            : "secondary"
-                        }
-                      >
-                        {student.transportDetails.isActive
-                          ? "Active"
-                          : "Inactive"}
-                      </Badge>
+                      {student.transportDetails.isActive ? (
+                        <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                          Active
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
+                          Inactive
+                        </span>
+                      )}
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-1">
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8"
+                          className="h-8 w-8 text-gray-400 hover:text-blue-600 hover:bg-blue-50"
                           onClick={() =>
                             handleViewStudent(student.transportDetails.id)
                           }
@@ -351,7 +340,7 @@ export default function RouteStudentsTab() {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8 text-blue-500 hover:text-blue-700"
+                            className="h-8 w-8 text-gray-400 hover:text-blue-600 hover:bg-blue-50"
                             onClick={() =>
                               handleStopChangeClick(
                                 student.transportDetails.id,
@@ -367,7 +356,7 @@ export default function RouteStudentsTab() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 text-red-500 hover:text-red-700"
+                          className="h-8 w-8 text-gray-400 hover:text-red-600 hover:bg-red-50"
                           onClick={() =>
                             handleDeactivateClick(
                               student.transportDetails.id,
@@ -387,24 +376,14 @@ export default function RouteStudentsTab() {
         </Card>
       )}
 
-      {/* Assign Student Modal */}
       {route?.sessionId && (
-        <>
-          <AssignStudentModal
-            isOpen={isAssignModalOpen}
-            onClose={() => setIsAssignModalOpen(false)}
-            sessionId={route.sessionId}
-            defaultRouteId={routeId}
-            onSuccess={() => refetch()}
-          />
-          <BulkAssignModal
-            isOpen={isBulkAssignModalOpen}
-            onClose={() => setIsBulkAssignModalOpen(false)}
-            sessionId={route.sessionId}
-            defaultRouteId={routeId}
-            onSuccess={() => refetch()}
-          />
-        </>
+        <AssignStudentsModal
+          isOpen={isAssignStudentsModalOpen}
+          onClose={() => setIsAssignStudentsModalOpen(false)}
+          sessionId={route.sessionId}
+          defaultRouteId={routeId}
+          onSuccess={() => refetch()}
+        />
       )}
 
       {/* View Student Details Modal */}

@@ -86,8 +86,8 @@ export function CreateRouteModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[500px]">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] flex flex-col p-0 gap-0">
+        <DialogHeader className="px-6 py-4 border-b shrink-0">
           <DialogTitle>Create New Route</DialogTitle>
           <DialogDescription>
             Add a new transport route. Fill in the details below.
@@ -95,7 +95,8 @@ export function CreateRouteModal({
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col overflow-hidden flex-1">
+            <div className="flex-1 overflow-y-auto p-6 space-y-4">
             <FormField
               control={form.control}
               name="name"
@@ -165,7 +166,9 @@ export function CreateRouteModal({
               )}
             />
 
-            <DialogFooter>
+            </div>
+
+            <DialogFooter className="px-6 py-4 border-t bg-gray-50/50 shrink-0">
               <Button type="button" variant="outline" onClick={onClose}>
                 Cancel
               </Button>

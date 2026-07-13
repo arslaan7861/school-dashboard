@@ -66,7 +66,7 @@ export default function RouteStopsTab() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pt-6">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
@@ -93,36 +93,35 @@ export default function RouteStopsTab() {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-2">
+        <div className="relative pl-6 ml-2 space-y-6 before:absolute before:inset-0 before:ml-[11px] before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-gray-200 before:to-transparent">
           {stops.map((stop, index) => (
-            <Card
-              onClick={() =>
-                router.push(`/transport/routes/${routeId}/stops/${stop.id}`)
-              }
-              key={stop.id}
-              className="hover:shadow-md transition-shadow"
-            >
-              <CardContent className="p-4">
+            <div key={stop.id} className="relative flex items-center justify-between group">
+              {/* Timeline dot */}
+              <div className="absolute left-[-35px] flex items-center justify-center w-8 h-8 rounded-full bg-white border-2 border-blue-500 shadow-sm z-10 group-hover:scale-110 group-hover:bg-blue-50 transition-all">
+                <span className="text-xs font-bold text-blue-600">
+                  {stop.stopOrder || index + 1}
+                </span>
+              </div>
+              
+              <div 
+                className="flex-1 bg-white border border-gray-100 p-4 rounded-xl shadow-sm hover:shadow-md hover:border-blue-200 transition-all cursor-pointer"
+                onClick={() => router.push(`/transport/routes/${routeId}/stops/${stop.id}`)}
+              >
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full">
-                      <span className="text-sm font-medium">
-                        {stop.stopOrder || index + 1}
+                  <div>
+                    <h3 className="font-semibold text-gray-900 group-hover:text-blue-700 transition-colors">{stop.name}</h3>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="inline-flex items-center rounded-md bg-green-50 px-2 py-1 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
+                        ₹{stop.monthlyFee.toLocaleString()} / month
                       </span>
                     </div>
-                    <div>
-                      <h3 className="font-medium">{stop.name}</h3>
-                      <p className="text-sm text-gray-500">
-                        ₹{stop.monthlyFee.toLocaleString()} / month
-                      </p>
-                    </div>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity" onClick={(e) => e.stopPropagation()}>
                     <Button
                       variant="ghost"
                       size="icon"
                       onClick={() => setStopToEdit(stop)}
-                      className="h-8 w-8"
+                      className="h-8 w-8 text-gray-400 hover:text-blue-600 hover:bg-blue-50"
                     >
                       <Pencil className="h-4 w-4" />
                     </Button>
@@ -130,14 +129,14 @@ export default function RouteStopsTab() {
                       variant="ghost"
                       size="icon"
                       onClick={() => setStopToDelete(stop.id)}
-                      className="h-8 w-8 text-red-500 hover:text-red-700"
+                      className="h-8 w-8 text-gray-400 hover:text-red-600 hover:bg-red-50"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
           ))}
         </div>
       )}

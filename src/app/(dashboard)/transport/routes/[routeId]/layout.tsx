@@ -72,22 +72,24 @@ export default function RouteDetailsLayout({
   const disabledMonthsCount = route.disabledMonths?.length || 0;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pt-6">
       {/* Route Details Card */}
-      <Card className="overflow-hidden">
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6">
+      <Card className="overflow-hidden bg-white border-gray-200 shadow-sm">
+        <div className="p-6 border-b border-gray-100">
           <div className="flex justify-between items-start">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{route.name}</h1>
-              <div className="flex items-center gap-2 mt-2">
-                <Bus className="w-4 h-4 text-gray-500" />
-                <span className="text-gray-600">
-                  Vehicle: {route.vehicleNumber || "Not assigned"}
+              <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{route.name}</h1>
+              <div className="flex items-center gap-2 mt-2 text-sm">
+                <span className="flex items-center justify-center bg-gray-100 rounded-full p-1">
+                  <Bus className="w-3.5 h-3.5 text-gray-600" />
+                </span>
+                <span className="font-medium text-gray-700">
+                  {route.vehicleNumber || "No vehicle assigned"}
                 </span>
               </div>
             </div>
             <Link href={`/transport/routes/${routeId}/edit`}>
-              <Button variant="outline" size="sm" className="gap-2">
+              <Button variant="outline" size="sm" className="gap-2 shadow-sm border-gray-200 hover:bg-gray-50">
                 <Edit className="w-4 h-4" />
                 Edit Route
               </Button>
@@ -95,51 +97,50 @@ export default function RouteDetailsLayout({
           </div>
         </div>
 
-        <CardContent className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <CardContent className="p-6 bg-gray-50/30">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {/* Session Info */}
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Calendar className="w-5 h-5 text-blue-600" />
+            <div className="flex items-start gap-3 p-3 bg-white border border-gray-100 rounded-xl shadow-sm">
+              <div className="p-2 bg-blue-50 rounded-lg shrink-0">
+                <Calendar className="w-4 h-4 text-blue-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Academic Session</p>
-                <p className="font-medium">Session {route.sessionId}</p>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Session</p>
+                <p className="font-semibold text-gray-900">{route.sessionId}</p>
               </div>
             </div>
 
             {/* Stops Count */}
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <MapPin className="w-5 h-5 text-green-600" />
+            <div className="flex items-start gap-3 p-3 bg-white border border-gray-100 rounded-xl shadow-sm">
+              <div className="p-2 bg-emerald-50 rounded-lg shrink-0">
+                <MapPin className="w-4 h-4 text-emerald-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Total Stops</p>
-                <p className="font-medium">{totalStops} stops</p>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Stops</p>
+                <p className="font-semibold text-gray-900">{totalStops}</p>
               </div>
             </div>
 
             {/* Students Count */}
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <Users className="w-5 h-5 text-purple-600" />
+            <div className="flex items-start gap-3 p-3 bg-white border border-gray-100 rounded-xl shadow-sm">
+              <div className="p-2 bg-purple-50 rounded-lg shrink-0">
+                <Users className="w-4 h-4 text-purple-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Assigned Students</p>
-                <p className="font-medium">{totalStudents} students</p>
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Students</p>
+                <p className="font-semibold text-gray-900">{totalStudents}</p>
               </div>
             </div>
 
             {/* Status */}
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <Clock className="w-5 h-5 text-orange-600" />
+            <div className="flex items-start gap-3 p-3 bg-white border border-gray-100 rounded-xl shadow-sm">
+              <div className="p-2 bg-amber-50 rounded-lg shrink-0">
+                <Clock className="w-4 h-4 text-amber-600" />
               </div>
               <div>
-                <p className="text-sm text-gray-500">Disabled Months</p>
-                <p className="font-medium">
-                  {disabledMonthsCount} month
-                  {disabledMonthsCount !== 1 ? "s" : ""}
+                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider">Disabled</p>
+                <p className="font-semibold text-gray-900">
+                  {disabledMonthsCount} {disabledMonthsCount === 1 ? "month" : "months"}
                 </p>
               </div>
             </div>
@@ -148,56 +149,62 @@ export default function RouteDetailsLayout({
       </Card>
 
       {/* Tabs Navigation */}
-      <div className="border-b">
-        <div className="flex gap-6">
+      <div className="pb-1">
+        <div className="flex gap-2 bg-gray-100/80 p-1 rounded-xl w-fit">
           <Link href={`/transport/routes/${routeId}`}>
             <button
-              className={`pb-3 px-1 text-sm font-medium transition-colors relative ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 activeTab === "stops"
-                  ? "text-blue-600 border-b-2 border-blue-600"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-500 hover:text-gray-900 hover:bg-gray-200/50"
               }`}
             >
-              Stops
-              {totalStops > 0 && (
-                <Badge variant="secondary" className="ml-2 text-xs">
-                  {totalStops}
-                </Badge>
-              )}
+              <div className="flex items-center gap-2">
+                Stops
+                {totalStops > 0 && (
+                  <Badge variant={activeTab === "stops" ? "default" : "secondary"} className="h-5 px-1.5 text-[10px]">
+                    {totalStops}
+                  </Badge>
+                )}
+              </div>
             </button>
           </Link>
 
           <Link href={`/transport/routes/${routeId}/students`}>
             <button
-              className={`pb-3 px-1 text-sm font-medium transition-colors relative ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 activeTab === "students"
-                  ? "text-blue-600 border-b-2 border-blue-600"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-500 hover:text-gray-900 hover:bg-gray-200/50"
               }`}
             >
-              Students
-              {totalStudents > 0 && (
-                <Badge variant="secondary" className="ml-2 text-xs">
-                  {totalStudents}
-                </Badge>
-              )}
+              <div className="flex items-center gap-2">
+                Students
+                {totalStudents > 0 && (
+                  <Badge variant={activeTab === "students" ? "default" : "secondary"} className="h-5 px-1.5 text-[10px]">
+                    {totalStudents}
+                  </Badge>
+                )}
+              </div>
             </button>
           </Link>
 
           <Link href={`/transport/routes/${routeId}/disabled`}>
             <button
-              className={`pb-3 px-1 text-sm font-medium transition-colors relative ${
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
                 activeTab === "disabled"
-                  ? "text-blue-600 border-b-2 border-blue-600"
-                  : "text-gray-500 hover:text-gray-700"
+                  ? "bg-white text-gray-900 shadow-sm"
+                  : "text-gray-500 hover:text-gray-900 hover:bg-gray-200/50"
               }`}
             >
-              Disabled Months
-              {disabledMonthsCount > 0 && (
-                <Badge variant="secondary" className="ml-2 text-xs">
-                  {disabledMonthsCount}
-                </Badge>
-              )}
+              <div className="flex items-center gap-2">
+                Disabled Months
+                {disabledMonthsCount > 0 && (
+                  <Badge variant={activeTab === "disabled" ? "default" : "secondary"} className="h-5 px-1.5 text-[10px]">
+                    {disabledMonthsCount}
+                  </Badge>
+                )}
+              </div>
             </button>
           </Link>
         </div>

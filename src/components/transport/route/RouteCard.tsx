@@ -29,25 +29,27 @@ export function RouteCard({ route, onEdit, onDelete }: RouteCardProps) {
 
   return (
     <Card
-      className="cursor-pointer hover:shadow-lg transition-shadow"
+      className="cursor-pointer bg-white transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:border-blue-200 border-gray-200 group"
       onClick={handleClick}
     >
-      <CardHeader>
+      <CardHeader className="pb-4">
         <div className="flex justify-between items-start">
           <div>
-            <CardTitle className="text-xl">{route.name}</CardTitle>
-            <CardDescription className="flex items-center gap-2 mt-1">
-              <Bus className="w-3 h-3" />
-              {route.vehicleNumber || "No vehicle assigned"}
+            <CardTitle className="text-xl font-semibold group-hover:text-blue-700 transition-colors">{route.name}</CardTitle>
+            <CardDescription className="flex items-center gap-2 mt-2">
+              <span className="flex items-center justify-center bg-gray-100 rounded-full p-1">
+                <Bus className="w-3 h-3 text-gray-600" />
+              </span>
+              <span className="font-medium text-gray-700">{route.vehicleNumber || "No vehicle assigned"}</span>
             </CardDescription>
           </div>
-          <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
+          <div className="flex gap-1" onClick={(e) => e.stopPropagation()}>
             {onEdit && (
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={() => onEdit(route)}
-                className="h-8 w-8"
+                className="h-8 w-8 text-gray-400 hover:text-blue-600 hover:bg-blue-50"
               >
                 <Pencil className="h-4 w-4" />
               </Button>
@@ -57,7 +59,7 @@ export function RouteCard({ route, onEdit, onDelete }: RouteCardProps) {
                 variant="ghost"
                 size="icon"
                 onClick={() => onDelete(route)}
-                className="h-8 w-8 text-red-500 hover:text-red-700"
+                className="h-8 w-8 text-gray-400 hover:text-red-600 hover:bg-red-50"
               >
                 <Trash2 className="h-4 w-4" />
               </Button>
@@ -65,27 +67,30 @@ export function RouteCard({ route, onEdit, onDelete }: RouteCardProps) {
           </div>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-2">
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <MapPin className="w-4 h-4" />
-            <span>{route.stops?.length || 0} stops</span>
+      <CardContent className="pb-4">
+        <div className="grid grid-cols-2 gap-4">
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-gray-500 font-medium uppercase tracking-wider">Stops</span>
+            <div className="flex items-center gap-2 text-sm text-gray-700 font-medium">
+              <div className="p-1.5 rounded-md bg-blue-50 text-blue-600">
+                <MapPin className="w-4 h-4" />
+              </div>
+              <span>{route.stops?.length || 0}</span>
+            </div>
           </div>
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <Users className="w-4 h-4" />
-            <span>Active students: --</span>
-          </div>
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <Calendar className="w-4 h-4" />
-            <span>Session: {route.sessionId}</span>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-gray-500 font-medium uppercase tracking-wider">Session</span>
+            <div className="flex items-center gap-2 text-sm text-gray-700 font-medium">
+              <div className="p-1.5 rounded-md bg-purple-50 text-purple-600">
+                <Calendar className="w-4 h-4" />
+              </div>
+              <span>{route.sessionId}</span>
+            </div>
           </div>
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between">
-        {/* <Badge variant={route.isActive ? "default" : "secondary"}>
-          {route.isActive ? "Active" : "Inactive"}
-        </Badge> */}
-        <Button variant="link" size="sm" onClick={handleClick}>
+      <CardFooter className="pt-2 border-t border-gray-100 bg-gray-50/50 rounded-b-lg flex justify-end">
+        <Button variant="link" size="sm" onClick={handleClick} className="text-blue-600 group-hover:text-blue-700 px-0 h-auto font-medium">
           View Details →
         </Button>
       </CardFooter>
