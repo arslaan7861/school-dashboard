@@ -152,16 +152,14 @@ export default function StudentDetailsPage() {
             </p>
           </div>
         </div>
-        {isAdmin && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => router.push(`/students/${studentId}/edit`)}
-          >
-            <Edit className="h-3 w-3 mr-2" />
-            Edit
-          </Button>
-        )}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => router.push(`/students/${studentId}/edit`)}
+        >
+          <Edit className="h-3 w-3 mr-2" />
+          Edit
+        </Button>
       </div>
 
       <Separator />

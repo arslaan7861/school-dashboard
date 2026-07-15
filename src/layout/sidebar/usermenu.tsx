@@ -49,7 +49,7 @@ export function NavUser() {
                 <AvatarFallback className="rounded-lg">
                   {user?.name
                     .split(" ")
-                    .map((s) => s[0].toLocaleUpperCase())
+                    .map((s) => s[0]?.toLocaleUpperCase())
                     .join("")}
                 </AvatarFallback>
               </Avatar>
@@ -73,7 +73,7 @@ export function NavUser() {
                   <AvatarFallback className="rounded-lg">
                     {user?.name
                       .split(" ")
-                      .map((s) => s[0].toLocaleUpperCase())
+                      .map((s) => s[0]?.toLocaleUpperCase())
                       .join("")}
                   </AvatarFallback>
                 </Avatar>

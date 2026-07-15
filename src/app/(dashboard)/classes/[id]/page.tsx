@@ -126,9 +126,7 @@ export default function ClassDetailsPage() {
   const { data: classData, isLoading } = useClass(classId);
   const classInfo = classData?.data;
 
-  const { data: classTeacherData } = useTeacher(
-    classInfo?.classTeacherId,
-  );
+  const { data: classTeacherData } = useTeacher(classInfo?.classTeacherId);
   const classTeacher = classTeacherData?.data;
 
   const { data: sessions } = useSessions();
@@ -192,24 +190,20 @@ export default function ClassDetailsPage() {
           </div>
         </div>
 
-        {isAdmin && (
-          <>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setIsUpdateDialogOpen(true)}
-            >
-              <Edit className="h-3 w-3 mr-2" />
-              Edit
-            </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setIsUpdateDialogOpen(true)}
+        >
+          <Edit className="h-3 w-3 mr-2" />
+          Edit
+        </Button>
 
-            <UpdateClassDialog
-              classData={classInfo}
-              open={isUpdateDialogOpen}
-              onOpenChange={setIsUpdateDialogOpen}
-            />
-          </>
-        )}
+        <UpdateClassDialog
+          classData={classInfo}
+          open={isUpdateDialogOpen}
+          onOpenChange={setIsUpdateDialogOpen}
+        />
       </div>
 
       <Separator />
@@ -336,10 +330,7 @@ export default function ClassDetailsPage() {
           <PlaceholderCard icon={GraduationCap} title="Exams" />
         </TabsContent>
         <TabsContent value="homework">
-          <HomeworkTab
-            classId={classId}
-            sessionId={classInfo.sessionId}
-          />
+          <HomeworkTab classId={classId} sessionId={classInfo.sessionId} />
         </TabsContent>
       </Tabs>
     </div>

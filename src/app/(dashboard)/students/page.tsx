@@ -309,16 +309,12 @@ export default function StudentsPage() {
             <div className="w-16 h-16 rounded-full bg-muted mx-auto mb-6 flex items-center justify-center">
               <Users className="w-8 h-8 text-muted-foreground" />
             </div>
-            <h2 className="text-xl font-semibold mb-2">
-              No Active Session
-            </h2>
+            <h2 className="text-xl font-semibold mb-2">No Active Session</h2>
             <p className="text-muted-foreground mb-6">
               Please select an active academic session to view and manage
               students.
             </p>
-            <Button
-              onClick={() => router.push("/dashboard/sessions")}
-            >
+            <Button onClick={() => router.push("/dashboard/sessions")}>
               Go to Sessions
             </Button>
           </CardContent>
@@ -342,7 +338,8 @@ export default function StudentsPage() {
                 Students
               </h1>
               <p className="text-xs text-muted-foreground mt-0.5">
-                {pagination?.totalRecords ?? 0} records &middot; Manage student records and class assignments
+                {pagination?.totalRecords ?? 0} records &middot; Manage student
+                records and class assignments
               </p>
             </div>
           </div>
@@ -356,7 +353,9 @@ export default function StudentsPage() {
               className="h-9 w-9"
               title="Refresh"
             >
-              <RefreshCw className={cn("h-4 w-4", isFetching && "animate-spin")} />
+              <RefreshCw
+                className={cn("h-4 w-4", isFetching && "animate-spin")}
+              />
             </Button>
             <Button
               variant="outline"
@@ -367,16 +366,14 @@ export default function StudentsPage() {
               <Share2 className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Share</span>
             </Button>
-            {isAdmin && (
-              <Button
-                onClick={() => router.push("/students/create")}
-                size="sm"
-                className="gap-1.5 h-9"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Add Student</span>
-              </Button>
-            )}
+            <Button
+              onClick={() => router.push("/students/create")}
+              size="sm"
+              className="gap-1.5 h-9"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Add Student</span>
+            </Button>
           </div>
         </div>
 
@@ -557,7 +554,7 @@ export default function StudentsPage() {
       </div>
 
       {/* Bulk Actions Bar - Sleeker design */}
-      {selectedStudents.length > 0 && isAdmin && (
+      {selectedStudents.length > 0 && (
         <div className="bg-primary/5 border border-primary/20 rounded-lg p-3 flex items-center justify-between animate-in slide-in-from-top-1">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
@@ -595,17 +592,15 @@ export default function StudentsPage() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50">
-                  {isAdmin && (
-                    <TableHead className="w-12">
-                      <Checkbox
-                        checked={
-                          selectedStudents.length === students.length &&
-                          students.length > 0
-                        }
-                        onCheckedChange={handleSelectAll}
-                      />
-                    </TableHead>
-                  )}
+                  <TableHead className="w-12">
+                    <Checkbox
+                      checked={
+                        selectedStudents.length === students.length &&
+                        students.length > 0
+                      }
+                      onCheckedChange={handleSelectAll}
+                    />
+                  </TableHead>
                   <TableHead>Student</TableHead>
                   <TableHead>Aadhaar No.</TableHead>
                   <TableHead>Admission No.</TableHead>
@@ -621,11 +616,9 @@ export default function StudentsPage() {
                   // Loading skeletons
                   Array.from({ length: 5 }).map((_, i) => (
                     <TableRow key={i}>
-                      {isAdmin && (
-                        <TableCell>
-                          <Skeleton className="h-4 w-4" />
-                        </TableCell>
-                      )}
+                      <TableCell>
+                        <Skeleton className="h-4 w-4" />
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Skeleton className="h-10 w-10 rounded-full" />
@@ -657,10 +650,7 @@ export default function StudentsPage() {
                   ))
                 ) : students.length === 0 ? (
                   <TableRow>
-                    <TableCell
-                      colSpan={isAdmin ? 8 : 7}
-                      className="h-32 text-center"
-                    >
+                    <TableCell colSpan={8} className="h-32 text-center">
                       <div className="flex flex-col items-center justify-center">
                         <Users className="w-8 h-8 text-muted-foreground mb-2" />
                         <p className="text-muted-foreground">
@@ -687,16 +677,14 @@ export default function StudentsPage() {
                       className="cursor-pointer hover:bg-muted/50"
                       onClick={() => router.push(`/students/${student.id}`)}
                     >
-                      {isAdmin && (
-                        <TableCell onClick={(e) => e.stopPropagation()}>
-                          <Checkbox
-                            checked={selectedStudents.includes(student.id)}
-                            onCheckedChange={() =>
-                              handleSelectStudent(student.id)
-                            }
-                          />
-                        </TableCell>
-                      )}
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        <Checkbox
+                          checked={selectedStudents.includes(student.id)}
+                          onCheckedChange={() =>
+                            handleSelectStudent(student.id)
+                          }
+                        />
+                      </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Avatar className="h-10 w-10 border-2 border-primary/10">
@@ -729,11 +717,7 @@ export default function StudentsPage() {
                             </p>
                           </div>
                         ) : (
-                          <Badge
-                            variant="secondary"
-                          >
-                            Not Assigned
-                          </Badge>
+                          <Badge variant="secondary">Not Assigned</Badge>
                         )}
                       </TableCell>
                       <TableCell>
@@ -781,26 +765,22 @@ export default function StudentsPage() {
                               <Eye className="h-4 w-4 mr-2" />
                               View Details
                             </DropdownMenuItem>
-                            {isAdmin && (
-                              <>
-                                <DropdownMenuItem
-                                  onClick={() =>
-                                    router.push(`/students/${student.id}/edit`)
-                                  }
-                                >
-                                  <Edit className="h-4 w-4 mr-2" />
-                                  Edit
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem
-                                  className="text-destructive"
-                                  onClick={() => handleDeleteClick(student)}
-                                >
-                                  <Trash2 className="h-4 w-4 mr-2" />
-                                  Delete
-                                </DropdownMenuItem>
-                              </>
-                            )}
+                            <DropdownMenuItem
+                              onClick={() =>
+                                router.push(`/students/${student.id}/edit`)
+                              }
+                            >
+                              <Edit className="h-4 w-4 mr-2" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              className="text-destructive"
+                              onClick={() => handleDeleteClick(student)}
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>

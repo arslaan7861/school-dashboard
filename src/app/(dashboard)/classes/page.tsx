@@ -78,13 +78,22 @@ export default function ClassesPage() {
   // Set default session to active session or first session
   useEffect(() => {
     if (sessions.length > 0 && !selectedSession) {
-      setSelectedSession(activeSessionId ? activeSessionId.toString() : sessions[0].id.toString());
+      setSelectedSession(
+        activeSessionId
+          ? activeSessionId.toString()
+          : sessions[0].id.toString(),
+      );
     }
   }, [sessions, activeSessionId]);
 
   // Fetch classes for selected session
-  const { data, isLoading } = useClasses(selectedSession ? Number(selectedSession) : undefined, search);
-  const { deleteClassMutation } = useClassCrud(selectedSession ? Number(selectedSession) : undefined);
+  const { data, isLoading } = useClasses(
+    selectedSession ? Number(selectedSession) : undefined,
+    search,
+  );
+  const { deleteClassMutation } = useClassCrud(
+    selectedSession ? Number(selectedSession) : undefined,
+  );
 
   const classes: ClassType[] = data?.data || [];
 
@@ -131,23 +140,23 @@ export default function ClassesPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm pt-4 pb-4 border-b">
-      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">
-            Class Management
-          </h1>
-          <p className="text-muted-foreground mt-1">
-            Manage classes, sections, and subjects
-          </p>
-        </div>
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Class Management
+            </h1>
+            <p className="text-muted-foreground mt-1">
+              Manage classes, sections, and subjects
+            </p>
+          </div>
 
-        <Link href="/classes/create">
-          <Button size="lg">
-            <Plus className="w-4 h-4 mr-2" />
-            Create Class
-          </Button>
-        </Link>
-      </div>
+          <Link href="/classes/create">
+            <Button size="lg">
+              <Plus className="w-4 h-4 mr-2" />
+              Create Class
+            </Button>
+          </Link>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -395,7 +404,7 @@ export default function ClassesPage() {
                               <Eye className="w-4 h-4 mr-2" />
                               View Details
                             </DropdownMenuItem>
-                            <DropdownMenuItem
+                            {/* <DropdownMenuItem
                               onClick={(e) => {
                                 e.stopPropagation();
                                 router.push(`/classes/${cls.id}/edit`);
@@ -403,7 +412,7 @@ export default function ClassesPage() {
                             >
                               <Pencil className="w-4 h-4 mr-2" />
                               Edit
-                            </DropdownMenuItem>
+                            </DropdownMenuItem> */}
                             <DropdownMenuSeparator />
                             <DropdownMenuItem
                               onClick={(e) => {

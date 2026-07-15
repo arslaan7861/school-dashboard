@@ -168,12 +168,10 @@ export function StudentSubjectsTab({
                 className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
               />
             </Button>
-            {isAdmin && (
-              <Button size="sm" onClick={handleManageSubjects}>
-                <Plus className="h-4 w-4 mr-2" />
-                Manage Subjects
-              </Button>
-            )}
+            <Button size="sm" onClick={handleManageSubjects}>
+              <Plus className="h-4 w-4 mr-2" />
+              Manage Subjects
+            </Button>
           </div>
         </CardHeader>
         <CardContent className="min-h-[300px] flex flex-col items-center justify-center text-center">
@@ -182,8 +180,8 @@ export function StudentSubjectsTab({
           </div>
           <h3 className="text-sm font-medium mb-1">No subjects yet</h3>
           <p className="text-xs text-muted-foreground max-w-[300px]">
-            This student is not enrolled in any subjects.
-            {isAdmin && " Click the 'Manage Subjects' button to get started."}
+            This student is not enrolled in any subjects. Click the 'Manage
+            Subjects' button to get started.
           </p>
         </CardContent>
       </Card>
@@ -256,12 +254,10 @@ export function StudentSubjectsTab({
                 className={`h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
               />
             </Button>
-            {isAdmin && (
-              <Button size="sm" onClick={handleManageSubjects}>
-                <Plus className="h-4 w-4 mr-2" />
-                Manage
-              </Button>
-            )}
+            <Button size="sm" onClick={handleManageSubjects}>
+              <Plus className="h-4 w-4 mr-2" />
+              Manage
+            </Button>
           </div>
         </CardHeader>
         <CardContent>
