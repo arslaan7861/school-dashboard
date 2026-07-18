@@ -284,10 +284,12 @@ export default function AttendancePage() {
 
       {/* Stats */}
       {canShowAttendance && (
-        <AttendanceStats
-          attendance={attendance}
-          isLoading={attendanceLoading}
-        />
+        <div className="hidden lg:block">
+          <AttendanceStats
+            attendance={attendance}
+            isLoading={attendanceLoading}
+          />
+        </div>
       )}
 
       {/* Content */}
@@ -305,7 +307,7 @@ export default function AttendancePage() {
             />
           </div>
 
-          <div className="space-y-6 hidden md:block">
+          <div className="space-y-6 hidden xl:block">
             {/* Quick Actions */}
             <Card>
               <CardHeader>

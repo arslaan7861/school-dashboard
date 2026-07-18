@@ -18,6 +18,7 @@ import {
   X,
   Check,
   Info,
+  ChevronDown,
 } from "lucide-react";
 
 import { format } from "date-fns";
@@ -27,6 +28,13 @@ import {
   HoverCardTrigger,
   HoverCardContent,
 } from "@/components/ui/hover-card";
+
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 import {
   Card,
@@ -411,7 +419,7 @@ export const AttendanceTable = forwardRef<
   return (
     <Card className="h-full min-h-0 max-h-full">
       {/* Header */}
-      <CardHeader className="border-b bg-muted/20">
+      <CardHeader className="border-b bg-muted/20 p-3 sm:p-6">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
             <CardTitle>Student Attendance</CardTitle>
@@ -438,53 +446,73 @@ export const AttendanceTable = forwardRef<
               )}
             </CardDescription>
           </div>
-          <div className="flex flex-wrap items-center justify-end gap-2 w-full lg:w-auto">
-            {hasChanges && !isLocked && (
-              <Button
-                variant="outline"
-                onClick={resetToOriginal}
-                className="gap-2 text-muted-foreground hover:text-foreground"
-              >
-                <X className="h-4 w-4" />
-                Clear Changes
-              </Button>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-1 w-full sm:w-auto">
+            {!isLocked && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" className="w-full sm:w-auto justify-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-primary" />
+                    <span>Bulk Actions</span>
+                    <ChevronDown className="h-3.5 w-3.5 opacity-50" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem
+                    onClick={markAllPresent}
+                    className="gap-2 text-green-600 dark:text-green-400 focus:text-green-600 cursor-pointer"
+                  >
+                    <Check className="h-4 w-4" />
+                    Mark all present
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={markAllAbsent}
+                    className="gap-2 text-red-600 dark:text-red-400 focus:text-red-600 cursor-pointer"
+                  >
+                    <X className="h-4 w-4" />
+                    Mark all absent
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={markAllLate}
+                    className="gap-2 text-orange-600 dark:text-orange-400 focus:text-orange-600 cursor-pointer"
+                  >
+                    <Clock className="h-4 w-4" />
+                    Mark all late
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={markAllLeave}
+                    className="gap-2 text-yellow-600 dark:text-yellow-400 focus:text-yellow-600 cursor-pointer"
+                  >
+                    <Clock className="h-4 w-4" />
+                    Mark all leave
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             )}
 
-            <Button
-              disabled={!hasChanges || isLocked}
-              onClick={handleSave}
-              className={cn(
-                "gap-2",
-                !(hasChanges && !isLocked) && "hidden",
-              )}
-            >
-              <Save className="h-4 w-4" />
-              Save Changes
-            </Button>
-
-            {!isLocked && (
-              <>
+            {hasChanges && !isLocked && (
+              <div className="flex items-center gap-1 w-full sm:w-auto">
                 <Button
-                  onClick={markAllAbsent}
-                  variant="destructive"
-                  className="gap-2"
+                  variant="outline"
+                  onClick={resetToOriginal}
+                  className="flex-1 sm:flex-initial justify-center gap-2 text-muted-foreground hover:text-foreground"
                 >
                   <X className="h-4 w-4" />
-                  Mark all absent
+                  <span>Clear</span>
                 </Button>
 
                 <Button
-                  onClick={markAllPresent}
-                  className="gap-2 bg-green-600 hover:bg-green-700"
+                  disabled={!hasChanges || isLocked}
+                  onClick={handleSave}
+                  className="flex-1 sm:flex-initial justify-center gap-2"
                 >
-                  <Check className="h-4 w-4" />
-                  Mark all present
+                  <Save className="h-4 w-4" />
+                  <span>Save</span>
                 </Button>
-              </>
+              </div>
             )}
 
             {isLocked && (
-              <Badge variant="outline" className="gap-1.5">
+              <Badge variant="outline" className="gap-1.5 justify-center py-1.5 sm:py-1">
                 <Lock className="h-3 w-3" />
                 Locked
               </Badge>
@@ -494,24 +522,24 @@ export const AttendanceTable = forwardRef<
       </CardHeader>
 
       {/* Table */}
-      <CardContent className="py-0 grow overflow-y-auto scrollbar-thin min-h-0">
+      <CardContent className="p-2 sm:p-6 py-0 sm:py-0 grow overflow-y-auto scrollbar-thin min-h-0">
         <div className="overflow-y-auto h-full min-h-0">
-          <Table>
+          <Table className="w-full table-fixed">
             <TableHeader className="bg-muted/30">
               <TableRow>
-                <TableHead className="text-center md:text-left">
+                <TableHead className="text-center h-8 sm:h-10 py-1 px-1.5 sm:py-3 sm:px-4 w-12">
                   Roll No
                 </TableHead>
-                <TableHead className="text-center md:text-left">
+                <TableHead className="text-left h-8 sm:h-10 py-1 px-1.5 sm:py-3 sm:px-4">
                   Student
                 </TableHead>
-                <TableHead className="hidden md:table-cell">
+                <TableHead className="hidden md:table-cell h-8 sm:h-10 py-1 px-1.5 sm:py-3 sm:px-4 md:w-36">
                   Admission No
                 </TableHead>
-                <TableHead className="text-center md:text-left">
+                <TableHead className="text-center h-8 sm:h-10 py-1 px-1.5 sm:py-3 sm:px-4 w-[125px] md:w-[150px]">
                   Status
                 </TableHead>
-                <TableHead className="min-w-[220px] hidden md:table-cell">
+                <TableHead className="min-w-[220px] hidden md:table-cell h-8 sm:h-10 py-1 px-1.5 sm:py-3 sm:px-4 md:w-60">
                   Remarks
                 </TableHead>
               </TableRow>
@@ -545,13 +573,15 @@ export const AttendanceTable = forwardRef<
                         "bg-amber-50/30 dark:bg-amber-950/10",
                     )}
                   >
-                    <TableCell className="text-center md:text-left">
+                    <TableCell className="text-center py-1 px-1.5 sm:py-2 sm:px-4">
                       {student.rollNumber}
                     </TableCell>
 
-                    <TableCell className="text-center md:text-left">
-                      <div className="flex items-center gap-2 justify-center md:justify-start">
-                        <span className="font-medium">{student.studentName}</span>
+                    <TableCell className="text-left py-1 px-1.5 sm:py-2 sm:px-4 min-w-0">
+                      <div className="flex items-center gap-1 justify-start min-w-0">
+                        <span className="font-medium truncate block">
+                          {student.studentName}
+                        </span>
                         {student.marker && (
                           <HoverCard>
                             <HoverCardTrigger asChild>
@@ -559,30 +589,42 @@ export const AttendanceTable = forwardRef<
                                 <Info className="h-3.5 w-3.5" />
                               </button>
                             </HoverCardTrigger>
-                            <HoverCardContent className="w-80 p-4" align="start">
+                            <HoverCardContent
+                              className="w-80 p-4"
+                              align="start"
+                            >
                               <div className="space-y-3">
                                 <div className="flex items-start gap-3">
                                   <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold uppercase text-sm">
                                     {student.marker.name.charAt(0)}
                                   </div>
                                   <div className="space-y-0.5">
-                                    <h4 className="text-sm font-semibold text-left">{student.marker.name}</h4>
-                                    <p className="text-xs text-muted-foreground text-left capitalize">{student.marker.role}</p>
+                                    <h4 className="text-sm font-semibold text-left">
+                                      {student.marker.name}
+                                    </h4>
+                                    <p className="text-xs text-muted-foreground text-left capitalize">
+                                      {student.marker.role}
+                                    </p>
                                   </div>
                                 </div>
-                                
+
                                 <div className="space-y-1.5 text-xs border-t pt-2">
                                   {student.marker.email && (
                                     <div className="flex items-center justify-between text-muted-foreground">
                                       <span>Email</span>
-                                      <span className="text-foreground font-medium">{student.marker.email}</span>
+                                      <span className="text-foreground font-medium">
+                                        {student.marker.email}
+                                      </span>
                                     </div>
                                   )}
                                   {student.markedAt && (
                                     <div className="flex items-center justify-between text-muted-foreground">
                                       <span>Marked At</span>
                                       <span className="text-foreground font-medium">
-                                        {format(new Date(student.markedAt), "MMM d, yyyy h:mm a")}
+                                        {format(
+                                          new Date(student.markedAt),
+                                          "MMM d, yyyy h:mm a",
+                                        )}
                                       </span>
                                     </div>
                                   )}
@@ -594,11 +636,11 @@ export const AttendanceTable = forwardRef<
                       </div>
                     </TableCell>
 
-                    <TableCell className="hidden md:block">
+                    <TableCell className="hidden md:table-cell py-1 px-1.5 sm:py-2 sm:px-4">
                       {student.admissionNo}
                     </TableCell>
 
-                    <TableCell>
+                    <TableCell className="py-1 px-1.5 sm:py-2 sm:px-4 text-center">
                       {isLocked ? (
                         <Badge variant="outline" className="gap-1.5 capitalize">
                           {currentOption && (
@@ -621,7 +663,7 @@ export const AttendanceTable = forwardRef<
                           >
                             <SelectTrigger
                               className={cn(
-                                "mx-auto md:mx-0",
+                                "h-8 text-xs px-2 w-[105px] mx-auto md:h-9 md:text-sm md:px-3 md:w-[125px]",
                                 hasStudentChanges &&
                                   "border-amber-500 bg-amber-50/50 dark:bg-amber-950/20",
                               )}
@@ -658,7 +700,7 @@ export const AttendanceTable = forwardRef<
                     </TableCell>
 
                     {/* Remarks */}
-                    <TableCell className="hidden md:block">
+                    <TableCell className="hidden md:table-cell py-1 px-1.5 sm:py-2 sm:px-4">
                       {isLocked ? (
                         <span className="text-sm text-muted-foreground">
                           {currentRemarks || "-"}
