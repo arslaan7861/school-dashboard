@@ -72,14 +72,12 @@ export default function SessionsPage() {
     const start = new Date(session.startDate); // Changed
     const end = new Date(session.endDate); // Changed
     const today = new Date();
-    console.log({ end, start, today });
 
     if (today < start) return 0;
     if (today > end) return 100;
 
     const totalDays = differenceInDays(end, start);
     const daysPassed = differenceInDays(today, start);
-    console.log({ totalDays, daysPassed });
 
     return Math.floor((daysPassed / totalDays) * 100);
   };
@@ -304,10 +302,10 @@ export default function SessionsPage() {
                   <Pencil className="w-4 h-4 mr-2" />
                   Edit Session
                 </Button>
-                <Button 
-                  size="lg" 
+                <Button
+                  size="lg"
                   className="gap-2 bg-blue-600 hover:bg-blue-700 text-white"
-                  onClick={() => router.push('/session/rollover')}
+                  onClick={() => router.push("/session/rollover")}
                 >
                   <FastForward className="w-4 h-4" />
                   Start Rollover Wizard

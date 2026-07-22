@@ -2,13 +2,9 @@
 
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
-import {
-  useTeacher,
-  useTeacherCrud,
-} from "@/features/teachers/hooks.teacher";
+import { useTeacher, useTeacherCrud } from "@/features/teachers/hooks.teacher";
 import { Button } from "@/components/ui/button";
 import { TeacherFormDialog } from "@/components/modal/teacher.form";
-import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Edit, ShieldBan, ShieldCheck } from "lucide-react";
@@ -27,14 +23,17 @@ export default function TeacherDetailPage() {
   const teacherId = Number(id);
 
   const { data, isLoading } = useTeacher(teacherId);
-  const { updateTeacherMutation, toggleTeacherStatusMutation } = useTeacherCrud();
+  const { updateTeacherMutation, toggleTeacherStatusMutation } =
+    useTeacherCrud();
 
   const [open, setOpen] = useState(false);
 
   if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <div className="text-muted-foreground animate-pulse">Loading teacher details...</div>
+        <div className="text-muted-foreground animate-pulse">
+          Loading teacher details...
+        </div>
       </div>
     );
   }
@@ -72,7 +71,10 @@ export default function TeacherDetailPage() {
         <Button variant="ghost" size="icon" onClick={() => router.back()}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
-        <PageHeader title="Teacher Details" description="View and manage teacher profile and assignments." />
+        <PageHeader
+          title="Teacher Details"
+          description="View and manage teacher profile and assignments."
+        />
       </div>
 
       {/* Profile Header */}
@@ -86,7 +88,9 @@ export default function TeacherDetailPage() {
           </Avatar>
           <div className="space-y-1.5">
             <div className="flex items-center gap-2">
-              <h2 className="text-2xl font-bold tracking-tight">{teacher.name}</h2>
+              <h2 className="text-2xl font-bold tracking-tight">
+                {teacher.name}
+              </h2>
               <Badge variant={teacher.isActive ? "default" : "destructive"}>
                 {teacher.isActive ? "Active" : "Inactive"}
               </Badge>
@@ -125,9 +129,9 @@ export default function TeacherDetailPage() {
       </div>
 
       {/* Tabs */}
-      <Tabs 
-        value={currentTab} 
-        onValueChange={(val) => router.push(`?tab=${val}`, { scroll: false })} 
+      <Tabs
+        value={currentTab}
+        onValueChange={(val) => router.push(`?tab=${val}`, { scroll: false })}
         className="w-full"
       >
         <TabsList className="mb-4">

@@ -7,9 +7,6 @@ import { format } from "date-fns";
 import {
   Calendar as CalendarIcon,
   RefreshCw,
-  Lock,
-  Unlock,
-  FileSpreadsheet,
   CheckCircle,
   ChevronDown,
   X,
@@ -32,8 +29,6 @@ import { useClasses } from "@/features/class/hooks.class";
 import {
   useAttendanceByDay,
   useBulkMarkAttendance,
-  useLockAttendance,
-  useUnlockAttendance,
 } from "@/features/attendance/hooks.attendance";
 
 import { useAuthStore } from "@/store/authStore";
@@ -44,7 +39,6 @@ import {
   AttendanceTableRef,
 } from "@/components/attendance/AttendanceTable";
 import { AttendanceSummaryCard } from "@/components/attendance/AttendanceSummaryCard";
-import { BulkAttendanceModal } from "@/components/attendance/BulkAttendanceModal";
 import { AcademicDaySelector } from "@/components/attendance/AcdemicDaySelector";
 import {
   Select,
